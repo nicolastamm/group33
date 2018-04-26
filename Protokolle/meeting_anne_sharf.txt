@@ -1,0 +1,102 @@
+﻿Meeting mit Anne Scharf - 24.04.2018
+
+
+
+
+- Ziel: Kartographierung mit Hobby Drohne, profi Drohnen viel zu teuer
+
+- Routenplanung bei Hobby Drohnen nur sehr grob bisher möglich
+
+
+
+- Schritte zur Kartographierung bisher:
+
+	
+
+	1. Polygon kartieren
+	2. Standpunkt auswählen wegen der Sichtweite
+	3. Frage: Wie soll die Drohne fliegen? Mit welchem Abstand werden Bilder gemacht und wo? Wie gross sind die Bilder?
+   		 Berechnung der Bilder mit Winkel der Kamera (FieldOfView) mithilfe von Strahlensatz und Höhe
+	4. Überlappung (80-85% Länge und 70-75% Breite) muss existieren dementsprechend Punkte des Bilder machens mit einberechnen
+	5. Raster der Punkte über Polygon 
+	6. Relevante Punkte befliegen per TSM vom Startpunkt aus wo man steht
+	7. Litchi App für Steuerung
+
+	.CSV Datei:
+	Latitude, Longitude, Altitude, Heading.deg (0=Norden), Rotation, Action (1=Bild)
+
+
+
+
+
+- Req:
+
+  
+
+- Kamera Eigenschaft eingeben: FOV, Flughöhe (Output: Pixelgrösse) (alternativ: Pixelgrösse (Output: Flughöhe)), Bildgrösse, Überlappung der Bilder
+
+- Warnung bei mehr als 100m
+
+  
+
+- Nutzer kann Polygon auf beliebiger Hintergrundkarte erstellen
+  
+ 
+ 
+- Standpunkt des Piloten festlegbar
+
+  
+
+	Route soll am Standort starten/enden
+        Warnmeldung wenn mehr als Sichtweite zwischen Pilot und Drohne erreicht ist
+
+
+- CSV Datei zum einlesen in die Website von der erstellten Route generieren
+
+
+
+
+- Drohne fliegt bei 25% Akku zurück
+ 
+- 150 Bilder in 20 Minuten möglich 
+
+
+
+- Special: Zu grosse Fläche in mehrere Polygone aufteilen und Standpunkte mit einberechnen (Standpunkt meistens zum Beispiel auf Strassen)
+
+
+
+
+Fragen:
+
+
+- An wen richtet sich die App in erster Linie? Wie einfach soll die GUI sein? In erster Linie richtet sich die App an Anne Scharf, aber auch andere Menschen sollten die App 
+  benutzen können ohne große IT-Kenntnisse. Die App richtet sich auch an Leute die nicht mit R umgehen können.
+
+- Flughöhe der Drohne? Hängt von der Pixelgrösse ab und die Drohne korrigiert selbt und bleibt immer auf 100 Meter über dem Boden.
+
+- Bildmerge in verschiedenen Höhen? Scheint kein Problem sein
+
+- Winkel der Kamera? Drohne guckt nach unten. Aber eigentlich irrelevant.
+
+- Offlineverfügbarkeit? Muss eigentlich nicht also Nice2Have
+
+- Wie stellt sich Anne Scharf den Einsatz der App vor? Desktop App 
+wäre ebenfalls möglich gewesenen.
+
+- Warnungen? Einfach auf Ok klicken reicht muss nicht abgebrochen werden.
+
+- Sichtweite? Maximale Distanz im Polygon angeben damit man weiss wie weit die Drohne weg sein wird.
+
+- Zu grosses Polygon? Splitten mit der Zusatzaufgabe
+
+- Eingrenzungen durch Strassen? Evtl Warnung aber der Pilot hat die Verantwortung
+
+- Route ist beliebig zu berechnen
+
+- Bei Litchi Mission Hub wird die CSV Datei importiert, als Mission 
+  gespeichert
+
+
+
+Ende: 18:04
