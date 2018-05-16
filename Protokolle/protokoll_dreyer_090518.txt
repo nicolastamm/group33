@@ -1,0 +1,227 @@
+﻿		Meeting mit Björn und Stefan 09.05.2018
+
+
+
+- erten Draft des SDD besprechen
+
+
+
+- Es wurde über Klassendiag. geredet, dieses muss und kann auf jeden Fall
+  abstrakter ausfallen
+
+
+
+- evtl ein Test dokument schreiben
+
+
+
+- Es wird die Arbeitseinteilung besprochen
+
+
+
+- Feature Branches werden angesprochen
+
+
+
+- dev branches statt name branches verwenden für git
+
+
+
+- Vllt über anderen Image Provider nachdenken
+
+
+
+- Die Apps müssen gekauft werden 
+
+
+               
+
+
+Protokoll Gruppeninternes Meeting 09.05.2018
+
+Start: 13:55 
+
+- Anwesend : Artuc, Nico, Johannes, Martin, Hilmi, Heiko
+
+
+
+- Beginnen die Arbeit am SDD
+
+
+
+- Seq. Diag bereits bearbeitet
+
+
+
+- Component Diag. macht Nico
+
+
+
+- Class Diag. übernimmt Class Diag
+
+
+
+- Wir starten mit Rahmenbedingungen, diese waren recht schnell abgeschlossen
+
+
+
+- Es fehlen noch die Diagramme und die Beschreibung der Diagramme
+
+
+
+- Es wird über die Activities diskutiert und deren Funktion
+
+
+
+- Idee: GUI als Pergament
+
+
+
+- Artuc, Hilmi und Heiko besprechen die Präsentation für den ersten Milestone
+
+- Nico und Martin diskutieren über die eingesetzten Algorithmen
+ 
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
