@@ -62,6 +62,7 @@ public class act5 extends FragmentActivity implements OnMapReadyCallback {
     private float[] settings;
     private double markerLat;
     private double markerLng;
+    private double nixda;
 
     private double height;
 
