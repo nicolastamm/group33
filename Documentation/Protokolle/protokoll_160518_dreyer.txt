@@ -1,0 +1,67 @@
+﻿                    Protokoll - Meeting der Gruppe 16.05.2018
+
+
+
+
+Anwesend: Martin, Johannes, Nico, Hilmi, Artuk, Heiko
+
+
+
+
+- Wir sprechen über das Diagramm und was wir noch alles bearbeiten müssen
+
+- Artuc, Hilmi und Heiko sprechen darüber was bis zur nächsten Woche erstellt
+  werden muss
+
+- Bis nächste Woche sollen Nico, Martin und Johannes ihre Programme mergen
+
+
+
+- Bis nächste Woche soll die App folgendes können:
+
+        
+
+- Warnungen ausgeben bei fehlenden Eingaben in Act1 und man darf nicht mehr nach Act2 (Heiko)
+
+        
+
+- Drop down Liste für die Camera Ratio (Hilmi)
+
+        
+
+- Primary Farbe ändern (Hilmi)
+
+        
+
+- Berechnung der Eingabewerte in der 1. Act, diese 
+sollen aber auch manuell einstellbar bleiben (Heiko) 
+
+	
+
+- Methode zur Pfadzeichnung in der 5. Act (Artuk)
+
+         
+
+- Lösung finden um Objekt an nächste Act. zu übergeben
+
+	
+
+- Startpunkt übergeben
+  
+	
+
+- Change Button bei Act4 und Act5
+
+ einfügen
+
+- Martin und Nico reden über eine Lösung für konkave Polygone
+
+- Es wurde eine Lösung gefunden
+  
+
+
+- Hilmi und Artuk reden über Entscheidungen bzgl des Designs und
+der implementierung in Android Studio dabei stehen insbesondere
+ die Marker im Fokus
+
+
