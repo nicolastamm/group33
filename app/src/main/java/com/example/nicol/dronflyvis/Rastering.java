@@ -136,14 +136,8 @@ public class Rastering
         double polygonWidth = Math.abs(borderCoordinates[0] - borderCoordinates[1]);
         polygonWidth *= 111325.0 * Math.cos(Math.toRadians(borderCoordinates[2]));
 
-        System.out.println("Polygon Height: " + polygonHeight);
-        System.out.println("Polygon Width: " + polygonWidth);
-
         int verticalAmountFotos =(int) Math.ceil(polygonHeight / fotoHeight);
         int horizontalAmountFotos =(int) Math.ceil(polygonWidth / fotoWidth);
-
-        System.out.println("Vertical Entries: " + verticalAmountFotos);
-        System.out.println("Horizontal Entries: " + horizontalAmountFotos);
 
         int subPolycols = 0;
         int subPolyrows = 0;
@@ -163,30 +157,21 @@ public class Rastering
                 break;
             }
         }
-        System.out.println("SubPoly Colums: " + subPolycols);
-        System.out.println("SubPoly Rows: " + subPolyrows);
 
-        int extraCol = horizontalAmountFotos % subPolycols;
-        int extraRow = verticalAmountFotos % subPolyrows;
-        int amountSubPolyHor = horizontalAmountFotos / subPolycols;
-        System.out.println(horizontalAmountFotos);
-        int amountSubPolyVert = verticalAmountFotos / subPolyrows;
-        System.out.println(verticalAmountFotos);
-        int amountSubPolyTotal = amountSubPolyHor * amountSubPolyVert;
+        int amountSubPolyTotal = (horizontalAmountFotos / subPolycols) * (verticalAmountFotos / subPolyrows);
         double fotoWidthCoord = metersToLong(fotoWidth , borderCoordinates[3]);
         double fotoHeightCoord = metersToLat(fotoHeight);
         double subPolyWidth = subPolycols * fotoWidthCoord;
         double subPolyHeight = subPolyrows * fotoHeightCoord;
+
         double traversedLongitude = subPolyWidth;
         double traversedLatitude = subPolyHeight;
         int index = 0;
         rasters = new ArrayList[amountSubPolyTotal];
-        System.out.println(amountSubPolyTotal);
-        polygonWidth = metersToLong(polygonWidth , borderCoordinates[2]);
-        polygonHeight = metersToLat(polygonHeight);
-        for(int i = 0 ; borderCoordinates[0] + traversedLongitude <= borderCoordinates[1] ; i++)
+
+        for(int i = 0 ; borderCoordinates[0] + traversedLongitude - (subPolyWidth / 2.0) <= borderCoordinates[1] + (subPolyWidth / 2.0); i++)
         {
-            for(int j = 0 ; borderCoordinates[2] + traversedLatitude <= borderCoordinates[3]; j++)
+            for(int j = 0 ; borderCoordinates[2] + traversedLatitude - (subPolyHeight / 2.0)<= borderCoordinates[3] + (subPolyHeight / 2.0); j++)
             {
                 rasters[index] = placeRaster(new Double[]
                         {
@@ -213,7 +198,9 @@ public class Rastering
         test.add(new Node(47.698420, 9.201961, 2));
 
         Rastering raster = new Rastering(test,  78.8, 100);
-        System.out.println(raster.getRasters()[1].toString());
+        ArrayList[] thisRasters = raster.getRasters();
+        for(int i = 0 ; i < thisRasters.length ; i++)
+            System.out.println(thisRasters[i]);
     }
 
     private static double metersToLat(double meters) {return meters / 111325.0;} // 1° of latitude is around 111.325 km.
