@@ -44,12 +44,15 @@ import static android.graphics.Bitmap.Config.ARGB_8888;
 
 public class Tours_View_And_Export_Activity extends FragmentActivity implements OnMapReadyCallback {
 
+    private static final int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 1;
+    private static  String FILE_NAME = "DronPfad.txt";
+    ArrayList<Marker> pfad = new ArrayList<>();
+
     private ImageButton infobuch;
     private GoogleMap mMap;
-    ArrayList<Marker> markers;
-    ArrayList<Marker> pfad = new ArrayList<>();
     public int MarkerCounter= 0;
-    private float pos;
+    private double height;
+
     private float zoom;
     private double lat;
     private double lng;
@@ -57,21 +60,13 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
     private float[] settings;
 
 
-    private double height;
-
-    private static final int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 1;
-
-
-
-    public String Pfad = "DronFlyVisPfad";
-    private static  String FILE_NAME = "DronPfad.txt";
     ArrayList<Node> nodeList;
     ArrayList<Node> route;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.tours_view_and_export_activity);
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
@@ -79,18 +74,15 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
         if(getIntent().getExtras() != null)
         {
             nodeList = getIntent().getExtras().getParcelableArrayList("com.example.nicol.dronflyvis.NODELIST");
-
-        }
-
-        if(getIntent().getExtras() != null)
-        {
+            settings = getIntent().getExtras().getFloatArray("com.example.nicol.dronflyvis.SETTINGS");
             lng = Float.parseFloat(getIntent().getExtras().getString("com.example.nicol.dronflyvis.mapLNG"));
             lat = Float.parseFloat(getIntent().getExtras().getString("com.example.nicol.dronflyvis.mapLAT"));
             zoom = getIntent().getExtras().getFloat("com.example.nicol.dronflyvis.mapZOOM");
             mapType = getIntent().getExtras().getInt("com.example.nicol.dronflyvis.mapType");
         }
 
-        infobuch = (ImageButton)findViewById(R.id.infobuch5);
+
+        infobuch = (ImageButton)findViewById(R.id.tvae_activity_infobuch_button);
         infobuch.setImageResource(R.drawable.infobuch);
         infobuch.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -100,10 +92,9 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
             }
         });
 
-        Button searchButton = (Button)findViewById(R.id.change5);
+        Button changeButton = (Button)findViewById(R.id.tvae_activity_change_button);
 
-        // Normales Click
-        searchButton.setOnClickListener(new View.OnClickListener() {
+        changeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
@@ -123,16 +114,12 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
                         break;
 
                 }
-
-
-
-
             }
         });
 
-        registerForContextMenu(searchButton);
+        registerForContextMenu(changeButton);
 
-        searchButton.setOnLongClickListener(new View.OnLongClickListener() {
+        changeButton.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
                 return false;
@@ -151,6 +138,7 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
 
         mMap.getUiSettings().setMapToolbarEnabled (false);
         mMap.getUiSettings().setZoomControlsEnabled(true);
+
 
 
         mMap.setMapType(mapType);
@@ -214,8 +202,48 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
         }
     }
 
-    public void act_5_back(View view){
-        onBackPressed();
+    public Bitmap makeBitmap(Context context, String text){
+
+        Resources resources = context.getResources();
+        float scale = resources.getDisplayMetrics().density;
+        Bitmap bitmap = BitmapFactory.decodeResource(resources, R.drawable.markerroute2);
+        bitmap = bitmap.copy(ARGB_8888, true);
+
+        Canvas canvas = new  Canvas(bitmap);
+
+        Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        paint.setColor(Color.WHITE);
+        paint.setTextSize(8 * scale);
+        paint.setShadowLayer(1f,0f,1f, Color.WHITE);
+
+        Rect bounds = new Rect();
+        paint.getTextBounds(text, 0, text.length(), bounds);
+
+        int x = bitmap.getWidth()/2 - bounds.width()/2;
+        int y = bitmap.getHeight()/2 - bounds.height()/3;
+
+        canvas.drawText(text, x, y, paint);
+
+        return bitmap;
+    }
+
+    private void drawPfad()
+    {
+
+        PolylineOptions optionss = new PolylineOptions()
+                .width(7)
+                .color(Color.RED);
+
+                for(int i=0;i<pfad.size();i++ )
+                {
+                    if(pfad.get(i) != null || pfad.size()>0){
+                        optionss.add(pfad.get(i).getPosition());
+                    }
+                }
+
+                pfad.get(0).setIcon(BitmapDescriptorFactory.fromResource(R.drawable.markerstart));
+                pfad.get(pfad.size()-1).setIcon(BitmapDescriptorFactory.fromResource(R.drawable.markerstart));
+                mMap.addPolyline(optionss);
     }
 
     public void akt5export(View view) {
@@ -291,54 +319,10 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
                 }
             }
         }
-
     }
 
-    public Bitmap makeBitmap(Context context, String text){
-        Resources resources = context.getResources();
-        float scale = resources.getDisplayMetrics().density;
-        Bitmap bitmap = BitmapFactory.decodeResource(resources, R.drawable.markerroute2);
-        bitmap = bitmap.copy(ARGB_8888, true);
-
-        Canvas canvas = new  Canvas(bitmap);
-        Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        paint.setColor(Color.WHITE);
-        paint.setTextSize(8 * scale);
-        paint.setShadowLayer(1f,0f,1f, Color.WHITE);
-        Rect bounds = new Rect();
-        paint.getTextBounds(text, 0, text.length(), bounds);
-
-        int x = bitmap.getWidth()/2 - bounds.width()/2;
-        int y = bitmap.getHeight()/2 - bounds.height()/3;
-
-        canvas.drawText(text, x, y, paint);
-
-        return bitmap;
-
+    public void act_5_back(View view){
+        onBackPressed();
     }
-
-    private void drawPfad()
-    {
-
-        PolylineOptions optionss = new PolylineOptions()
-                .width(7)
-                .color(Color.RED);
-
-
-                for(int i=0;i<pfad.size();i++ )
-                {
-                    if(pfad.get(i) != null || pfad.size()>0){
-                        optionss.add(pfad.get(i).getPosition());
-                    }
-                }
-
-                pfad.get(0).setIcon(BitmapDescriptorFactory.fromResource(R.drawable.markerstart));
-                pfad.get(pfad.size()-1).setIcon(BitmapDescriptorFactory.fromResource(R.drawable.markerstart));
-                mMap.addPolyline(optionss);
-    }
-
-
-
-
-    }
+}
 

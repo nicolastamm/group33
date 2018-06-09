@@ -6,70 +6,64 @@ import android.graphics.Color;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
-
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
+import com.google.android.gms.location.places.ui.PlaceSelectionListener;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.Circle;
-import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.PolygonOptions;
-
 import java.util.ArrayList;
 
-import static android.media.CamcorderProfile.get;
+
 
 public class Main_Activity extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
-    private ImageButton infobuch;
+    private Boolean deleteModus = false;
+    private Boolean drawModus = true;
+    private Boolean pinModus = false;
+    private float[] settings;
 
-
-    //Polygonpunkte und der Polygon selbst
     ArrayList<Marker> markers = new ArrayList<Marker>();
     Polygon shape;
-
-    //unsere Modusen bis jetzt
-    private Boolean deleteModus = false;
-    private Boolean drawModus = false;
-    private Boolean pinModus = false;
-    private int mapType;
-    private double markerLat;
-    private double markerLng;
-    private float zoom;
-
-    private float[] settings;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity);
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+
         if(getIntent().getExtras() != null)
         {
-
             settings = getIntent().getExtras().getFloatArray("com.example.nicol.dronflyvis.SETTINGS");
         }
 
-
-
-        infobuch = (ImageButton)findViewById(R.id.infobuch4);
+        ImageButton infobuch = (ImageButton)findViewById(R.id.infobuch_main_activity);
         infobuch.setImageResource(R.drawable.infobuch);
+
         infobuch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -78,9 +72,35 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
             }
         });
 
+        PlaceAutocompleteFragment placesFragment = (PlaceAutocompleteFragment) getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
+
+        TextView aut_comp_text = findViewById(R.id.place_autocomplete_search_input);
+        aut_comp_text.setText(" ");
+
+        ImageView searchIcon = (ImageView) findViewById(R.id.place_autocomplete_search_button);
+        searchIcon.setScaleX(2f);
+        searchIcon.setScaleY(2f);
 
 
 
+
+        placesFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+            @Override
+            public void onPlaceSelected(Place place)
+            {
+                LatLng latLng = place.getLatLng();
+                CameraUpdate nloc = CameraUpdateFactory.newLatLngZoom(
+                        latLng, 10);
+
+                mMap.animateCamera(nloc);
+            }
+
+            @Override
+            public void onError(Status status)
+            {
+                Log.i("error","" + status);
+            }
+        });
 
         final ImageButton pinImageButton = (ImageButton) findViewById(R.id.pin);
         final ImageButton deleteImageButton = (ImageButton) findViewById(R.id.delete);
@@ -89,7 +109,7 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
 
         pinImageButton.setImageResource(R.drawable.pinicon);
         deleteImageButton.setImageResource(R.drawable.deleteicon);
-        drawImageButton.setImageResource(R.drawable.drawicon);
+        drawImageButton.setImageResource(R.drawable.drawselectedicon);
         clearImageButton.setImageResource(R.drawable.clear_image_button_style);
 
 
@@ -101,8 +121,6 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
                     mMap.getUiSettings().setScrollGesturesEnabled(true);
 
                     pinModus=false;
-
-
                 }
                 else{
                     pinImageButton.setImageResource(R.drawable.pinselectedicon);
@@ -120,8 +138,6 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
                 if(deleteModus){
                     deleteImageButton.setImageResource(R.drawable.deleteicon);
                     deleteModus = false;
-
-
                 }
                 else{
                     deleteImageButton.setImageResource(R.drawable.delteselectedicon);
@@ -129,9 +145,7 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
 
                     drawImageButton.setImageResource(R.drawable.drawicon);
                     drawModus = false;
-
-
-                }
+                    }
             }
         });
 
@@ -142,8 +156,6 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
                 if(drawModus){
                     drawImageButton.setImageResource(R.drawable.drawicon);
                     drawModus = false;
-
-
                 }
                 else{
                     drawImageButton.setImageResource(R.drawable.drawselectedicon);
@@ -151,7 +163,6 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
 
                     deleteImageButton.setImageResource(R.drawable.deleteicon);
                     deleteModus = false;
-
                 }
             }
         });
@@ -170,8 +181,6 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 removePolygon();
                                 dialogInterface.cancel();
-
-
                             }})
                         .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                             @Override
@@ -180,7 +189,6 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
                             }
                         });
 
-
                 AlertDialog alertDialog = dBuilder.create();
                 alertDialog.setTitle("Delete Polygon");
                 alertDialog.show();
@@ -188,16 +196,9 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
             }
         });
 
-        // ****************************************************************************************************************************
-
-
-
-
-        // Change Button
-        // ****************************************************************************************************************************
 
         Button searchButton = (Button)findViewById(R.id.main_act_change_button);
-        // Normales Click
+
         searchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -223,8 +224,6 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
         });
 
         registerForContextMenu(searchButton);
-
-
         searchButton.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
@@ -234,7 +233,8 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
 
 
     }
-    //Context menu für change Button
+
+
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
@@ -262,23 +262,18 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
         }
     }
 
-    // ****************************************************************************************************************************
-    // ****************************************************************************************************************************
-    // was unten steht ist selbsterklerend eigentlich
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        //Shalte die Toolbar aus. Mich nervt es einfach :)
+
         mMap = googleMap;
+        mMap.getUiSettings().setCompassEnabled(false);
+        mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
         mMap.getUiSettings().setMapToolbarEnabled (false);
         mMap.getUiSettings().setZoomControlsEnabled(true);
 
-
-
-
         if (mMap != null) {
 
-            mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener()
-            {
+            mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
                 @Override
                 public void onMapClick(LatLng latLng)
                 {
@@ -332,11 +327,10 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
 
                    }
                });
-                }
+            }
 
 
-            mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener()
-            {
+            mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
                 @Override
                 public boolean onMarkerClick(Marker marker) {
 
@@ -355,15 +349,12 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
                                 }
                                 if(markers.size()>=1){
                                 drawPolygon();}
-
-
                     }
                     return true;
                 }
             });
 
-            mMap.setOnMarkerDragListener(new GoogleMap.OnMarkerDragListener()
-            {
+            mMap.setOnMarkerDragListener(new GoogleMap.OnMarkerDragListener() {
 
                 @Override
                 public void onMarkerDragStart(Marker marker)
@@ -383,7 +374,6 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
                         shape=null;
                     }
                     drawPolygon();
-
                 }
 
                 @Override
@@ -398,17 +388,12 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
                     marker.hideInfoWindow();
                 }
             });
-
         }
-
-
     }
 
 
 
-    private void setMarker(String locality, double lat, double lng)
-    {
-
+    private void setMarker(String locality, double lat, double lng) {
         MarkerOptions options = new MarkerOptions()
                 .title("Marker")
                 .draggable(true)
@@ -417,9 +402,9 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
                 .icon(BitmapDescriptorFactory.fromResource(R.drawable.markerstandard))
                 .anchor((float)0.5, (float)0.5);
 
-
         markers.add(mMap.addMarker(options));
         redrawMarker();
+
         if(markers.size() >= 3)
         {
             if(shape != null){
@@ -431,15 +416,17 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
     }
 
     private  void redrawMarker(){
+
         if (markers.size() >= 2){
             markers.get(0).setIcon(BitmapDescriptorFactory.fromResource(R.drawable.markeranfangende));
             markers.get(markers.size()-1).setIcon(BitmapDescriptorFactory.fromResource(R.drawable.markeranfangende));
+
             for (int i = 1; i < markers.size()-1; i++){
                 markers.get(i).setIcon(BitmapDescriptorFactory.fromResource(R.drawable.markerstandard));
             }
-
         }
     }
+
     private void drawPolygon()
     {
         PolygonOptions options = new PolygonOptions()
@@ -447,18 +434,16 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
                 .strokeWidth(4)
                 .strokeColor(Color.BLACK);
 
-        //ArrayList<Marker> mmarkers = new ArrayList<Marker>(ordnePolygon());
         for(int i=0;i<markers.size();i++ )
         {
             if(markers.size()>0){
                 options.add(markers.get(i).getPosition());
             }
         }
+
         shape = mMap.addPolygon(options);
-
-
-
     }
+
     public boolean checkRadius(double lat1, double lng1, double lat2, double lng2)
     {
         if(getDistanceMeters(lat1, lng1, lat2, lng2) > 300)
@@ -467,6 +452,7 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
         }
         return false;
     }
+
     public static long getDistanceMeters(double lat1, double lng1, double lat2, double lng2) {
 
         double l1 = Math.toRadians(lat1);
@@ -492,110 +478,40 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
             alertDialog.show();
             return;
         }
-        Node startNode = new Node(markers.get(0).getPosition().latitude,markers.get(0).getPosition().longitude,0);
+
         ArrayList<Node> nodeList = new ArrayList<Node>();
 
         Intent intent = new Intent(this, Tours_View_And_Export_Activity.class);
-        for(Marker marker : markers)
-        {
-            nodeList.add(new Node(marker.getPosition().latitude, marker.getPosition().longitude, 0));
-        }
-        intent.putParcelableArrayListExtra("com.example.nicol.dronflyvis.NODELIST", nodeList);
-        intent.putExtra("com.example.nicol.dronflyvis.BEARING", mMap.getCameraPosition().bearing);
-        intent.putExtra("com.example.nicol.dronflyvis.mapZOOM", mMap.getCameraPosition().zoom);
-        intent.putExtra("com.example.nicol.dronflyvis.mapLAT","" + mMap.getCameraPosition().target.latitude);
-        intent.putExtra("com.example.nicol.dronflyvis.mapLNG","" + mMap.getCameraPosition().target.longitude);
-        intent.putExtra("com.example.nicol.dronflyvis.mapType", mMap.getMapType());
-        intent.putExtra("com.example.nicol.dronflyvis.SETTINGS", settings);
+
+            for(Marker marker : markers)
+            {
+                nodeList.add(new Node(marker.getPosition().latitude, marker.getPosition().longitude, 0));
+            }
+
+            intent.putParcelableArrayListExtra("com.example.nicol.dronflyvis.NODELIST", nodeList);
+            intent.putExtra("com.example.nicol.dronflyvis.BEARING", mMap.getCameraPosition().bearing);
+            intent.putExtra("com.example.nicol.dronflyvis.mapZOOM", mMap.getCameraPosition().zoom);
+            intent.putExtra("com.example.nicol.dronflyvis.mapLAT","" + mMap.getCameraPosition().target.latitude);
+            intent.putExtra("com.example.nicol.dronflyvis.mapLNG","" + mMap.getCameraPosition().target.longitude);
+            intent.putExtra("com.example.nicol.dronflyvis.mapType", mMap.getMapType());
+            intent.putExtra("com.example.nicol.dronflyvis.SETTINGS", settings);
 
         startActivity(intent);
-
     }
-
 
     private void removePolygon()
     {
         if(shape!=null) {
             shape.remove();
 
-
             for (int i = 0; i < markers.size(); i++) {
                 Marker m = markers.get(i);
                 m.remove();
                 m = null;
-
             }
-
             markers.removeAll(markers);
         }
-
     }
-
-
-/**
-    public ArrayList<Marker> ordnePolygon(){
-        ArrayList<Marker> geordnet = new ArrayList<Marker>();
-
-
-        for(int i = 0; i<markers.size(); i++ ){
-            Marker aktMarker = markers.get(i);
-            Marker aktMinMarker = aktMarker;
-            float mindist = 0f;
-            if(!isInArray(geordnet,markers.get(i))){
-                geordnet.add(aktMarker);
-            }
-            for(int j = 0; j<markers.size(); j++ ){
-                if(!isInArray(geordnet,markers.get(j)) &  getDistanceMeters(
-                        aktMarker.getPosition().latitude,aktMarker.getPosition().latitude,
-                        markers.get(j).getPosition().latitude,markers.get(j).getPosition().latitude)<mindist)
-                {
-                    mindist = getDistanceMeters(
-                            aktMarker.getPosition().latitude,aktMarker.getPosition().latitude,
-                            markers.get(j).getPosition().latitude,markers.get(j).getPosition().latitude);
-                    aktMinMarker = markers.get(j);
-
-                }
-            }
-
-            geordnet.add(aktMinMarker);
-        }
-
-        return geordnet;
-    }
-
-
-
-    public static long getDistanceMeters(double lat1, double lng1, double lat2, double lng2) {
-
-        double l1 = toRadians(lat1);
-        double l2 = toRadians(lat2);
-        double g1 = toRadians(lng1);
-        double g2 = toRadians(lng2);
-
-        double dist = acos(sin(l1) * sin(l2) + cos(l1) * cos(l2) * cos(g1 - g2));
-        if(dist < 0) {
-            dist = dist + Math.PI;
-        }
-
-        return Math.round(dist * 6378100);
-    }
-
-    public boolean isInArray(ArrayList<Marker> liste,Marker marker)
-    {
-        boolean isIn = false;
-            if(liste.size()>0){
-                for(int i = 0; i<liste.size();i++){
-                    if(liste.get(i)==marker){
-                        isIn = true;
-                    }
-                }
-            }
-        return isIn;
-
-    }
-
-*/
-
 
     public void main_activity_back(View view)
     {

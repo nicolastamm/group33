@@ -13,6 +13,7 @@ import android.text.Html;
 import android.widget.TextView;
 
 public class AboutUs_PopUp_Activity extends Activity {
+
     Button closeInfo;
 
     private final String htmlText = "<body><h1> <big><font color=\"black\"> Welcome to Drone Tours!</big> </font> </h1>" +
