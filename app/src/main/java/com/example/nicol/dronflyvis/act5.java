@@ -30,17 +30,12 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.PolygonOptions;
-import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -185,12 +180,10 @@ public class act5 extends FragmentActivity implements OnMapReadyCallback {
         mMap.setMapType(mapType);
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lat,lng),zoom));
 
-
         TravelingSalesman tsm = new TravelingSalesman();
-        new Rastering(nodeList, new Node(markerLat, markerLng, 2), (float) 78.8, 100, 3);
-        route = tsm.travelingSalesman(Rastering.getRoute());
+        Rastering raster = new Rastering(nodeList, (float) 78.8, 100);
+        route = tsm.travelingSalesman(raster.getRaster() , new Node(markerLat , markerLng , 2));
         Log.i("test", ""+route);
-
 
         for(int i = 0; i<route.size(); i++)
         {
@@ -206,9 +199,6 @@ public class act5 extends FragmentActivity implements OnMapReadyCallback {
                     .position(new LatLng((float)lt,(float)lon))
                     .icon(BitmapDescriptorFactory.fromBitmap(bitmap))
                     .anchor((float)0.5, (float)0.5);;
-
-
-
             pfad.add(mMap.addMarker(options));
         }
         drawPfad();
