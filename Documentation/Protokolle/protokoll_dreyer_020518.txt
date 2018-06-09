@@ -1,0 +1,160 @@
+﻿     						Protokoll 02.05.2018 - Meeting mit Björn und Stefan
+
+
+
+
+Start: 12:00
+
+
+
+- Arbeitsaufteilung schreiben. Textdatei ins git, evtl.
+  Untergruppen bilden
+
+
+
+- Besprechung des SRS
+
+
+
+- Besprechung des Use Case diagram
+
+
+
+- verschiedene Kartenprovider im Dokument vorgeschlagen
+
+
+
+- Im Sequence Diag muss ein weiterer Pfeil hinzu auf dem die inneren
+ Tourpunkte berechnet werden
+
+
+
+- Tourpunkte zum Schluss änderbar vllt?
+
+
+
+- Wunschkriterien: 3D Karten hinzufügen
+
+
+
+- TravelingRouterman ändern
+
+
+
+- Berechnung von Punkten hinzufügen, Namen von 4.1.7 ändern
+
+
+
+- Neues Wunschkriterium: Optimierung der Überlappung durch Diagonale
+
+
+
+- Evtl. vordefinierte, vorgespeicherte Profile einbauen.
+
+
+
+- BenutzerID streichen bei Produktdaten Punkt 5.1-5.3
+
+
+
+- Berechnung der Tourpunkte in die Nutzeroberfläche
+
+
+
+- Produktschnittstelle: Übergabe der CSV Datei direkt an AR Pro zur weiteren Automatisierung
+
+
+
+- Milestone 2 hinzufügen: spezifische Tests bereits durchgeführt
+
+
+
+- Bei Milestones soll etwas abgeschlossen sein, es soll im besten 
+Fall auch ein Dokument dazu abgegeben werden
+
+
+
+
+- Do. Treffen der Gruppenleiter ab ca. 11:00
+
+
+ 
+
+							
+						Protokoll Gruppenmeeting - 02.05.2018
+
+
+
+Start: 14:10
+
+
+
+- Zunächst besprechen wir die Arbeitsteilung:
+
+ 
+
+	1. Martin: Routenberechnung für Drohne, Testing
+    
+
+	2. Johannes: Output Handling
+    
+
+	3. Nico: Raster-Generierung und Erstellung der Preconditions
+    
+
+	4. Hilmi: grundlegendes Input Handling, User Experience (u.a. GUI)
+    
+
+	5. Heiko: Input Handling, Daten zur Kartographie, Polygonerstellung
+, Testing
+   
+
+	6. Artuk: grundlegende Android Activities, Android Integration
+  
+
+
+
+- Bzgl. der Tests: Jede neue Funktion soll sofort getestet werden
+
+
+
+- Wöchentliche Code Reviews
+
+
+
+- Wir reden über die Erwartungen der Einzelnen Personen an das SWP und deren erwünschtes Ergebnis
+
+
+
+- Es wird über die Berechnung der Tourpunkte diskutiert
+
+
+
+- Bis zum ersten Milestone soll noch nicht die optimale Route berechnet
+ werden
+
+ Prototyp zum ersten Milestone
+
+- Die Activites 1-5 sind grundsätzlich vorhanden. Die essentiellen Algorithmen(Raster & Route)
+ werden zunächst anhand eines festen Polygon implementiert unabhängig
+ von der restlichen App.
+
+
+
+- App: Einfache GUI mit next und back buttons, google maps (o.a.) soll in der App geladen werden und es ist möglich Punkte einzuzeichen.
+
+  Weitere Activity in der noch der Startpunkt eingefügt werden soll
+
+
+
+- Es soll eine minimale csv datei generiert werden als Output die 
+aber noch nichts sinnvolles enthält.
+
+
+
+- Nächstes Treffen Montag 15:00: Heiko, Johannes, Artuk, Hilmi
+
+
+
+
+Ende: 18:30
