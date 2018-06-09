@@ -11,6 +11,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 public class Buch_Slider extends PagerAdapter{
+
     Context context;
     LayoutInflater layoutInflater;
 
@@ -70,6 +71,7 @@ public class Buch_Slider extends PagerAdapter{
         slideImage.setImageResource(images_toslide[position]);
         header.setText(act_headers[position]);
         discr.setText(act_discr[position]);
+
         header.setTextColor(Color.BLACK);
         header.setTextSize(25);
         discr.setTextColor(Color.BLACK);

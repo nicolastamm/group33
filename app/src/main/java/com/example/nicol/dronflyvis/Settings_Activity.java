@@ -19,12 +19,7 @@ import java.util.ArrayList;
 
 public class Settings_Activity extends AppCompatActivity
 {
-    private Button nextBtn;
-    private EditText inputText;
     private Boolean inputOk = false;
-    private RadioButton bepob;
-    private RadioButton mavic;
-    private Button aboutUs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -32,12 +27,12 @@ public class Settings_Activity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.settings_activity);
 
-        bepob = (RadioButton) findViewById(R.id.radioButton4);
-        mavic = (RadioButton) findViewById(R.id.radioButton3);
-        nextBtn = (Button) findViewById(R.id.settings_next_button);
+        RadioButton bepob = (RadioButton) findViewById(R.id.radioButton4);
+        RadioButton mavic = (RadioButton) findViewById(R.id.radioButton3);
+        Button nextBtn = (Button) findViewById(R.id.settings_next_button);
+        Button aboutUs = (Button) findViewById(R.id.about_us_button);
 
 
-        aboutUs = (Button) findViewById(R.id.about_us_button);
         aboutUs.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -114,7 +109,7 @@ public class Settings_Activity extends AppCompatActivity
         float[] inputValues = new float[]{-1,-1,-1};
         for(int id : inputIds)
         {
-            inputText = (EditText) findViewById(id);
+            EditText inputText = (EditText) findViewById(id);
             if(isEmpty(inputText))
             {
                 inputText.setError("missing input");
@@ -124,7 +119,6 @@ public class Settings_Activity extends AppCompatActivity
                 inputValues[i] = Float.parseFloat("0" + inputText.getText().toString());
                 i++;
             }
-
         }
 
         return inputValues;
@@ -148,12 +142,7 @@ public class Settings_Activity extends AppCompatActivity
         return false;
     }
 
-
-
-
-
-    public void settings_next(View view)
-    {
+    public void settings_next(View view) {
         float invalidInput = -1.0f;
         float[] inputValues = getInputValues();
         if(!contains(inputValues, invalidInput))
@@ -176,10 +165,5 @@ public class Settings_Activity extends AppCompatActivity
         }
 
     }
-
-
-
-
-
 }
 
