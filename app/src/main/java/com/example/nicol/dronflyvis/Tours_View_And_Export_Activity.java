@@ -147,7 +147,7 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
 
         TravelingSalesman tsm = new TravelingSalesman();
         Rastering raster = new Rastering(nodeList, (float) 78.8, 100);
-        route = tsm.travelingSalesman(raster.getRaster() , new Node(nodeList.get(0).getLatitude(), nodeList.get(0).getLongitude(), 2));
+        route = tsm.travelingSalesman(raster.getRasters()[0] , new Node(nodeList.get(0).getLatitude(), nodeList.get(0).getLongitude(), 2));
         Log.i("test", ""+route);
 
 
