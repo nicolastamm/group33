@@ -11,6 +11,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
@@ -34,7 +35,7 @@ import java.util.Locale;
 
 public class act2 extends FragmentActivity implements OnMapReadyCallback
 {
-    Button buch;
+    ImageButton infobuch;
     private GoogleMap mMap;
     private LatLng latLng;
     private float[] settings;
@@ -115,8 +116,9 @@ public class act2 extends FragmentActivity implements OnMapReadyCallback
 
 
 
-        buch = (Button)findViewById(R.id.buch);
-        buch.setOnClickListener(new View.OnClickListener() {
+        infobuch = (ImageButton)findViewById(R.id.infobuch2);
+        infobuch.setImageResource(R.drawable.infobuch);
+        infobuch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(getApplicationContext(),buch_act.class);
@@ -211,6 +213,5 @@ public class act2 extends FragmentActivity implements OnMapReadyCallback
         startActivity(intent);
 
     }
-
 }
 

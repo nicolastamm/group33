@@ -9,12 +9,14 @@ import android.view.ContextMenu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
@@ -23,6 +25,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 public class act3 extends FragmentActivity implements OnMapReadyCallback {
 
+    private ImageButton infobuch;
     private GoogleMap mMap;
     Marker startMarker;
     Circle sichtFeld;
@@ -32,8 +35,8 @@ public class act3 extends FragmentActivity implements OnMapReadyCallback {
     private double lat;
     private double lng;
     private int mapType;
-    private boolean inputOk = false;
     private float[] settings;
+    private boolean inputOk = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -54,6 +57,16 @@ public class act3 extends FragmentActivity implements OnMapReadyCallback {
             mapType = getIntent().getExtras().getInt("com.example.nicol.dronflyvis.MapType");
             settings = getIntent().getExtras().getFloatArray("com.example.nicol.dronflyvis.SETTINGS");
         }
+
+        infobuch = (ImageButton)findViewById(R.id.infobuch3);
+        infobuch.setImageResource(R.drawable.infobuch);
+        infobuch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getApplicationContext(),buch_act.class);
+                startActivity(intent);
+            }
+        });
     }
 
 
@@ -204,11 +217,7 @@ public class act3 extends FragmentActivity implements OnMapReadyCallback {
         }
     }
 
-// ****************************************************************************************************************************
-
-
-
-
+    // ****************************************************************************************************************************
     // Setmarker methode für Startmarker mit dem Circle um den sPunkt
     // Es Kann nur ein Startmarker gebe, also zus löschen marker+circle drin
     // ****************************************************************************************************************************
@@ -223,7 +232,9 @@ public class act3 extends FragmentActivity implements OnMapReadyCallback {
                 .title(locality)
                 .draggable(true)
                 .position(new LatLng(lat,lng))
-                .snippet("StartPos");
+                .snippet("StartPos")
+                .icon(BitmapDescriptorFactory.fromResource(R.drawable.markerstart))
+                .anchor((float)0.5, (float)0.5);
 
         startMarker= mMap.addMarker(options);
         sichtFeld = drawCircle(new LatLng(lat, lng));
@@ -234,7 +245,7 @@ public class act3 extends FragmentActivity implements OnMapReadyCallback {
     {
         CircleOptions options = new CircleOptions()
                 .center(latLng)
-                .radius(500)
+                .radius(300)
                 .fillColor(0x66696969)
                 .strokeColor(Color.RED)
                 .strokeWidth(3);

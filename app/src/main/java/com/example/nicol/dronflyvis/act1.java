@@ -2,6 +2,7 @@ package com.example.nicol.dronflyvis;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Handler;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -14,6 +15,7 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RadioButton;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -26,16 +28,37 @@ public class act1 extends AppCompatActivity
     private Button nextBtn;
     private EditText inputText;
     private Boolean inputOk = false;
+    private RadioButton bepob;
+    private RadioButton mavic;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_act1);
-
+        bepob = (RadioButton) findViewById(R.id.radioButton4);
+        mavic = (RadioButton) findViewById(R.id.radioButton3);
         nextBtn = (Button) findViewById(R.id.act1next);
         //InfoButtonPopUp
-        //bepobFlag
+
+        Button infoButton = (Button) findViewById(R.id.act1info);
+        infoButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getApplicationContext(),infoPopUpAct.class);
+                startActivity(intent);
+            }
+        });
+
+        String[] cr = {"Choose your camera resolution","1280x960  (4:3)"," 1280x720 (16:9)", "1280x853.33 (3:2)","1280x548.57 (21:9)"};
+
+
+        Spinner MySpinner = (Spinner)findViewById(R.id.spinner);
+        ArrayAdapter<String> myAdapter = new
+                ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, cr);
+        myAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        MySpinner.setAdapter(myAdapter);
+
         final ArrayList<EditText> inputTexts = new ArrayList<>();
 
         EditText altitude = (EditText) findViewById(R.id.editText3);
@@ -70,7 +93,6 @@ public class act1 extends AppCompatActivity
 
                         }
                     }
-
                 }
 
                 @Override
@@ -83,40 +105,12 @@ public class act1 extends AppCompatActivity
                             txt.setText("0" + editable.toString());
                         }
                     }
-
                 }
             });
         }
 
-        Button infoButton = (Button) findViewById(R.id.act1info);
-        infoButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getApplicationContext(),infoPopUpAct.class);
-                startActivity(intent);
-            }
-        });
-
-        String[] cr = {"Choose your camera resolution","1280x960 (4:3)"," 1280x720 (16:9)", "1280x853.33 (3:2)","1280x548.57 (21:9)"};
-
-        Spinner MySpinner = (Spinner)findViewById(R.id.spinner);
-        ArrayAdapter<String> myAdapter = new
-                ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, cr);
-        myAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        MySpinner.setAdapter(myAdapter);
-
     }
-    public double getFov(float fotoWidth, double height)
-    {
-        return 2 * Math.toDegrees((Math.atan(fotoWidth/(2*height))));
-    }
-    public double getPixelSize(float flightHeight, float fov, float imageRatio)
-    {
-        double fotoWidth = (2.0 * flightHeight) * (Math.tan(Math.toRadians(fov/2.0)));
-        double fotoHeight = fotoWidth * (3.0/4.0);
 
-        return (fotoWidth*fotoHeight)/(imageRatio);
-    }
     public float[] getInputValues()
     {
         int[] inputIds = {R.id.editText, R.id.editText3, R.id.editText4};
@@ -202,14 +196,15 @@ public class act1 extends AppCompatActivity
             intent.putExtra("com.example.nicol.dronflyvis.INPUT_VALUES", getInputValues());
             startActivity(intent);
         }
-        else
-            {
 
-                Warning warning = new Warning("Fill in the empty fields before you continue.", "Please fill in missing values", true, "OK", this);
-                android.app.AlertDialog alertDialog = warning.createWarning();
-                alertDialog.setTitle("Missing Values");
-                alertDialog.show();
-            }
+        else
+        {
+            Warning warning = new Warning("Fill in the empty fields before you continue.", "Please fill in missing values", true, "OK", this);
+            android.app.AlertDialog alertDialog = warning.createWarning();
+            alertDialog.setTitle("Missing Values");
+            alertDialog.show();
+        }
+
     }
 
 

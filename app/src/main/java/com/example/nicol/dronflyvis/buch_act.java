@@ -1,6 +1,7 @@
 package com.example.nicol.dronflyvis;
 
 import android.app.Activity;
+import android.graphics.Color;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -32,7 +33,6 @@ public class buch_act extends Activity {
         lp.y = -20;
 
         getWindow().setAttributes(lp);
-
 
         mSlideViewPager = (ViewPager)findViewById(R.id.slideViewPager);
         buchSlider = new buch_slider(this);

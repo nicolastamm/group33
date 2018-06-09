@@ -15,7 +15,6 @@ public class Rastering
     private static ArrayList<ArrayList<Node>> route;
     private static Node startNode;
     private GeoTest geoTest;
-    private ArrayList<ArrayList<Node>> [] rasters;
     
     public Rastering(ArrayList<Node> inputPolygon, Node startNode, double fov, float flightHeight, float pixelSize)
     {
@@ -100,6 +99,7 @@ public class Rastering
         System.out.println(Arrays.toString(outputRaster.toArray()) + outputRaster.size());
         return outputRaster;
     }
+
 
     private static double metersToLat(double meters) {return meters / 111325.0;} // 1° of latitude is around 111.325 km.
     private static double metersToLong(double meters , double lat) {return (meters / (111325.0 * Math.cos(Math.toRadians(lat))));}

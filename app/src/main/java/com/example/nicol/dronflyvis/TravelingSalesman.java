@@ -19,13 +19,14 @@ public class TravelingSalesman
 	 * @param grid stores the route points
 	 * @return an ArrayList which stores the order of the route points
 	 */
-	public ArrayList<Node> travelingSalesman(ArrayList<ArrayList<Node>> grid , Node startNode)
+	public ArrayList<Node> travelingSalesman(ArrayList<ArrayList<Node>> grid)
 	{
 		HeapSort heap = new HeapSort();
 		ArrayList<Node> route = new ArrayList<Node>();
 		ArrayList<Node> lastColumn = null;
 		ArrayList<Node> firstColumn = null;
 		ArrayList<Node> splitted = null;
+		Node startNode = Rastering.getStartingpoint();
 		boolean uneven;
 		double shortestDist = Double.MAX_VALUE;
 		Node closestNeighbor = null;
@@ -82,7 +83,7 @@ public class TravelingSalesman
 			while(k > 0)
 			{
 				int lastIndex = grid.get(k).size() - 1;
-				route.add(grid.get(k).get(lastIndex -1));		//get last element of list with index k
+				route.add(grid.get(k).get(lastIndex));		//get last element of list with index k
 				grid.get(k).remove(lastIndex);
 				
 				k--;
@@ -181,8 +182,7 @@ public class TravelingSalesman
 			
 			if(uneven)
 			{
-				firstColumn =
-
+				firstColumn = heap.sort(firstColumn, true);
 				splitted = addNodesInRoute(route, firstColumn);
 				if(splitted != null)
 				{

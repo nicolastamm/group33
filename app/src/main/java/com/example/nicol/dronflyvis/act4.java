@@ -1,11 +1,11 @@
 package com.example.nicol.dronflyvis;
 
-import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
-import android.util.Log;
+import android.support.v7.app.AlertDialog;
 import android.view.ContextMenu;
 import android.view.MenuItem;
 import android.view.View;
@@ -17,6 +17,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
@@ -32,7 +33,7 @@ import static android.media.CamcorderProfile.get;
 public class act4 extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
-
+    private ImageButton infobuch;
 
     private double lat;
     private double lng;
@@ -75,6 +76,18 @@ public class act4 extends FragmentActivity implements OnMapReadyCallback {
             zoom = getIntent().getExtras().getFloat("com.example.nicol.dronflyvis.mapZOOM");
             mapType = getIntent().getExtras().getInt("com.example.nicol.dronflyvis.mapType");
         }
+
+        infobuch = (ImageButton)findViewById(R.id.infobuch4);
+        infobuch.setImageResource(R.drawable.infobuch);
+        infobuch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getApplicationContext(),buch_act.class);
+                startActivity(intent);
+            }
+        });
+
+
 
 
         /**
@@ -163,7 +176,32 @@ public class act4 extends FragmentActivity implements OnMapReadyCallback {
         clearImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                removePolygon();
+
+                AlertDialog.Builder dBuilder = new AlertDialog.Builder(act4.this);
+
+                dBuilder.setTitle("Delete Polygon");
+                dBuilder.setMessage("Are you sure that you want delete the polygon?")
+                        .setCancelable(false)
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                removePolygon();
+                                dialogInterface.cancel();
+
+
+                            }})
+                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                dialogInterface.cancel();
+                            }
+                        });
+
+
+                AlertDialog alertDialog = dBuilder.create();
+                alertDialog.setTitle("Delete Polygon");
+                alertDialog.show();
+
             }
         });
 
@@ -242,10 +280,6 @@ public class act4 extends FragmentActivity implements OnMapReadyCallback {
     }
 
     // ****************************************************************************************************************************
-
-
-
-
     // ****************************************************************************************************************************
     // was unten steht ist selbsterklerend eigentlich
     @Override
@@ -323,13 +357,12 @@ public class act4 extends FragmentActivity implements OnMapReadyCallback {
             //Set StartMarker
             MarkerOptions options = new MarkerOptions()
                     .draggable(false)
-                    .position(new LatLng(markerLat, markerLng));
+                    .position(new LatLng(markerLat, markerLng))
+                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.markerstart))
+                    .anchor((float)0.5, (float)0.5);
 
             StartMarker = mMap.addMarker(options);
             drawCircle(new LatLng(markerLat, markerLng));
-
-
-
 
             mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener()
             {
@@ -342,6 +375,7 @@ public class act4 extends FragmentActivity implements OnMapReadyCallback {
                             if (marker.getPosition().longitude != StartMarker.getPosition().longitude) {    //Kein Startmarker löschen
                                 aktMarker.remove();
                                 markers.remove(marker);
+                                redrawMarker();
 
                                 if (shape != null) {
 
@@ -408,7 +442,7 @@ public class act4 extends FragmentActivity implements OnMapReadyCallback {
     {
         CircleOptions options = new CircleOptions()
                 .center(latLng)
-                .radius(500)
+                .radius(300)
                 .fillColor(0x66696969)
                 .strokeColor(Color.RED)
                 .strokeWidth(3);
@@ -417,21 +451,24 @@ public class act4 extends FragmentActivity implements OnMapReadyCallback {
 
     private void setMarker(String locality, double lat, double lng)
     {
+
         MarkerOptions options = new MarkerOptions()
                 .title("Marker")
                 .draggable(true)
                 .position(new LatLng(lat,lng))
-                .snippet("lat :" +lat+ "\nlng :" +lng+"");
-
-
+                .snippet("lat :" +lat+ "\nlng :" +lng+"")
+                .icon(BitmapDescriptorFactory.fromResource(R.drawable.markerstandard))
+                .anchor((float)0.5, (float)0.5);
         if(checkRadius(lat, lng, StartMarker.getPosition().latitude, StartMarker.getPosition().longitude))
         {
             Warning warning = new Warning("One of your Markers is more than 300 meters away from the start marker, press OK to continue", "Redraw", true, "OK", this);
-            AlertDialog alertDialog = warning.createWarning();
+            android.app.AlertDialog alertDialog = warning.createWarning();
             alertDialog.setTitle("Redraw Marker");
             alertDialog.show();
         }
+
         markers.add(mMap.addMarker(options));
+        redrawMarker();
         if(markers.size() >= 3)
         {
             if(shape != null){
@@ -442,6 +479,16 @@ public class act4 extends FragmentActivity implements OnMapReadyCallback {
         }
     }
 
+    private  void redrawMarker(){
+        if (markers.size() >= 2){
+            markers.get(0).setIcon(BitmapDescriptorFactory.fromResource(R.drawable.markeranfangende));
+            markers.get(markers.size()-1).setIcon(BitmapDescriptorFactory.fromResource(R.drawable.markeranfangende));
+            for (int i = 1; i < markers.size()-1; i++){
+                markers.get(i).setIcon(BitmapDescriptorFactory.fromResource(R.drawable.markerstandard));
+            }
+
+        }
+    }
     private void drawPolygon()
     {
         PolygonOptions options = new PolygonOptions()
@@ -458,6 +505,8 @@ public class act4 extends FragmentActivity implements OnMapReadyCallback {
         }
         shape = mMap.addPolygon(options);
 
+
+
     }
     public boolean checkRadius(double lat1, double lng1, double lat2, double lng2)
     {
@@ -465,7 +514,7 @@ public class act4 extends FragmentActivity implements OnMapReadyCallback {
         {
             return true;
         }
-            return false;
+        return false;
     }
     public static long getDistanceMeters(double lat1, double lng1, double lat2, double lng2) {
 
@@ -487,28 +536,31 @@ public class act4 extends FragmentActivity implements OnMapReadyCallback {
         if(markers.size() == 0)
         {
             Warning warning = new Warning("You have to draw a polygon", "Please draw", false, "OK", this);
-            AlertDialog alertDialog = warning.createWarning();
+            android.app.AlertDialog alertDialog = warning.createWarning();
             alertDialog.setTitle("Missing Polygon");
             alertDialog.show();
             return;
         }
         Node startNode = new Node(StartMarker.getPosition().latitude, StartMarker.getPosition().longitude,0);
+        ArrayList<Node> nodeList = new ArrayList<Node>();
 
         Intent intent = new Intent(this, act5.class);
-
-        ArrayList<Node> nodeList = new ArrayList<Node>();
         for(Marker marker : markers)
         {
             nodeList.add(new Node(marker.getPosition().latitude, marker.getPosition().longitude, 0));
         }
         intent.putParcelableArrayListExtra("com.example.nicol.dronflyvis.NODELIST", nodeList);
-        intent.putExtra("com.example.nicol.dronflyvis.START_NODE", startNode);
-        intent.putExtra("com.example.nicol.dronflyvis.ACT4_MAP_TYPE", mMap.getMapType());
-        intent.putExtra("com.example.nicol.dronflyvis.ACT4_LONG", mMap.getCameraPosition().target.longitude + "");
-        intent.putExtra("com.example.nicol.dronflyvis.ACT4_LAT", mMap.getCameraPosition().target.latitude + "");
-        intent.putExtra("com.example.nicol.dronflyvis.ACT4_ZOOM", mMap.getCameraPosition().zoom);
+        intent.putExtra("com.example.nicol.dronflyvis.ACT2BEARING", mMap.getCameraPosition().bearing);
+        intent.putExtra("com.example.nicol.dronflyvis.mapZOOM", mMap.getCameraPosition().zoom);
+        intent.putExtra("com.example.nicol.dronflyvis.mapLAT","" + mMap.getCameraPosition().target.latitude);
+        intent.putExtra("com.example.nicol.dronflyvis.mapLNG","" + mMap.getCameraPosition().target.longitude);
+        intent.putExtra("com.example.nicol.dronflyvis.mapType", mMap.getMapType());
+        intent.putExtra("com.example.nicol.dronflyvis.MARKER_LNG", markerLng);
+        intent.putExtra("com.example.nicol.dronflyvis.MARKER_LAT", markerLat);
         intent.putExtra("com.example.nicol.dronflyvis.SETTINGS", settings);
+
         startActivity(intent);
+
     }
 
 
