@@ -42,7 +42,7 @@ import java.util.Date;
 
 import static android.graphics.Bitmap.Config.ARGB_8888;
 
-public class act5 extends FragmentActivity implements OnMapReadyCallback {
+public class Tours_View_And_Export_Activity extends FragmentActivity implements OnMapReadyCallback {
 
     private ImageButton infobuch;
     private GoogleMap mMap;
@@ -55,32 +55,12 @@ public class act5 extends FragmentActivity implements OnMapReadyCallback {
     private double lng;
     private int mapType;
     private float[] settings;
-    private double markerLat;
-    private double markerLng;
-    private double nixda;
+
 
     private double height;
 
     private static final int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 1;
 
-
-    /**
-     * Ich tue hier nur ein Paar klene Änderungen bezüglich des Pfads.
-     * Wenn wir so weit sind, müssen wir den Pfad mahlen
-     * Dafür sollen die Punkte übergeben werden(nicht notwendigerweise als marker!)
-     * und in den markes Array geschrieben werden
-     *
-     * Ich bereite schon mal einen DrowPfad Method.
-     *
-     * Input-man bitte alles in array reinschreiben nach dem die Übergabe erfollgt ist
-     *
-     * Design-man, für dich ist jetzt ein kleiner Counter in den Variablen,
-     * Also wenn wir so weit mit unseren Icons sind, können wir mit dem Counter die Markers nicht nur mahlen
-     * sondern auch in der verbundener Reinfolge ausgeben.
-     *
-     *
-     * VG Android Integrator :)
-     * */
 
 
     public String Pfad = "DronFlyVisPfad";
@@ -90,7 +70,7 @@ public class act5 extends FragmentActivity implements OnMapReadyCallback {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_act5);
+        setContentView(R.layout.tours_view_and_export_activity);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -100,12 +80,6 @@ public class act5 extends FragmentActivity implements OnMapReadyCallback {
         {
             nodeList = getIntent().getExtras().getParcelableArrayList("com.example.nicol.dronflyvis.NODELIST");
 
-        }
-
-        if(getIntent().getExtras() != null)
-        {
-            markerLng = getIntent().getExtras().getDouble("com.example.nicol.dronflyvis.MARKER_LNG");
-            markerLat = getIntent().getExtras().getDouble("com.example.nicol.dronflyvis.MARKER_LAT");
         }
 
         if(getIntent().getExtras() != null)
@@ -121,7 +95,7 @@ public class act5 extends FragmentActivity implements OnMapReadyCallback {
         infobuch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(getApplicationContext(),buch_act.class);
+                Intent intent = new Intent(getApplicationContext(),Buch_PopUp_Activity.class);
                 startActivity(intent);
             }
         });
@@ -178,13 +152,16 @@ public class act5 extends FragmentActivity implements OnMapReadyCallback {
         mMap.getUiSettings().setMapToolbarEnabled (false);
         mMap.getUiSettings().setZoomControlsEnabled(true);
 
+
         mMap.setMapType(mapType);
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lat,lng),zoom));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lat, lng), zoom));
+
 
         TravelingSalesman tsm = new TravelingSalesman();
         Rastering raster = new Rastering(nodeList, (float) 78.8, 100);
-        route = tsm.travelingSalesman(raster.getRaster() , new Node(markerLat , markerLng , 2));
+        route = tsm.travelingSalesman(raster.getRaster() , new Node(nodeList.get(0).getLatitude(), nodeList.get(0).getLongitude(), 2));
         Log.i("test", ""+route);
+
 
         for(int i = 0; i<route.size(); i++)
         {
@@ -271,7 +248,7 @@ public class act5 extends FragmentActivity implements OnMapReadyCallback {
         FILE_NAME = "Route " + timeStamp + ".csv";
 
         //Request storage permissions during runtime
-        ActivityCompat.requestPermissions( act5.this ,new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+        ActivityCompat.requestPermissions( Tours_View_And_Export_Activity.this ,new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
                 MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE);
 
         //Get the path to the directory to save the CSV

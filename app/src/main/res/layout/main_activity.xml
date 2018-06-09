@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    tools:context=".act4">
+    tools:context=".Main_Activity">
 
     <fragment
         android:id="@+id/map"
@@ -22,7 +22,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0"
-        tools:context=".act4" />
+        tools:context=".Main_Activity" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -39,15 +39,15 @@
         app:layout_constraintVertical_bias="0.0">
 
         <Button
-            android:id="@+id/act4back"
+            android:id="@+id/main_act_back_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:onClick="act_4_back"
+            android:onClick="main_activity_back"
             android:text="back" />
 
         <Button
-            android:id="@+id/change4"
+            android:id="@+id/main_act_change_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -55,10 +55,10 @@
 
 
         <Button
-            android:id="@+id/act4next"
+            android:id="@+id/main_act_next_button"
             android:layout_width="126dp"
             android:layout_height="wrap_content"
-            android:onClick="act_4_next"
+            android:onClick="main_activity_next"
             android:text="next" />
 
     </LinearLayout>

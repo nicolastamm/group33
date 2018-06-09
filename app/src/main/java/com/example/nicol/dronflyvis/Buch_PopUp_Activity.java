@@ -1,9 +1,7 @@
 package com.example.nicol.dronflyvis;
 
 import android.app.Activity;
-import android.graphics.Color;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
@@ -11,14 +9,14 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 
-public class buch_act extends Activity {
+public class Buch_PopUp_Activity extends Activity {
     private ViewPager mSlideViewPager;
-    private buch_slider buchSlider;
+    private Buch_Slider buchSlider;
     private Button close;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_buch_act);
+        setContentView(R.layout.buch_activity);
 
         DisplayMetrics dm = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(dm);
@@ -35,7 +33,7 @@ public class buch_act extends Activity {
         getWindow().setAttributes(lp);
 
         mSlideViewPager = (ViewPager)findViewById(R.id.slideViewPager);
-        buchSlider = new buch_slider(this);
+        buchSlider = new Buch_Slider(this);
         mSlideViewPager.setAdapter(buchSlider);
 
         close = (Button)findViewById(R.id.close_buch_act);

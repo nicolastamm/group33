@@ -10,11 +10,11 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-public class buch_slider extends PagerAdapter{
+public class Buch_Slider extends PagerAdapter{
     Context context;
     LayoutInflater layoutInflater;
 
-    public buch_slider(Context context){
+    public Buch_Slider(Context context){
         this.context = context;
     }
 
