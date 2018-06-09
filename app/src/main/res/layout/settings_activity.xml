@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".act1">
+    tools:context=".Settings_Activity">
 
     <ImageView
         android:id="@+id/imageView"
@@ -185,21 +185,19 @@
         app:layout_constraintVertical_bias="0.62">
 
         <Button
-            android:id="@+id/act1info"
+            android:id="@+id/about_us_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="About us"
-            />
+            android:text="About us" />
 
         <Button
-            android:id="@+id/act1next"
+            android:id="@+id/settings_next_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:onClick="act_1_next"
-            android:text="next"
-            />
+            android:onClick="settings_next"
+            android:text="next" />
 
     </LinearLayout>
 
