@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Drone Tours</string>
+    <string name="title_activity_act2">Map</string>
+    <string name="title_activity_maps">Map</string>
+    <string name="title_activity_act3">Map</string>
+    <string name="title_activity_act4">Map</string>
+    <string name="title_activity_act5">Map</string>
+
+</resources>
