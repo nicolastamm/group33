@@ -1,51 +1,47 @@
 package com.example.nicol.dronflyvis;
 
-import android.content.DialogInterface;
+import android.app.AlertDialog;
 import android.content.Intent;
-import android.graphics.Color;
-import android.os.Handler;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.Spinner;
-import android.widget.Toast;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 
-public class act1 extends AppCompatActivity
+public class Settings_Activity extends AppCompatActivity
 {
     private Button nextBtn;
     private EditText inputText;
     private Boolean inputOk = false;
     private RadioButton bepob;
     private RadioButton mavic;
+    private Button aboutUs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_act1);
+        setContentView(R.layout.settings_activity);
+
         bepob = (RadioButton) findViewById(R.id.radioButton4);
         mavic = (RadioButton) findViewById(R.id.radioButton3);
-        nextBtn = (Button) findViewById(R.id.act1next);
-        //InfoButtonPopUp
+        nextBtn = (Button) findViewById(R.id.settings_next_button);
 
-        Button infoButton = (Button) findViewById(R.id.act1info);
-        infoButton.setOnClickListener(new View.OnClickListener() {
+
+        aboutUs = (Button) findViewById(R.id.about_us_button);
+        aboutUs.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(getApplicationContext(),infoPopUpAct.class);
+                Intent intent = new Intent(getApplicationContext(),AboutUs_PopUp_Activity.class);
                 startActivity(intent);
             }
         });
@@ -86,8 +82,8 @@ public class act1 extends AppCompatActivity
                     {
                         if(Double.parseDouble(charSequence.toString()) > 100)
                         {
-                            Warning altitudeWarning = new Warning("Altitude is larger than 100 meters, are you sure you want to continue?", "Altitude too large", true, "OK", act1.this);
-                            android.app.AlertDialog alertDialog = altitudeWarning.createWarning();
+                            Warning altitudeWarning = new Warning("Altitude is larger than 100 meters, are you sure you want to continue?", "Altitude too large", true, "OK", Settings_Activity.this);
+                            AlertDialog alertDialog = altitudeWarning.createWarning();
                             alertDialog.setTitle("Altitude larger than 100 meters");
                             alertDialog.show();
 
@@ -154,36 +150,10 @@ public class act1 extends AppCompatActivity
 
 
 
-    /**
-     Der Skelet für Alelrt !
-     Also Jungs, hier sit schon mal unser erster Allert.
-     Dafür habe ich oben eine neue Variable hinzugefügt (inputOk).
-
-     Wenn der Wert von dieser gleich False ist, dann kommt der Alert mit dem anderen Button zum wegclicken.
-     Ist der Input ok, dann soll auch alles wie wir es hatten ablaufen.
-
-     also To_Do hier :
-
-     Input-man erstellt sich jetzt die neue Funktion(mit den alten, die der schon hatte) mit mehreren Abfragen in den Feldern.
-     War alles ok? dann wird auch der inputOk auf "true" gesetzt und NUR dann.
-     Und ja, um die Funktion überhaupt zu starten muss man erst auf next drücken, also ruf die einfach in act_1_next auf;
-
-     Design-man kann sich jetzt gedanken machen über das Aussehen von Alert.
-     Solche Sachen wie Bilder hinzufügen, Messege als Source speichern, farben und und und :)
 
 
-
-     LG
-     Android Integrator
-
-     */
-
-    public void act_1_next(View view)
+    public void settings_next(View view)
     {
-        // Also hier kann man die Überprüfungsfunktion Starten;
-        // Also OBACHT hier habe ich manuel ein Mal allert Ausgegeben, beim erneut
-        // drücken wird die Akt 2 gestartet(ich ersetze inputOK manuel)
-
         float invalidInput = -1.0f;
         float[] inputValues = getInputValues();
         if(!contains(inputValues, invalidInput))
@@ -192,7 +162,7 @@ public class act1 extends AppCompatActivity
         }
 
         if(inputOk) {
-            Intent intent = new Intent(this, act2.class);
+            Intent intent = new Intent(this, Main_Activity.class);
             intent.putExtra("com.example.nicol.dronflyvis.INPUT_VALUES", getInputValues());
             startActivity(intent);
         }
