@@ -124,7 +124,6 @@ public class Settings_Activity extends AppCompatActivity
                 inputValues[i] = Float.parseFloat("0" + inputText.getText().toString());
                 i++;
             }
-
         }
 
         return inputValues;
@@ -147,10 +146,6 @@ public class Settings_Activity extends AppCompatActivity
         }
         return false;
     }
-
-
-
-
 
     public void settings_next(View view)
     {
@@ -176,10 +171,5 @@ public class Settings_Activity extends AppCompatActivity
         }
 
     }
-
-
-
-
-
 }
 

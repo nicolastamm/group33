@@ -157,8 +157,8 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lat, lng), zoom));
 
         TravelingSalesman tsm = new TravelingSalesman();
-        new Rastering(nodeList, new Node(nodeList.get(0).getLatitude(), nodeList.get(0).getLongitude(), 2), (float) 78.8, 100, 3);
-        route = tsm.travelingSalesman(Rastering.getRoute());
+        Rastering rasterized = new Rastering(nodeList, (float) 78.8, 100);
+        route = tsm.travelingSalesman(rasterized.getRaster() , new Node(nodeList.get(0).getLatitude(), nodeList.get(0).getLongitude(), 2));
         Log.i("test", ""+route);
 
 
