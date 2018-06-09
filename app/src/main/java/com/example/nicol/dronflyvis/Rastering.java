@@ -21,7 +21,10 @@ public class Rastering
         this.fov = fov;
         this.flightHeight = flightHeight;
         this.geoTest = new GeoTest(inputPolygon);
-        raster = placeRaster(searchForBorderCoordinates());
+        fotoWidth = (2.0 * flightHeight) * (Math.tan(Math.toRadians(fov / 2.0)));
+        fotoHeight = fotoWidth * (3.0/4.0); //Assuming 4:3 aspect ratio
+        fotoWidth *= 0.30; //70% horizontal overlap.
+        fotoHeight *= 0.15; //85% vertical overlap.
     }
     
     private Double[] searchForBorderCoordinates()
@@ -58,11 +61,6 @@ public class Rastering
 
     private ArrayList<ArrayList<Node>> placeRaster(Double[] borderCoordinates)
     {
-
-        fotoWidth = (2.0 * flightHeight) * (Math.tan(Math.toRadians(fov/2.0)));
-        fotoHeight = fotoWidth * (3.0/4.0); //Assuming 4:3 aspect ratio
-        fotoWidth *= 0.30; //70% horizontal overlap.
-        fotoHeight *= 0.15; //85% vertical overlap.
         double fotoWidthCoord = metersToLong(fotoWidth , borderCoordinates[3]);
         double fotoHeightCoord = metersToLat(fotoHeight);
 
@@ -171,12 +169,37 @@ public class Rastering
 
         int extraCol = horizontalAmountFotos % subPolycols;
         int extraRow = verticalAmountFotos % subPolyrows;
-        int amountSubPoly = (verticalAmountFotos / subPolyrows) * (horizontalAmountFotos / subPolycols);
-
-        for(int i = 0 ; i < amountSubPoly ; i++)
+        int amountSubPolyHor = horizontalAmountFotos / subPolycols;
+        System.out.println(horizontalAmountFotos);
+        int amountSubPolyVert = verticalAmountFotos / subPolyrows;
+        System.out.println(verticalAmountFotos);
+        int amountSubPolyTotal = amountSubPolyHor * amountSubPolyVert;
+        double fotoWidthCoord = metersToLong(fotoWidth , borderCoordinates[3]);
+        double fotoHeightCoord = metersToLat(fotoHeight);
+        double traversedLongitude = borderCoordinates[0];
+        double traversedLatitude = borderCoordinates[2];
+        int index = 0;
+        System.out.println(amountSubPolyTotal);
+        ArrayList[] thisRasters = new ArrayList[amountSubPolyTotal*2];
+        polygonWidth = metersToLong(polygonWidth , borderCoordinates[2]);
+        polygonHeight = metersToLat(polygonHeight);
+        for(int i = 0 ; polygonWidth + traversedLongitude <= borderCoordinates[1] ; i++)
         {
-
+            for(int j = 0 ; polygonHeight + traversedLatitude <= borderCoordinates[3]; j++)
+            {
+                thisRasters[index] = placeRaster(new Double[]
+                        {
+                                traversedLongitude ,
+                                traversedLongitude + polygonWidth,
+                                traversedLatitude,
+                                traversedLatitude + polygonHeight
+                        });
+                traversedLatitude += polygonHeight;
+                index++;
+            }
+            traversedLongitude += polygonWidth;
         }
+        rasters = thisRasters;
     }
 
 
@@ -189,11 +212,19 @@ public class Rastering
         test.add(new Node(47.698420, 9.201961, 2));
 
         Rastering raster = new Rastering(test,  78.8, 100);
-        raster.splitPolygon();
+        raster.getRasters();
     }
 
     private static double metersToLat(double meters) {return meters / 111325.0;} // 1° of latitude is around 111.325 km.
     private static double metersToLong(double meters , double lat) {return (meters / (111325.0 * Math.cos(Math.toRadians(lat))));}
-    public  ArrayList<ArrayList<Node>> getRaster() {return raster;}
-    public ArrayList<ArrayList<Node>>[] getRasters() { splitPolygon();return rasters; }
+    public  ArrayList<ArrayList<Node>> getRaster()
+    {
+        placeRaster(searchForBorderCoordinates());
+        return raster;
+    }
+    public ArrayList<ArrayList<Node>>[] getRasters()
+    {
+        splitPolygon();
+        return rasters;
+    }
 }
