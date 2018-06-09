@@ -18,14 +18,14 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".startAct">
+        <activity android:name=".Start_Activity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".act1"
+        <activity android:name=".Settings_Activity"
             android:screenOrientation="portrait"/>
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
@@ -41,26 +41,18 @@
             />
 
         <activity
-            android:name=".act2"
-            android:label="@string/title_activity_act2"
-            android:screenOrientation="portrait"/>
-        <activity
-            android:name=".act3"
-            android:label="@string/title_activity_act3"
-            android:screenOrientation="portrait"/>
-        <activity
-            android:name=".act4"
+            android:name=".Main_Activity"
             android:label="@string/title_activity_act4"
             android:screenOrientation="portrait"/>
         <activity
-            android:name=".act5"
+            android:name=".Tours_View_And_Export_Activity"
             android:label="@string/title_activity_act5"
             android:screenOrientation="portrait"/>
         <activity
-            android:name=".infoPopUpAct"
+            android:name=".AboutUs_PopUp_Activity"
             android:theme="@style/PopUpStyle"
             android:screenOrientation="portrait"/>
-        <activity android:name=".buch_act"
+        <activity android:name=".Buch_PopUp_Activity"
             android:theme="@style/PopUpStyle"
             android:screenOrientation="portrait"/>
     </application>
