@@ -30,14 +30,12 @@ import java.util.ArrayList;
 
 import static android.media.CamcorderProfile.get;
 
-public class act4 extends FragmentActivity implements OnMapReadyCallback {
+public class Main_Activity extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
     private ImageButton infobuch;
 
-    private double lat;
-    private double lng;
-    private Marker StartMarker;
+
     //Polygonpunkte und der Polygon selbst
     ArrayList<Marker> markers = new ArrayList<Marker>();
     Polygon shape;
@@ -50,39 +48,32 @@ public class act4 extends FragmentActivity implements OnMapReadyCallback {
     private double markerLat;
     private double markerLng;
     private float zoom;
-    private boolean inputOk = false;
+
     private float[] settings;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_act4);
+        setContentView(R.layout.main_activity);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
         if(getIntent().getExtras() != null)
         {
-            markerLng = getIntent().getExtras().getDouble("com.example.nicol.dronflyvis.MARKER_LNG");
-            markerLat = getIntent().getExtras().getDouble("com.example.nicol.dronflyvis.MARKER_LAT");
+
             settings = getIntent().getExtras().getFloatArray("com.example.nicol.dronflyvis.SETTINGS");
         }
 
-        if(getIntent().getExtras() != null)
-        {
-            lng = Float.parseFloat(getIntent().getExtras().getString("com.example.nicol.dronflyvis.mapLNG"));
-            lat = Float.parseFloat(getIntent().getExtras().getString("com.example.nicol.dronflyvis.mapLAT"));
-            zoom = getIntent().getExtras().getFloat("com.example.nicol.dronflyvis.mapZOOM");
-            mapType = getIntent().getExtras().getInt("com.example.nicol.dronflyvis.mapType");
-        }
+
 
         infobuch = (ImageButton)findViewById(R.id.infobuch4);
         infobuch.setImageResource(R.drawable.infobuch);
         infobuch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(getApplicationContext(),buch_act.class);
+                Intent intent = new Intent(getApplicationContext(),Buch_PopUp_Activity.class);
                 startActivity(intent);
             }
         });
@@ -90,14 +81,6 @@ public class act4 extends FragmentActivity implements OnMapReadyCallback {
 
 
 
-        /**
-         * Hole die Buttons die für die Modusen verantwortig sind und mache
-         * die active(bzw inactive) per click.
-         *
-         * Zusätzlich beachte, dass 2 modusen wie Add und Del nicht hleichzeitig an sind
-         * */
-
-        // ****************************************************************************************************************************
 
         final ImageButton pinImageButton = (ImageButton) findViewById(R.id.pin);
         final ImageButton deleteImageButton = (ImageButton) findViewById(R.id.delete);
@@ -177,7 +160,7 @@ public class act4 extends FragmentActivity implements OnMapReadyCallback {
             @Override
             public void onClick(View view) {
 
-                AlertDialog.Builder dBuilder = new AlertDialog.Builder(act4.this);
+                AlertDialog.Builder dBuilder = new AlertDialog.Builder(Main_Activity.this);
 
                 dBuilder.setTitle("Delete Polygon");
                 dBuilder.setMessage("Are you sure that you want delete the polygon?")
@@ -213,7 +196,7 @@ public class act4 extends FragmentActivity implements OnMapReadyCallback {
         // Change Button
         // ****************************************************************************************************************************
 
-        Button searchButton = (Button)findViewById(R.id.change4);
+        Button searchButton = (Button)findViewById(R.id.main_act_change_button);
         // Normales Click
         searchButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -290,8 +273,7 @@ public class act4 extends FragmentActivity implements OnMapReadyCallback {
         mMap.getUiSettings().setZoomControlsEnabled(true);
 
 
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lat, lng), zoom));
-        mMap.setMapType(mapType);
+
 
         if (mMap != null) {
 
@@ -302,21 +284,21 @@ public class act4 extends FragmentActivity implements OnMapReadyCallback {
                 {
                     if(!drawModus &!deleteModus){
                         Toast.makeText(
-                                act4.this,
+                                Main_Activity.this,
                                 "Please select a mode",
                                 Toast.LENGTH_LONG
                         ).show();
                     }
                     if(deleteModus){
                         Toast.makeText(
-                                act4.this,
+                                Main_Activity.this,
                                 "Nothing to delete ",
                                 Toast.LENGTH_LONG
                         ).show();
                     }
 
                     if(drawModus) {
-                        act4.this.setMarker("Local", latLng.latitude, latLng.longitude);
+                        Main_Activity.this.setMarker("Local", latLng.latitude, latLng.longitude);
                     }
                 }
             });
@@ -331,38 +313,27 @@ public class act4 extends FragmentActivity implements OnMapReadyCallback {
 
                        if(!drawModus &!deleteModus){
                            Toast.makeText(
-                                   act4.this,
+                                   Main_Activity.this,
                                    "Please select a mode",
                                    Toast.LENGTH_LONG
                            ).show();
                        }
                        if(deleteModus){
                            Toast.makeText(
-                                   act4.this,
+                                   Main_Activity.this,
                                    "Nothing to delete",
                                    Toast.LENGTH_LONG
                            ).show();
                        }
 
                        if(drawModus) {
-                           act4.this.setMarker("Local", latLng.latitude, latLng.longitude);
+                           Main_Activity.this.setMarker("Local", latLng.latitude, latLng.longitude);
                        }
 
                    }
                });
                 }
 
-
-
-            //Set StartMarker
-            MarkerOptions options = new MarkerOptions()
-                    .draggable(false)
-                    .position(new LatLng(markerLat, markerLng))
-                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.markerstart))
-                    .anchor((float)0.5, (float)0.5);
-
-            StartMarker = mMap.addMarker(options);
-            drawCircle(new LatLng(markerLat, markerLng));
 
             mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener()
             {
@@ -371,8 +342,8 @@ public class act4 extends FragmentActivity implements OnMapReadyCallback {
 
                     Marker aktMarker = marker;
 
-                    if(deleteModus) { // wenn man in dem Modus ist
-                            if (marker.getPosition().longitude != StartMarker.getPosition().longitude) {    //Kein Startmarker löschen
+                    if(deleteModus) {
+
                                 aktMarker.remove();
                                 markers.remove(marker);
                                 redrawMarker();
@@ -384,13 +355,8 @@ public class act4 extends FragmentActivity implements OnMapReadyCallback {
                                 }
                                 if(markers.size()>=1){
                                 drawPolygon();}
-                            } else {
-                                Toast.makeText(
-                                        act4.this,
-                                        "You can't delete the startpoint",
-                                        Toast.LENGTH_LONG
-                                ).show();
-                            }
+
+
                     }
                     return true;
                 }
@@ -438,16 +404,7 @@ public class act4 extends FragmentActivity implements OnMapReadyCallback {
 
     }
 
-    private Circle drawCircle(LatLng latLng)
-    {
-        CircleOptions options = new CircleOptions()
-                .center(latLng)
-                .radius(300)
-                .fillColor(0x66696969)
-                .strokeColor(Color.RED)
-                .strokeWidth(3);
-        return mMap.addCircle(options);
-    }
+
 
     private void setMarker(String locality, double lat, double lng)
     {
@@ -459,13 +416,7 @@ public class act4 extends FragmentActivity implements OnMapReadyCallback {
                 .snippet("lat :" +lat+ "\nlng :" +lng+"")
                 .icon(BitmapDescriptorFactory.fromResource(R.drawable.markerstandard))
                 .anchor((float)0.5, (float)0.5);
-        if(checkRadius(lat, lng, StartMarker.getPosition().latitude, StartMarker.getPosition().longitude))
-        {
-            Warning warning = new Warning("One of your Markers is more than 300 meters away from the start marker, press OK to continue", "Redraw", true, "OK", this);
-            android.app.AlertDialog alertDialog = warning.createWarning();
-            alertDialog.setTitle("Redraw Marker");
-            alertDialog.show();
-        }
+
 
         markers.add(mMap.addMarker(options));
         redrawMarker();
@@ -531,7 +482,7 @@ public class act4 extends FragmentActivity implements OnMapReadyCallback {
         return Math.round(dist * 6378100);
     }
 
-    public void act_4_next(View view)
+    public void main_activity_next(View view)
     {
         if(markers.size() == 0)
         {
@@ -541,22 +492,20 @@ public class act4 extends FragmentActivity implements OnMapReadyCallback {
             alertDialog.show();
             return;
         }
-        Node startNode = new Node(StartMarker.getPosition().latitude, StartMarker.getPosition().longitude,0);
+        Node startNode = new Node(markers.get(0).getPosition().latitude,markers.get(0).getPosition().longitude,0);
         ArrayList<Node> nodeList = new ArrayList<Node>();
 
-        Intent intent = new Intent(this, act5.class);
+        Intent intent = new Intent(this, Tours_View_And_Export_Activity.class);
         for(Marker marker : markers)
         {
             nodeList.add(new Node(marker.getPosition().latitude, marker.getPosition().longitude, 0));
         }
         intent.putParcelableArrayListExtra("com.example.nicol.dronflyvis.NODELIST", nodeList);
-        intent.putExtra("com.example.nicol.dronflyvis.ACT2BEARING", mMap.getCameraPosition().bearing);
+        intent.putExtra("com.example.nicol.dronflyvis.BEARING", mMap.getCameraPosition().bearing);
         intent.putExtra("com.example.nicol.dronflyvis.mapZOOM", mMap.getCameraPosition().zoom);
         intent.putExtra("com.example.nicol.dronflyvis.mapLAT","" + mMap.getCameraPosition().target.latitude);
         intent.putExtra("com.example.nicol.dronflyvis.mapLNG","" + mMap.getCameraPosition().target.longitude);
         intent.putExtra("com.example.nicol.dronflyvis.mapType", mMap.getMapType());
-        intent.putExtra("com.example.nicol.dronflyvis.MARKER_LNG", markerLng);
-        intent.putExtra("com.example.nicol.dronflyvis.MARKER_LAT", markerLat);
         intent.putExtra("com.example.nicol.dronflyvis.SETTINGS", settings);
 
         startActivity(intent);
@@ -648,7 +597,7 @@ public class act4 extends FragmentActivity implements OnMapReadyCallback {
 */
 
 
-    public void act_4_back(View view)
+    public void main_activity_back(View view)
     {
         onBackPressed();
     }
