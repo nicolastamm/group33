@@ -1,7 +1,6 @@
 package com.example.nicol.dronflyvis;
 
 import android.app.Activity;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
@@ -9,12 +8,11 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.text.Html;
-import android.graphics.drawable.Drawable;
 
 
 import android.widget.TextView;
 
-public class infoPopUpAct extends Activity {
+public class AboutUs_PopUp_Activity extends Activity {
     Button closeInfo;
 
     private final String htmlText = "<body><h1> <big><font color=\"black\"> Welcome to Drone Tours!</big> </font> </h1>" +
@@ -37,7 +35,7 @@ public class infoPopUpAct extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_info_pop_up);
+        setContentView(R.layout.info_pop_up_activity);
         closeInfo = (Button) findViewById(R.id.closeInfo1Button);
 
         closeInfo.setOnClickListener(new View.OnClickListener() {
