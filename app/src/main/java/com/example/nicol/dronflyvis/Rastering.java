@@ -195,5 +195,5 @@ public class Rastering
     private static double metersToLat(double meters) {return meters / 111325.0;} // 1° of latitude is around 111.325 km.
     private static double metersToLong(double meters , double lat) {return (meters / (111325.0 * Math.cos(Math.toRadians(lat))));}
     public  ArrayList<ArrayList<Node>> getRaster() {return raster;}
-    public ArrayList<ArrayList<Node>>[] getRasters() {splitPolygon();return rasters; }
+    public ArrayList<ArrayList<Node>>[] getRasters() { splitPolygon();return rasters; }
 }
