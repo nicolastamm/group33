@@ -255,16 +255,19 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
         String timeStamp = "" + format.format(currentTime);
 
         String content = null;
+        String directory = "";
         //Only create Export for selected drone
         int bebopFlag = 0;
         switch(bebopFlag) {
             case 0:
                 content = routeForMavicPro();
-                FILE_NAME = "DJI/Route " + timeStamp + ".csv";
+                FILE_NAME = "Route " + timeStamp + ".csv";
+                directory = "DJI/";
                 break;
             case 1:
                 content = routeForBebop();
-                FILE_NAME += "ARPro3/" + timeStamp + " Route";
+                FILE_NAME += timeStamp + " Route";
+                directory = "ARPro3/";
                 break;
             default:
                 content = "";
@@ -278,12 +281,12 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
 
         //Get the path to the directory to save the CSV
         String path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/DroneTours/";
-        File file = new File(path);
+        File file = new File(path + directory);
 
         //If there is no folder, create a new one
-
-        file = new File(path + FILE_NAME);
         file.mkdirs();
+        file = new File(path + FILE_NAME);
+
         //Create a new File to later write in the data
         try
         {
