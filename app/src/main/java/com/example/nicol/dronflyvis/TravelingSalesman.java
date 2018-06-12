@@ -15,6 +15,7 @@ import java.util.Iterator;
 public class TravelingSalesman 
 {
 	/**
+	 * TEST
 	 * Calculates an approximately optimal route
 	 * @param grid stores the route points
 	 * @return an ArrayList which stores the order of the route points
