@@ -147,10 +147,9 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
         Rastering raster = new Rastering(nodeList, (float) 78.8, 100);
         TravelingSalesman tsm = new TravelingSalesman();
 
-        for(int k=0;k<3;k++) {
-            ArrayList<Marker> pfad = new ArrayList<>();
-            ArrayList<Node> route;
-            ArrayList<ArrayList<Node>> actRuster = raster.getRasters()[k];
+
+        ArrayList<Marker> pfad = new ArrayList<>();
+            ArrayList<ArrayList<Node>> actRuster = raster.getRaster();
             Node startNode = actRuster.get(0).get(0);
             route = tsm.travelingSalesman(actRuster, new Node(startNode.getLatitude(), startNode.getLongitude(), 2));
 
@@ -175,7 +174,7 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
             drawPfad(pfad);
             farbe++;
             MarkerCounter=0;
-        }
+
 
     }
 
@@ -237,26 +236,6 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
         ArrayList<Marker> pfad = markArray;
         PolylineOptions optionss = new PolylineOptions()
                 .width(7);
-
-        switch(farbe){
-            case(0):
-            {
-                optionss.color(Color.RED);
-                break;
-            }
-            case(1):
-            {
-                optionss.color(Color.BLUE);
-                break;
-            }
-            case(2):
-            {
-                optionss.color(Color.YELLOW);
-                break;
-            }
-
-
-        }
 
                 for(int i=0;i<pfad.size();i++ )
                 {
