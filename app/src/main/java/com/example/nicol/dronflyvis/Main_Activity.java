@@ -40,7 +40,9 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
     private Boolean deleteModus = false;
     private Boolean drawModus = true;
     private Boolean pinModus = false;
+    private Boolean polyAufgeteilt = false;
     private float[] settings;
+    private Node startNode;
 
     ArrayList<Marker> markers = new ArrayList<Marker>();
     Polygon shape;
@@ -470,6 +472,66 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
 
     public void main_activity_next(View view)
     {
+        if(!polyAufgeteilt){
+            Warning warning = new Warning("wir teilen für dich das Polygon auf", "Polygon aufteilen", false, "OK", this);
+            android.app.AlertDialog alertDialog = warning.createWarning();
+            alertDialog.setTitle("Polygon zu groß!");
+            alertDialog.show();
+
+            ArrayList<Node> actNodeListe = new ArrayList<Node>();
+            for(Marker marker : markers)
+            {
+                actNodeListe.add(new Node(marker.getPosition().latitude, marker.getPosition().longitude, 0));
+            }
+
+            Rastering raster = new Rastering(actNodeListe, (float) 78.8, 100);
+            TravelingSalesman tsm = new TravelingSalesman();
+
+            ArrayList<Node> route;
+            ArrayList<ArrayList<Node>> actRuster = raster.getRaster();
+            Node startNode = actRuster.get(0).get(0);
+            route = tsm.travelingSalesman(actRuster, new Node(startNode.getLatitude(), startNode.getLongitude(), 2));
+
+
+
+            for (int i = 0; i < route.size(); i++) {
+                double lt = route.get(i).getLatitude();
+                double lon = route.get(i).getLongitude();
+
+                if(i==0){
+                    MarkerOptions options = new MarkerOptions()
+                            .title("Marker")
+                            .draggable(false)
+                            .position(new LatLng(lt,lon))
+                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.markerstart))
+                            .anchor((float)0.5, (float)0.5);
+
+                    mMap.addMarker(options);
+                }
+                MarkerOptions options = new MarkerOptions()
+                        .title("Marker")
+                        .draggable(false)
+                        .position(new LatLng(lt,lon))
+                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.markerstandard))
+                        .anchor((float)0.5, (float)0.5);
+
+                 mMap.addMarker(options);
+
+            }
+
+            for(int j= 0; j<markers.size();j++){
+                markers.get(j).setIcon(BitmapDescriptorFactory.fromResource(R.drawable.markerstandard));
+            }
+
+            if(shape!=null) {
+                shape.remove();
+            }
+
+
+            polyAufgeteilt=true;
+            return;
+        }
+
         if(markers.size() == 0)
         {
             Warning warning = new Warning("You have to draw a polygon", "Please draw", false, "OK", this);
@@ -512,6 +574,9 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
             markers.removeAll(markers);
         }
     }
+
+
+
 
     public void main_activity_back(View view)
     {
