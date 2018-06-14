@@ -44,7 +44,7 @@ import static android.graphics.Bitmap.Config.ARGB_8888;
 
 public class Tours_View_And_Export_Activity extends FragmentActivity implements OnMapReadyCallback {
 
-    private static final int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 1;
+    private static final int REQUEST_WRITE_EXTERNAL_STORAGE = 1;
     private static  String FILE_NAME = "DronPfad.txt";
 
 
@@ -249,7 +249,7 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
                 mMap.addPolyline(optionss);
     }
 
-    public void export_csv(View view) {
+    public void akt5export(View view) {
         /*
          * Gets the current Date und Time, to timestamp the CSV
          */
@@ -257,34 +257,34 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
         Date currentTime = new Date();
         String timeStamp = "" + format.format(currentTime);
 
-        String content;
-        content = "latitude,longitude,altitude.m.,heading.deg.,curvesize.m.,rotationdir,gimbalmode,"
-                + "gimbalpitchangle,";
-
-        for(int i = 1; i <= 15; ++i)
-        {
-            content += "actiontype" + i + ",actionparam" + i + ",";
+        String content = "";
+        String directory = "";
+        //Only create Export for selected drone
+        int bebopFlag = 0;
+        switch(bebopFlag) {
+            case 0:
+                content = routeForMavicPro();
+                FILE_NAME = "Route " + timeStamp + ".csv";
+                directory = "DJI/";
+                break;
+            case 1:
+                content = routeForBebop();
+                FILE_NAME += timeStamp + " Route";
+                directory = "ARPro3/";
+                break;
+            default:
+                content = "";
+                Toast.makeText(this,"Invalid Drone selected",Toast.LENGTH_LONG).show();
+                break;
         }
-        content += "\r\n";
-
-        // iterates through the whole list and writes every Nodes Longitude and Latitude
-        for (int i = 0; i < route.size(); ++i)
-        {
-            Node add = route.get(i);
-            content += add.getLatitude() + "," + add.getLongitude() + "," + height
-                    + ",0,0,0,0,0,1,0,-1,0,-1,0,-1,0,-1,0,-1,0,-1,0,-1,0,-1,0,-1,0,-1,0,-1,0,-1,0,-1,0,-1,0\r\n";
-        }
-
-
-        FILE_NAME = "Route " + timeStamp + ".csv";
 
         //Request storage permissions during runtime
         ActivityCompat.requestPermissions( Tours_View_And_Export_Activity.this ,new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE);
+                REQUEST_WRITE_EXTERNAL_STORAGE);
 
         //Get the path to the directory to save the CSV
         String path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/DroneTours/";
-        File file = new File(path);
+        File file = new File(path + directory);
 
         //If there is no folder, create a new one
         file.mkdirs();
@@ -322,6 +322,54 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
                 }
             }
         }
+    }
+
+    /**
+     * Creates the Content for the CSV, which is needed for LitchiOnline
+     * @return the content used for the CSV File
+     */
+    private String routeForMavicPro()
+    {
+        String content;
+        content = "latitude,longitude,altitude.m.,heading.deg.,curvesize.m.,rotationdir,gimbalmode,"
+                + "gimbalpitchangle,";
+
+        for(int i = 1; i <= 15; ++i)
+        {
+            content += "actiontype" + i + ",actionparam" + i + ",";
+        }
+        content += "\r\n";
+
+        // iterates through the whole list and writes every Nodes Longitude and Latitude
+        for (int i = 0; i < route.size(); ++i)
+        {
+            Node add = route.get(i);
+            content += add.getLatitude() + "," + add.getLongitude() + "," + height
+                    + ",0,0,0,0,0,1,0,-1,0,-1,0,-1,0,-1,0,-1,0,-1,0,-1,0,-1,0,-1,0,-1,0,-1,0,-1,0,-1,0,-1,0\r\n";
+        }
+
+        return content;
+    }
+
+    /**
+     * Creates the Content for the CSV, which is needed for AR Pro 3
+     * @return the content used for the CSV File
+     */
+    private String routeForBebop()
+    {
+        String content = null;
+        // iterates through the whole list and writes every Nodes Longitude and Latitude
+        for (int i = 0; i < route.size() - 1; ++i)
+        {
+            Node add = route.get(i);
+            content += height + ",0,4,0," + i + ",0,0,0,0,0,-1,5,1,"
+                    + (float)add.getLatitude() + "," + (float)add.getLongitude() + ",false,99,30\r\n";
+        }
+        Node add = route.get(route.size() - 1);
+        content += height + ",0,4,0," + (route.size() - 1) + ",0,0,0,0,0,-1,5,1,"
+                + (float)add.getLatitude() + "," + (float)add.getLongitude() + ",false," + Integer.MIN_VALUE + ",0";
+
+        return content;
     }
 
     public void tvae_back(View view){
