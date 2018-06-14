@@ -46,12 +46,13 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
 
     private static final int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 1;
     private static  String FILE_NAME = "DronPfad.txt";
-    ArrayList<Marker> pfad = new ArrayList<>();
+
 
     private ImageButton infobuch;
     private GoogleMap mMap;
     public int MarkerCounter= 0;
-    private double height;
+    private double height = 100.0;
+    public int farbe = 0;
 
     private float zoom;
     private double lat;
@@ -62,6 +63,7 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
 
     ArrayList<Node> nodeList;
     ArrayList<Node> route;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -125,8 +127,6 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
                 return false;
             }
         });
-
-        height = 100.0;
     }
 
 
@@ -144,33 +144,36 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
         mMap.setMapType(mapType);
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lat, lng), zoom));
 
-
-        TravelingSalesman tsm = new TravelingSalesman();
         Rastering raster = new Rastering(nodeList, (float) 78.8, 100);
-        route = tsm.travelingSalesman(raster.getRasters()[0] , new Node(nodeList.get(0).getLatitude(), nodeList.get(0).getLongitude(), 2));
-        Log.i("test", ""+route);
+        TravelingSalesman tsm = new TravelingSalesman();
 
 
-        for(int i = 0; i<route.size(); i++)
-        {
-            double lt = route.get(i).getLatitude();
-            double lon = route.get(i).getLongitude();
+        ArrayList<Marker> pfad = new ArrayList<>();
+            ArrayList<ArrayList<Node>> actRuster = raster.getRaster();
+            Node startNode = actRuster.get(0).get(0);
+            route = tsm.travelingSalesman(actRuster, new Node(startNode.getLatitude(), startNode.getLongitude(), 2));
 
-            MarkerCounter++;
-            String text = String.valueOf(MarkerCounter);
-            Bitmap bitmap = makeBitmap(this, text);
 
-            MarkerOptions options = new MarkerOptions()
-                    .draggable(false)
-                    .position(new LatLng((float)lt,(float)lon))
-                    .icon(BitmapDescriptorFactory.fromBitmap(bitmap))
-                    .anchor((float)0.5, (float)0.5);;
-            pfad.add(mMap.addMarker(options));
-        }
-        drawPfad();
-        for(int j = 0; j<pfad.size();j++){
-            pfad.get(j).showInfoWindow();
-        }
+
+            for (int i = 0; i < route.size(); i++) {
+                double lt = route.get(i).getLatitude();
+                double lon = route.get(i).getLongitude();
+
+                MarkerCounter++;
+                String text = String.valueOf(MarkerCounter);
+                Bitmap bitmap = makeBitmap(this, text);
+
+                MarkerOptions options = new MarkerOptions()
+                        .draggable(false)
+                        .position(new LatLng((float) lt, (float) lon))
+                        .icon(BitmapDescriptorFactory.fromBitmap(bitmap))
+                        .anchor((float) 0.5, (float) 0.5);
+                ;
+                pfad.add(mMap.addMarker(options));
+            }
+            drawPfad(pfad);
+            farbe++;
+            MarkerCounter=0;
 
 
     }
@@ -227,12 +230,12 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
         return bitmap;
     }
 
-    private void drawPfad()
+    private void drawPfad(ArrayList<Marker> markArray)
     {
 
+        ArrayList<Marker> pfad = markArray;
         PolylineOptions optionss = new PolylineOptions()
-                .width(7)
-                .color(Color.RED);
+                .width(7);
 
                 for(int i=0;i<pfad.size();i++ )
                 {
@@ -246,7 +249,7 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
                 mMap.addPolyline(optionss);
     }
 
-    public void akt5export(View view) {
+    public void export_csv(View view) {
         /*
          * Gets the current Date und Time, to timestamp the CSV
          */
@@ -321,7 +324,7 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
         }
     }
 
-    public void act_5_back(View view){
+    public void tvae_back(View view){
         onBackPressed();
     }
 }

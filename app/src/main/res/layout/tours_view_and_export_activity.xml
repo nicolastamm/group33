@@ -53,7 +53,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:onClick="act_5_back"
+            android:onClick="tvae_back"
             android:text="back" />
 
         <Button
@@ -67,7 +67,7 @@
             android:id="@+id/tvae_avtivity_export_button"
             android:layout_width="126dp"
             android:layout_height="wrap_content"
-            android:onClick="akt5export"
+            android:onClick="export_csv"
             android:text="export" />
     </LinearLayout>
 </LinearLayout>
