@@ -492,27 +492,39 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
 
         Rastering raster = new Rastering(actNodeListe, (float) 78.8, 100);
 
-        ArrayList<ArrayList<Node>> actRuster = raster.getRaster();
+        ArrayList<ArrayList<ArrayList<Node>>> actRuster = raster.getRasters();
 
 
-        for (int i = 0; i < actRuster.size(); i++) {
-            for(Node j : actRuster.get(i)) {
+        for (ArrayList<ArrayList<Node>> i : actRuster) {
+            for (ArrayList<Node> x : i) {
+                for (Node j : x) {
                 double lt = j.getLatitude();
                 double lon = j.getLongitude();
+                    if (j == i.get(0).get(0)) {
+                        MarkerOptions options = new MarkerOptions()
+                                .title("Marker")
+                                .draggable(false)
+                                .position(new LatLng(lt, lon))
+                                .icon(BitmapDescriptorFactory.fromResource(R.drawable.markerstart))
+                                .anchor((float) 0.5, (float) 0.5);
 
-                MarkerOptions options = new MarkerOptions()
-                        .title("Marker")
-                        .draggable(false)
-                        .position(new LatLng(lt, lon))
-                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.markerstandard))
-                        .anchor((float) 0.5, (float) 0.5);
+                        actPointsInPoly.add(mMap.addMarker(options));
+                    } else {
+                        MarkerOptions options = new MarkerOptions()
+                                .title("Marker")
+                                .draggable(false)
+                                .position(new LatLng(lt, lon))
+                                .icon(BitmapDescriptorFactory.fromResource(R.drawable.markerstandard))
+                                .anchor((float) 0.5, (float) 0.5);
 
-                actPointsInPoly.add(mMap.addMarker(options));
+                        actPointsInPoly.add(mMap.addMarker(options));
+                    }
+                }
             }
         }
 
 
-        polyAufgeteilt=true;
+        polyAufgeteilt = true;
         return;
     }
 
