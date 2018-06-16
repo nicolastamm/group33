@@ -242,7 +242,7 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
         paint.getTextBounds(text, 0, text.length(), bounds);
 
         int x = bitmap.getWidth()/2 - bounds.width()/2;
-        int y = bitmap.getHeight()/2 - bounds.height()/3;
+        int y = bitmap.getHeight()/2+bounds.height()/2;
 
         canvas.drawText(text, x, y, paint);
 
