@@ -68,7 +68,7 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
             settings = getIntent().getExtras().getFloatArray("com.example.nicol.dronflyvis.SETTINGS");
         }
 
-        ImageButton infobuch = (ImageButton)findViewById(R.id.infobuch_main_activity);
+        ImageButton infobuch = findViewById(R.id.infobuch_main_activity);
         infobuch.setImageResource(R.drawable.infobuch);
 
         infobuch.setOnClickListener(new View.OnClickListener() {
@@ -84,7 +84,7 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
         TextView aut_comp_text = findViewById(R.id.place_autocomplete_search_input);
         aut_comp_text.setText(" ");
 
-        ImageView searchIcon = (ImageView) findViewById(R.id.place_autocomplete_search_button);
+        ImageView searchIcon = findViewById(R.id.place_autocomplete_search_button);
         searchIcon.setScaleX(2f);
         searchIcon.setScaleY(2f);
 
@@ -109,10 +109,10 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
             }
         });
 
-        final ImageButton pinImageButton = (ImageButton) findViewById(R.id.pin);
-        final ImageButton deleteImageButton = (ImageButton) findViewById(R.id.delete);
-        final ImageButton drawImageButton = (ImageButton) findViewById(R.id.draw);
-        final ImageButton clearImageButton = (ImageButton)findViewById(R.id.clear);
+        final ImageButton pinImageButton = findViewById(R.id.pin);
+        final ImageButton deleteImageButton = findViewById(R.id.delete);
+        final ImageButton drawImageButton = findViewById(R.id.draw);
+        final ImageButton clearImageButton = findViewById(R.id.clear);
 
         pinImageButton.setImageResource(R.drawable.pinicon);
         deleteImageButton.setImageResource(R.drawable.deleteicon);
@@ -204,7 +204,7 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
         });
 
 
-        Button searchButton = (Button)findViewById(R.id.main_act_change_button);
+        Button searchButton = findViewById(R.id.main_act_change_button);
 
         searchButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -381,7 +381,7 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
                         shape=null;
                     }
                     drawPolygon();
-                    drowPointInPoly();
+                    // drawPointInPoly();
                 }
 
                 @Override
@@ -391,9 +391,8 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
                         shape.remove();
                         shape=null;
                     }
-
                     drawPolygon();
-                    drowPointInPoly();
+                    drawPointInPoly();
 
                 }
             });
@@ -455,11 +454,7 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
 
     public boolean checkRadius(double lat1, double lng1, double lat2, double lng2)
     {
-        if(getDistanceMeters(lat1, lng1, lat2, lng2) > 300)
-        {
-            return true;
-        }
-        return false;
+        return getDistanceMeters(lat1, lng1, lat2, lng2) > 300;
     }
 
     public static long getDistanceMeters(double lat1, double lng1, double lat2, double lng2) {
@@ -477,7 +472,7 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
         return Math.round(dist * 6378100);
     }
 
-    public void drowPointInPoly(){
+    public void drawPointInPoly() {
 
         if(actPointsInPoly!=null){
             for (int i = 0; i < actPointsInPoly.size(); i++) {
@@ -528,7 +523,7 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
             android.app.AlertDialog alertDialog = warning.createWarning();
             alertDialog.setTitle("Polygon zu groß!");
             alertDialog.show();
-            drowPointInPoly();
+            drawPointInPoly();
             return;
         }
 
