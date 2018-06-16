@@ -159,7 +159,7 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
 
                 MarkerCounter++;
                 String text = String.valueOf(MarkerCounter);
-                Bitmap bitmap = makeBitmap(this, text);
+                Bitmap bitmap = makeBitmap(this, text, farbe);
 
                 MarkerOptions options = new MarkerOptions()
                         .draggable(false)
@@ -202,19 +202,41 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
         }
     }
 
-    public Bitmap makeBitmap(Context context, String text){
-
+    public Bitmap makeBitmap(Context context, String text, int colourMode) {
         Resources resources = context.getResources();
         float scale = resources.getDisplayMetrics().density;
-        Bitmap bitmap = BitmapFactory.decodeResource(resources, R.drawable.markerroute2);
-        bitmap = bitmap.copy(ARGB_8888, true);
 
-        Canvas canvas = new  Canvas(bitmap);
+        Bitmap bitmap = BitmapFactory.decodeResource(resources, R.drawable.markerroute2);
 
         Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        paint.setColor(Color.WHITE);
         paint.setTextSize(8 * scale);
         paint.setShadowLayer(1f,0f,1f, Color.WHITE);
+        colourMode = colourMode % 4;
+        switch (colourMode) {
+            case (0):
+                bitmap = BitmapFactory.decodeResource(resources, R.drawable.markerroutegreen);
+                bitmap = bitmap.copy(ARGB_8888, true);
+                paint.setColor(Color.WHITE);
+                break;
+            case (1):
+                bitmap = BitmapFactory.decodeResource(resources, R.drawable.markerstandardcyan);
+                bitmap = bitmap.copy(ARGB_8888, true);
+                paint.setColor(Color.WHITE);
+                break;
+            case (2):
+                bitmap = BitmapFactory.decodeResource(resources, R.drawable.markerstandardmagenta);
+                bitmap = bitmap.copy(ARGB_8888, true);
+                paint.setColor(Color.WHITE);
+                break;
+            case (3):
+                bitmap = BitmapFactory.decodeResource(resources, R.drawable.markerstandardyellow);
+                bitmap = bitmap.copy(ARGB_8888, true);
+                paint.setColor(Color.WHITE);
+                break;
+
+        }
+
+        Canvas canvas = new Canvas(bitmap);
 
         Rect bounds = new Rect();
         paint.getTextBounds(text, 0, text.length(), bounds);
@@ -241,8 +263,8 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
                     }
                 }
 
-                pfad.get(0).setIcon(BitmapDescriptorFactory.fromResource(R.drawable.markerstart));
-                pfad.get(pfad.size()-1).setIcon(BitmapDescriptorFactory.fromResource(R.drawable.markerstart));
+        pfad.get(0).setIcon(BitmapDescriptorFactory.fromResource(R.drawable.markerstandardred));
+        pfad.get(pfad.size() - 1).setIcon(BitmapDescriptorFactory.fromResource(R.drawable.markerstandardred));
                 mMap.addPolyline(optionss);
     }
 

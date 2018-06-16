@@ -51,10 +51,10 @@ public class Rastering
         }
         return new Double[]
                 {
-                        longMin + metersToLong(1 , latMin) ,
-                        longMax + metersToLong(1 , latMax) ,
-                        latMin + metersToLat(1),
-                        latMax + metersToLat(1)
+                        longMin,
+                        longMax,
+                        latMin,
+                        latMax
                 };
     }
 
@@ -172,7 +172,6 @@ public class Rastering
             }
         }
 
-        int amountSubPolyTotal = (horizontalAmountFotos / subPolycols) * (verticalAmountFotos / subPolyrows);
         double fotoWidthCoord = metersToLong(fotoWidth , borderCoordinates[3]);
         double fotoHeightCoord = metersToLat(fotoHeight);
         double subPolyWidth = subPolycols * fotoWidthCoord;

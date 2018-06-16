@@ -407,7 +407,7 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
                 .draggable(true)
                 .position(new LatLng(lat,lng))
                 .snippet("lat :" +lat+ "\nlng :" +lng+"")
-                .icon(BitmapDescriptorFactory.fromResource(R.drawable.markerroute))
+                .icon(BitmapDescriptorFactory.fromResource(R.drawable.markerstandardred))
                 .anchor((float)0.5, (float)0.5);
 
         markers.add(mMap.addMarker(options));
@@ -494,8 +494,10 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
 
         ArrayList<ArrayList<ArrayList<Node>>> actRuster = raster.getRasters();
 
-
+        int colour = -1;
         for (ArrayList<ArrayList<Node>> i : actRuster) {
+            colour++;
+            colour = colour % 4;
             for (ArrayList<Node> x : i) {
                 for (Node j : x) {
                 double lt = j.getLatitude();
@@ -505,19 +507,50 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
                                 .title("Marker")
                                 .draggable(false)
                                 .position(new LatLng(lt, lon))
-                                .icon(BitmapDescriptorFactory.fromResource(R.drawable.markerstart))
+                                .icon(BitmapDescriptorFactory.fromResource(R.drawable.markerstandardred))
                                 .anchor((float) 0.5, (float) 0.5);
 
                         actPointsInPoly.add(mMap.addMarker(options));
                     } else {
-                        MarkerOptions options = new MarkerOptions()
-                                .title("Marker")
-                                .draggable(false)
-                                .position(new LatLng(lt, lon))
-                                .icon(BitmapDescriptorFactory.fromResource(R.drawable.markerstandard))
-                                .anchor((float) 0.5, (float) 0.5);
-
-                        actPointsInPoly.add(mMap.addMarker(options));
+                        MarkerOptions options;
+                        switch (colour) {
+                            case (0):
+                                options = new MarkerOptions()
+                                        .title("Marker")
+                                        .draggable(false)
+                                        .position(new LatLng(lt, lon))
+                                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.markerroutegreen))
+                                        .anchor((float) 0.5, (float) 0.5);
+                                actPointsInPoly.add(mMap.addMarker(options));
+                                break;
+                            case (1):
+                                options = new MarkerOptions()
+                                        .title("Marker")
+                                        .draggable(false)
+                                        .position(new LatLng(lt, lon))
+                                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.markerstandardcyan))
+                                        .anchor((float) 0.5, (float) 0.5);
+                                actPointsInPoly.add(mMap.addMarker(options));
+                                break;
+                            case (2):
+                                options = new MarkerOptions()
+                                        .title("Marker")
+                                        .draggable(false)
+                                        .position(new LatLng(lt, lon))
+                                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.markerstandardmagenta))
+                                        .anchor((float) 0.5, (float) 0.5);
+                                actPointsInPoly.add(mMap.addMarker(options));
+                                break;
+                            case (3):
+                                options = new MarkerOptions()
+                                        .title("Marker")
+                                        .draggable(false)
+                                        .position(new LatLng(lt, lon))
+                                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.markerstandardyellow))
+                                        .anchor((float) 0.5, (float) 0.5);
+                                actPointsInPoly.add(mMap.addMarker(options));
+                                break;
+                        }
                     }
                 }
             }
