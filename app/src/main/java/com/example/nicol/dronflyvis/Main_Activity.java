@@ -47,6 +47,9 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
     private Node startNode;
 
     ArrayList<Marker> markers = new ArrayList<Marker>();
+    ArrayList<Marker> actPointsInPoly = new ArrayList<Marker>();
+
+
     Polygon shape;
 
     @Override
@@ -65,7 +68,7 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
             settings = getIntent().getExtras().getFloatArray("com.example.nicol.dronflyvis.SETTINGS");
         }
 
-        ImageButton infobuch = findViewById(R.id.infobuch_main_activity);
+        ImageButton infobuch = (ImageButton)findViewById(R.id.infobuch_main_activity);
         infobuch.setImageResource(R.drawable.infobuch);
 
         infobuch.setOnClickListener(new View.OnClickListener() {
@@ -81,7 +84,7 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
         TextView aut_comp_text = findViewById(R.id.place_autocomplete_search_input);
         aut_comp_text.setText(" ");
 
-        ImageView searchIcon = findViewById(R.id.place_autocomplete_search_button);
+        ImageView searchIcon = (ImageView) findViewById(R.id.place_autocomplete_search_button);
         searchIcon.setScaleX(2f);
         searchIcon.setScaleY(2f);
 
@@ -106,10 +109,10 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
             }
         });
 
-        final ImageButton pinImageButton = findViewById(R.id.pin);
-        final ImageButton deleteImageButton = findViewById(R.id.delete);
-        final ImageButton drawImageButton = findViewById(R.id.draw);
-        final ImageButton clearImageButton = findViewById(R.id.clear);
+        final ImageButton pinImageButton = (ImageButton) findViewById(R.id.pin);
+        final ImageButton deleteImageButton = (ImageButton) findViewById(R.id.delete);
+        final ImageButton drawImageButton = (ImageButton) findViewById(R.id.draw);
+        final ImageButton clearImageButton = (ImageButton)findViewById(R.id.clear);
 
         pinImageButton.setImageResource(R.drawable.pinicon);
         deleteImageButton.setImageResource(R.drawable.deleteicon);
@@ -201,7 +204,7 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
         });
 
 
-        Button searchButton = findViewById(R.id.main_act_change_button);
+        Button searchButton = (Button)findViewById(R.id.main_act_change_button);
 
         searchButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -372,12 +375,13 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
                 {
                     LatLng ll = marker.getPosition();
                     marker.setSnippet("lat : " +ll.latitude+ " lng :" +ll.longitude+"");
-                    marker.showInfoWindow();
+
                     if(shape != null){
                         shape.remove();
                         shape=null;
                     }
                     drawPolygon();
+                    drowPointInPoly();
                 }
 
                 @Override
@@ -389,7 +393,8 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
                     }
 
                     drawPolygon();
-                    marker.hideInfoWindow();
+                    drowPointInPoly();
+
                 }
             });
         }
@@ -403,7 +408,7 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
                 .draggable(true)
                 .position(new LatLng(lat,lng))
                 .snippet("lat :" +lat+ "\nlng :" +lng+"")
-                .icon(BitmapDescriptorFactory.fromResource(R.drawable.markerstandard))
+                .icon(BitmapDescriptorFactory.fromResource(R.drawable.markerroute))
                 .anchor((float)0.5, (float)0.5);
 
         markers.add(mMap.addMarker(options));
@@ -450,7 +455,11 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
 
     public boolean checkRadius(double lat1, double lng1, double lat2, double lng2)
     {
-        return getDistanceMeters(lat1, lng1, lat2, lng2) > 300;
+        if(getDistanceMeters(lat1, lng1, lat2, lng2) > 300)
+        {
+            return true;
+        }
+        return false;
     }
 
     public static long getDistanceMeters(double lat1, double lng1, double lat2, double lng2) {
@@ -468,6 +477,50 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
         return Math.round(dist * 6378100);
     }
 
+    public void drowPointInPoly(){
+
+        if(actPointsInPoly!=null){
+            for (int i = 0; i < actPointsInPoly.size(); i++) {
+                Marker m = actPointsInPoly.get(i);
+                m.remove();
+                m = null;
+            }
+            actPointsInPoly.removeAll(actPointsInPoly);
+
+        }
+
+        ArrayList<Node> actNodeListe = new ArrayList<Node>();
+        for(Marker marker : markers)
+        {
+            actNodeListe.add(new Node(marker.getPosition().latitude, marker.getPosition().longitude, 0));
+        }
+
+        Rastering raster = new Rastering(actNodeListe, (float) 78.8, 100);
+
+        ArrayList<ArrayList<Node>> actRuster = raster.getRaster();
+
+
+        for (int i = 0; i < actRuster.size(); i++) {
+            for(Node j : actRuster.get(i)) {
+                double lt = j.getLatitude();
+                double lon = j.getLongitude();
+
+                MarkerOptions options = new MarkerOptions()
+                        .title("Marker")
+                        .draggable(false)
+                        .position(new LatLng(lt, lon))
+                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.markerstandard))
+                        .anchor((float) 0.5, (float) 0.5);
+
+                actPointsInPoly.add(mMap.addMarker(options));
+            }
+        }
+
+
+        polyAufgeteilt=true;
+        return;
+    }
+
     public void main_activity_next(View view)
     {
         if(!polyAufgeteilt){
@@ -475,58 +528,7 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
             android.app.AlertDialog alertDialog = warning.createWarning();
             alertDialog.setTitle("Polygon zu groß!");
             alertDialog.show();
-
-            ArrayList<Node> actNodeListe = new ArrayList<Node>();
-            for(Marker marker : markers)
-            {
-                actNodeListe.add(new Node(marker.getPosition().latitude, marker.getPosition().longitude, 0));
-            }
-
-            Rastering raster = new Rastering(actNodeListe, (float) 78.8, 100);
-            TravelingSalesman tsm = new TravelingSalesman();
-
-            ArrayList<Node> route;
-            ArrayList<ArrayList<Node>> actRaster = raster.getRaster();
-            Node startNode = actRaster.get(0).get(0);
-            route = tsm.travelingSalesman(actRaster, new Node(startNode.getLatitude(), startNode.getLongitude(), 2));
-
-
-
-            for (int i = 0; i < route.size(); i++) {
-                double lt = route.get(i).getLatitude();
-                double lon = route.get(i).getLongitude();
-
-                if(i==0){
-                    MarkerOptions options = new MarkerOptions()
-                            .title("Marker")
-                            .draggable(false)
-                            .position(new LatLng(lt,lon))
-                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.markerstart))
-                            .anchor((float)0.5, (float)0.5);
-
-                    mMap.addMarker(options);
-                }
-                MarkerOptions options = new MarkerOptions()
-                        .title("Marker")
-                        .draggable(false)
-                        .position(new LatLng(lt,lon))
-                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.markerstandard))
-                        .anchor((float)0.5, (float)0.5);
-
-                 mMap.addMarker(options);
-
-            }
-
-            for(int j= 0; j<markers.size();j++){
-                markers.get(j).setIcon(BitmapDescriptorFactory.fromResource(R.drawable.markerstandard));
-            }
-
-            if(shape!=null) {
-                shape.remove();
-            }
-
-
-            polyAufgeteilt=true;
+            drowPointInPoly();
             return;
         }
 
