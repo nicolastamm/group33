@@ -406,7 +406,7 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
                 .draggable(true)
                 .position(new LatLng(lat,lng))
                 .snippet("lat :" +lat+ "\nlng :" +lng+"")
-                .icon(BitmapDescriptorFactory.fromResource(R.drawable.markerstandard))
+                .icon(BitmapDescriptorFactory.fromResource(R.drawable.markerroute))
                 .anchor((float)0.5, (float)0.5);
 
         markers.add(mMap.addMarker(options));
