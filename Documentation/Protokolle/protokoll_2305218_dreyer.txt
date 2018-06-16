@@ -1,0 +1,64 @@
+﻿			Protokoll - 23.05.2018
+
+
+
+
+- Anwesend : Artuk, Nico, Martin, Heiko, Hilmi
+
+
+
+- Wir sprechen über Probleme bzgl des Designs
+
+
+
+- Wir treffen uns 04.06.2018 um alle Versionen zu mergen
+
+
+
+- Vielleicht alle Buttons Blau machen
+
+
+
+- Version 6 wird der 2. Milestone
+
+
+
+- Treffen nächsten Montag 15:00 Uhr
+
+
+
+- Flag in node klasse muss auf 2 gesetzt werden(Später)
+
+
+
+- Nächste Woche wird V4 vorgestellt, in V5 wird die Search Bar eingefügt
+  (Heiko) und evtl personalisiert.
+
+
+
+- Nico und Martin testen gerade den Export
+
+
+
+- Hilmi arbeitet am Design der Radio Buttons
+
+
+
+- Anpassung des Designs
+
+
+
+- Nice to Have besprechen eine Woche vor dem 2. Milestone
+
+
+
+- Nico und Martin arbeiten weiterhin am Export
+
+
+
+- Hilmi und Artuk arbeiten gerade wieder am Design
+
+
+
+Ende: 16:30
+
