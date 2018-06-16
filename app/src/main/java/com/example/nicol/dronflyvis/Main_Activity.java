@@ -45,6 +45,9 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
     private Node startNode;
 
     ArrayList<Marker> markers = new ArrayList<Marker>();
+    ArrayList<Marker> actPointsInPoly = new ArrayList<Marker>();
+
+
     Polygon shape;
 
     @Override
@@ -370,12 +373,13 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
                 {
                     LatLng ll = marker.getPosition();
                     marker.setSnippet("lat : " +ll.latitude+ " lng :" +ll.longitude+"");
-                    marker.showInfoWindow();
+
                     if(shape != null){
                         shape.remove();
                         shape=null;
                     }
                     drawPolygon();
+                    drowPointInPoly();
                 }
 
                 @Override
@@ -387,7 +391,8 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
                     }
 
                     drawPolygon();
-                    marker.hideInfoWindow();
+                    drowPointInPoly();
+
                 }
             });
         }
@@ -470,6 +475,50 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
         return Math.round(dist * 6378100);
     }
 
+    public void drowPointInPoly(){
+
+        if(actPointsInPoly!=null){
+            for (int i = 0; i < actPointsInPoly.size(); i++) {
+                Marker m = actPointsInPoly.get(i);
+                m.remove();
+                m = null;
+            }
+            actPointsInPoly.removeAll(actPointsInPoly);
+
+        }
+
+        ArrayList<Node> actNodeListe = new ArrayList<Node>();
+        for(Marker marker : markers)
+        {
+            actNodeListe.add(new Node(marker.getPosition().latitude, marker.getPosition().longitude, 0));
+        }
+
+        Rastering raster = new Rastering(actNodeListe, (float) 78.8, 100);
+
+        ArrayList<ArrayList<Node>> actRuster = raster.getRaster();
+
+
+        for (int i = 0; i < actRuster.size(); i++) {
+            for(Node j : actRuster.get(i)) {
+                double lt = j.getLatitude();
+                double lon = j.getLongitude();
+
+                MarkerOptions options = new MarkerOptions()
+                        .title("Marker")
+                        .draggable(false)
+                        .position(new LatLng(lt, lon))
+                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.markerstandard))
+                        .anchor((float) 0.5, (float) 0.5);
+
+                actPointsInPoly.add(mMap.addMarker(options));
+            }
+        }
+
+
+        polyAufgeteilt=true;
+        return;
+    }
+
     public void main_activity_next(View view)
     {
         if(!polyAufgeteilt){
@@ -477,58 +526,7 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
             android.app.AlertDialog alertDialog = warning.createWarning();
             alertDialog.setTitle("Polygon zu groß!");
             alertDialog.show();
-
-            ArrayList<Node> actNodeListe = new ArrayList<Node>();
-            for(Marker marker : markers)
-            {
-                actNodeListe.add(new Node(marker.getPosition().latitude, marker.getPosition().longitude, 0));
-            }
-
-            Rastering raster = new Rastering(actNodeListe, (float) 78.8, 100);
-            TravelingSalesman tsm = new TravelingSalesman();
-
-            ArrayList<Node> route;
-            ArrayList<ArrayList<Node>> actRuster = raster.getRaster();
-            Node startNode = actRuster.get(0).get(0);
-            route = tsm.travelingSalesman(actRuster, new Node(startNode.getLatitude(), startNode.getLongitude(), 2));
-
-
-
-            for (int i = 0; i < route.size(); i++) {
-                double lt = route.get(i).getLatitude();
-                double lon = route.get(i).getLongitude();
-
-                if(i==0){
-                    MarkerOptions options = new MarkerOptions()
-                            .title("Marker")
-                            .draggable(false)
-                            .position(new LatLng(lt,lon))
-                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.markerstart))
-                            .anchor((float)0.5, (float)0.5);
-
-                    mMap.addMarker(options);
-                }
-                MarkerOptions options = new MarkerOptions()
-                        .title("Marker")
-                        .draggable(false)
-                        .position(new LatLng(lt,lon))
-                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.markerstandard))
-                        .anchor((float)0.5, (float)0.5);
-
-                 mMap.addMarker(options);
-
-            }
-
-            for(int j= 0; j<markers.size();j++){
-                markers.get(j).setIcon(BitmapDescriptorFactory.fromResource(R.drawable.markerstandard));
-            }
-
-            if(shape!=null) {
-                shape.remove();
-            }
-
-
-            polyAufgeteilt=true;
+            drowPointInPoly();
             return;
         }
 
