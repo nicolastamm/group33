@@ -10,11 +10,10 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
-import android.os.Bundle;
-import android.util.Log;
 import android.view.ContextMenu;
 import android.view.MenuItem;
 import android.view.View;
@@ -84,7 +83,7 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
         }
 
 
-        infobuch = (ImageButton)findViewById(R.id.tvae_activity_infobuch_button);
+        infobuch = findViewById(R.id.tvae_activity_infobuch_button);
         infobuch.setImageResource(R.drawable.infobuch);
         infobuch.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -94,7 +93,7 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
             }
         });
 
-        Button changeButton = (Button)findViewById(R.id.tvae_activity_change_button);
+        Button changeButton = findViewById(R.id.tvae_activity_change_button);
 
         changeButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -149,15 +148,14 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
 
 
         ArrayList<Marker> pfad = new ArrayList<>();
-            ArrayList<ArrayList<Node>> actRuster = raster.getRaster();
-            Node startNode = actRuster.get(0).get(0);
-            route = tsm.travelingSalesman(actRuster, new Node(startNode.getLatitude(), startNode.getLongitude(), 2));
+        ArrayList<ArrayList<ArrayList<Node>>> actRaster = raster.getRasters();
+        for (ArrayList<ArrayList<Node>> i : actRaster) {
+            Node startNode = i.get(0).get(0);
+            route = tsm.travelingSalesman(i, new Node(startNode.getLatitude(), startNode.getLongitude(), 2));
 
-
-
-            for (int i = 0; i < route.size(); i++) {
-                double lt = route.get(i).getLatitude();
-                double lon = route.get(i).getLongitude();
+            for (int j = 0; j < route.size(); j++) {
+                double lt = route.get(j).getLatitude();
+                double lon = route.get(j).getLongitude();
 
                 MarkerCounter++;
                 String text = String.valueOf(MarkerCounter);
@@ -168,13 +166,12 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
                         .position(new LatLng((float) lt, (float) lon))
                         .icon(BitmapDescriptorFactory.fromBitmap(bitmap))
                         .anchor((float) 0.5, (float) 0.5);
-                ;
                 pfad.add(mMap.addMarker(options));
             }
             drawPfad(pfad);
             farbe++;
-            MarkerCounter=0;
-
+            MarkerCounter = 0;
+        }
 
     }
 
