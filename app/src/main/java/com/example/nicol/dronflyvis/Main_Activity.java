@@ -138,11 +138,13 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
         final ImageButton deleteImageButton = findViewById(R.id.delete);
         final ImageButton drawImageButton = findViewById(R.id.draw);
         final ImageButton clearImageButton = findViewById(R.id.clear);
+        final ImageButton importImageButton = findViewById(R.id.importo);
 
         pinImageButton.setImageResource(R.drawable.pinicon);
         deleteImageButton.setImageResource(R.drawable.deleteicon);
         drawImageButton.setImageResource(R.drawable.drawselectedicon);
         clearImageButton.setImageResource(R.drawable.clear_image_button_style);
+        importImageButton.setImageResource(R.drawable.import_image_button);
 
 
         pinImageButton.setOnClickListener(new View.OnClickListener() {
@@ -224,6 +226,19 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
                 AlertDialog alertDialog = dBuilder.create();
                 alertDialog.setTitle("Delete Polygon");
                 alertDialog.show();
+
+            }
+        });
+
+        importImageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+
+                // Outputman: for imports of polygons
+
+
+
 
             }
         });
