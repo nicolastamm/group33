@@ -32,9 +32,11 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.channels.FileChannel;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -51,6 +53,7 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
     private GoogleMap mMap;
     public int MarkerCounter= 0;
     private double height = 100.0;
+    private int bebopFlag = 0;
     public int farbe = 0;
 
     private float zoom;
@@ -269,6 +272,14 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
     }
 
     public void  export_csv(View view) {
+        //Request storage permissions during runtime
+        ActivityCompat.requestPermissions( Tours_View_And_Export_Activity.this ,new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                REQUEST_WRITE_EXTERNAL_STORAGE);
+
+        //Request storage permissions during runtime
+        ActivityCompat.requestPermissions( Tours_View_And_Export_Activity.this ,new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                REQUEST_WRITE_EXTERNAL_STORAGE);
+
         /*
          * Gets the current Date und Time, to timestamp the CSV
          */
@@ -278,8 +289,8 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
 
         String content = "";
         String directory = "";
+
         //Only create Export for selected drone
-        int bebopFlag = 0;
         switch(bebopFlag) {
             case 0:
                 content = routeForMavicPro();
@@ -296,10 +307,6 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
                 Toast.makeText(this,"Invalid Drone selected",Toast.LENGTH_LONG).show();
                 break;
         }
-
-        //Request storage permissions during runtime
-        ActivityCompat.requestPermissions( Tours_View_And_Export_Activity.this ,new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                REQUEST_WRITE_EXTERNAL_STORAGE);
 
         //Get the path to the directory to save the CSV
         String path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/DroneTours/";
@@ -318,6 +325,15 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
             Toast.makeText(this,"CouldNotCreateFile",Toast.LENGTH_LONG).show();
         }
         FileOutputStream fos = null;
+
+        /*
+         *
+         */
+        if(bebopFlag == 1)
+        {
+            File inF = new File("/home/user/inputFile.txt");
+            //copyFile(inF, file);
+        }
 
         //write data to file
         try
@@ -389,6 +405,40 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
                 + (float)add.getLatitude() + "," + (float)add.getLongitude() + ",false," + Integer.MIN_VALUE + ",0";
 
         return content;
+    }
+
+    /**
+     *
+     * @param in
+     * @param out
+     */
+    private void copyFile(File in, File out)
+    {
+        FileChannel inChannel = null;
+        FileChannel outChannel = null;
+        try
+        {
+            inChannel = new FileInputStream(in).getChannel();
+            outChannel = new FileOutputStream(out).getChannel();
+            inChannel.transferTo(0, inChannel.size(), outChannel);
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+            Toast.makeText(this,"IOException, during write to file",Toast.LENGTH_LONG).show();
+        }
+        finally
+        {
+            try
+            {
+                if (inChannel != null)
+                    inChannel.close();
+                if (outChannel != null)
+                    outChannel.close();
+            }
+            catch (IOException e)
+            {}
+        }
     }
 
     public void tvae_back(View view){
