@@ -8,6 +8,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.ContextMenu;
+import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -34,6 +35,9 @@ import com.google.android.gms.maps.model.PolygonOptions;
 
 import java.util.ArrayList;
 
+import de.keyboardsurfer.android.widget.crouton.Configuration;
+import de.keyboardsurfer.android.widget.crouton.Crouton;
+import de.keyboardsurfer.android.widget.crouton.Style;
 
 
 public class Main_Activity extends FragmentActivity implements OnMapReadyCallback {
@@ -57,6 +61,20 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity);
+
+
+        // Define configuration options
+        Configuration croutonConfiguration = new Configuration.Builder()
+                .setDuration(3500).build();
+        // Define styles for crouton
+        Style style = new Style.Builder()
+                .setBackgroundColorValue(Color.argb(200,0,0,0))
+                .setGravity(Gravity.CENTER_HORIZONTAL)
+                .setConfiguration(croutonConfiguration)
+                .setHeight(200)
+                .setTextColorValue(Color.WHITE).build();
+        // Display style and configuration
+        Crouton.showText(Main_Activity.this, R.string.crouton_main_activity , style);
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);

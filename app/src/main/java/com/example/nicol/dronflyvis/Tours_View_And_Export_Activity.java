@@ -15,6 +15,7 @@ import android.os.Environment;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.view.ContextMenu;
+import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -38,6 +39,10 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+
+import de.keyboardsurfer.android.widget.crouton.Configuration;
+import de.keyboardsurfer.android.widget.crouton.Crouton;
+import de.keyboardsurfer.android.widget.crouton.Style;
 
 import static android.graphics.Bitmap.Config.ARGB_8888;
 
@@ -67,6 +72,19 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.tours_view_and_export_activity);
+
+        // Define configuration options
+        Configuration croutonConfiguration = new Configuration.Builder()
+                .setDuration(3500).build();
+        // Define styles for crouton
+        Style style = new Style.Builder()
+                .setBackgroundColorValue(Color.argb(200,0,0,0))
+                .setGravity(Gravity.CENTER_HORIZONTAL)
+                .setConfiguration(croutonConfiguration)
+                .setHeight(200)
+                .setTextColorValue(Color.WHITE).build();
+        // Display style and configuration
+        Crouton.showText(Tours_View_And_Export_Activity.this, R.string.crouton_tours_activity, style);
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
