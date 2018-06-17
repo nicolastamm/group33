@@ -46,7 +46,7 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
     private Boolean deleteModus = false;
     private Boolean drawModus = true;
     private Boolean pinModus = false;
-    private Boolean polyAufgeteilt = false;
+    private Boolean polyAufteilung = false;
     private float[] settings;
     private Node startNode;
 
@@ -341,6 +341,7 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
 
                     if(drawModus) {
                         Main_Activity.this.setMarker("Local", latLng.latitude, latLng.longitude);
+
                     }
                 }
             });
@@ -365,7 +366,16 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
                                     shape = null;
                                 }
                                 if(markers.size()>=1){
-                                drawPolygon();}
+                                    drawPolygon();
+
+                                    if(markers.size()<3){
+                                        deletePointsInPoly();
+                                    }
+
+                                    if(polyAufteilung & markers.size()>=3){
+                                        drawPointInPoly();
+                                    }
+                                }
                     }
                     return true;
                 }
@@ -400,7 +410,10 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
                         shape=null;
                     }
                     drawPolygon();
-                    drawPointInPoly();
+
+                    if(polyAufteilung) {
+                        drawPointInPoly();
+                    }
 
                 }
             });
@@ -426,6 +439,9 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
                 shape=null;
             }
             drawPolygon();
+            if(polyAufteilung) {
+                drawPointInPoly();
+            }
         }
     }
 
@@ -559,18 +575,38 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
         }
 
 
-        polyAufgeteilt = true;
+
         return;
     }
 
+
+
+
     public void main_activity_next(View view)
     {
-        if(!polyAufgeteilt){
-            Warning warning = new Warning("Would you like to split your polygon into multiple polygons?", "Divide polygon", false, "OK", this);
-            android.app.AlertDialog alertDialog = warning.createWarning();
-            alertDialog.setTitle("Your polygon is too large!");
+        if(countPointInPoly()>99){
+            AlertDialog.Builder dBuilder = new AlertDialog.Builder(Main_Activity.this);
+
+            dBuilder.setTitle("Polygon zu groß");
+            dBuilder.setMessage("Sollen wir es für dich aussplitten ?")
+                    .setCancelable(false)
+                    .setPositiveButton("Ja", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            drawPointInPoly();
+                            polyAufteilung = true;
+                            dialogInterface.cancel();
+                        }})
+                    .setNegativeButton("Nein", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            dialogInterface.cancel();
+                        }
+                    });
+
+            AlertDialog alertDialog = dBuilder.create();
+            alertDialog.setTitle("Polygon zu groß");
             alertDialog.show();
-            drawPointInPoly();
             return;
         }
 
@@ -617,11 +653,50 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
         }
     }
 
+    public int countPointInPoly() {
+
+        ArrayList<Node> actNodeListe = new ArrayList<Node>();
+        for(Marker marker : markers)
+        {
+            actNodeListe.add(new Node(marker.getPosition().latitude, marker.getPosition().longitude, 0));
+        }
+
+        Rastering raster = new Rastering(actNodeListe, (float) 78.8, 100);
+
+        ArrayList<ArrayList<ArrayList<Node>>> actRuster = raster.getRasters();
+
+        int anzahl = 0;
+        for (ArrayList<ArrayList<Node>> i : actRuster) {
+
+            for (ArrayList<Node> x : i) {
+                for (Node j : x) {
+                        anzahl++;
+                    }
+                }
+            }
+        return anzahl;
+    }
 
 
+    public void deletePointsInPoly(){
+        if(actPointsInPoly!=null){
+            for (int i = 0; i < actPointsInPoly.size(); i++) {
+                Marker m = actPointsInPoly.get(i);
+                m.remove();
+                m = null;
+            }
+            actPointsInPoly.removeAll(actPointsInPoly);
+
+        }
+    }
 
     public void main_activity_back(View view)
     {
+        if(polyAufteilung){
+            polyAufteilung = false;
+            deletePointsInPoly();
+            return;
+        }
         onBackPressed();
     }
 
