@@ -22,6 +22,7 @@ public class Warning
         this.btnMsg = btnMsg;
         dBuilder = new AlertDialog.Builder(ctx);
     }
+    int test = 5;
 
     public AlertDialog createWarning()
     {
