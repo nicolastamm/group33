@@ -213,6 +213,7 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
                         .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
+                                deletePointsInPoly();
                                 removePolygon();
                                 dialogInterface.cancel();
                             }})
@@ -540,7 +541,7 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
                                 options = new MarkerOptions()
                                         .draggable(false)
                                         .position(new LatLng(lt, lon))
-                                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.markerroutegreen))
+                                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.markerstandardgreen))
                                         .anchor((float) 0.5, (float) 0.5);
                                 actPointsInPoly.add(mMap.addMarker(options));
                                 break;
@@ -584,20 +585,28 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
 
     public void main_activity_next(View view)
     {
-        if(countPointInPoly()>99){
+        if(markers.size() == 0) {
+        Warning warning = new Warning("You have to draw a polygon", "Please draw", false, "OK", this);
+        android.app.AlertDialog alertDialog = warning.createWarning();
+        alertDialog.setTitle("Missing Polygon");
+        alertDialog.show();
+        return;
+        }
+
+        if(countPointInPoly()>99 & !polyAufteilung){
             AlertDialog.Builder dBuilder = new AlertDialog.Builder(Main_Activity.this);
 
-            dBuilder.setTitle("Polygon zu groß");
-            dBuilder.setMessage("Sollen wir es für dich aussplitten ?")
+            dBuilder.setTitle("Polygon is too large!");
+            dBuilder.setMessage("Would you like to split your polygon into several polygons?")
                     .setCancelable(false)
-                    .setPositiveButton("Ja", new DialogInterface.OnClickListener() {
+                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
                             drawPointInPoly();
                             polyAufteilung = true;
                             dialogInterface.cancel();
                         }})
-                    .setNegativeButton("Nein", new DialogInterface.OnClickListener() {
+                    .setNegativeButton("No", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
                             dialogInterface.cancel();
@@ -605,19 +614,12 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
                     });
 
             AlertDialog alertDialog = dBuilder.create();
-            alertDialog.setTitle("Polygon zu groß");
+            alertDialog.setTitle("Polygon is too large!");
             alertDialog.show();
             return;
         }
 
-        if(markers.size() == 0)
-        {
-            Warning warning = new Warning("You have to draw a polygon", "Please draw", false, "OK", this);
-            android.app.AlertDialog alertDialog = warning.createWarning();
-            alertDialog.setTitle("Missing Polygon");
-            alertDialog.show();
-            return;
-        }
+
 
         ArrayList<Node> nodeList = new ArrayList<Node>();
 
@@ -635,6 +637,7 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
             intent.putExtra("com.example.nicol.dronflyvis.mapLNG","" + mMap.getCameraPosition().target.longitude);
             intent.putExtra("com.example.nicol.dronflyvis.mapType", mMap.getMapType());
             intent.putExtra("com.example.nicol.dronflyvis.SETTINGS", settings);
+            intent.putExtra("com.example.nicol.dronflyvis.splitPoly", polyAufteilung);
 
         startActivity(intent);
     }
