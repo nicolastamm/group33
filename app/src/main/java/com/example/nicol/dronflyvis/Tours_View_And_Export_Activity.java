@@ -249,6 +249,10 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
                 mMap.addPolyline(optionss);
     }
 
+    /**
+     *
+     * @param view
+     */
     public void export_csv(View view) {
         /*
          * Gets the current Date und Time, to timestamp the CSV
