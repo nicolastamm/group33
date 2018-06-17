@@ -10,11 +10,10 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
-import android.os.Bundle;
-import android.util.Log;
 import android.view.ContextMenu;
 import android.view.MenuItem;
 import android.view.View;
@@ -84,7 +83,7 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
         }
 
 
-        infobuch = (ImageButton)findViewById(R.id.tvae_activity_infobuch_button);
+        infobuch = findViewById(R.id.tvae_activity_infobuch_button);
         infobuch.setImageResource(R.drawable.infobuch);
         infobuch.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -94,7 +93,7 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
             }
         });
 
-        Button changeButton = (Button)findViewById(R.id.tvae_activity_change_button);
+        Button changeButton = findViewById(R.id.tvae_activity_change_button);
 
         changeButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -149,32 +148,30 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
 
 
         ArrayList<Marker> pfad = new ArrayList<>();
-            ArrayList<ArrayList<Node>> actRuster = raster.getRaster();
-            Node startNode = actRuster.get(0).get(0);
-            route = tsm.travelingSalesman(actRuster, new Node(startNode.getLatitude(), startNode.getLongitude(), 2));
+        ArrayList<ArrayList<ArrayList<Node>>> actRaster = raster.getRasters();
+        for (ArrayList<ArrayList<Node>> i : actRaster) {
+            Node startNode = i.get(0).get(0);
+            route = tsm.travelingSalesman(i, new Node(startNode.getLatitude(), startNode.getLongitude(), 2));
 
-
-
-            for (int i = 0; i < route.size(); i++) {
-                double lt = route.get(i).getLatitude();
-                double lon = route.get(i).getLongitude();
+            for (int j = 0; j < route.size(); j++) {
+                double lt = route.get(j).getLatitude();
+                double lon = route.get(j).getLongitude();
 
                 MarkerCounter++;
                 String text = String.valueOf(MarkerCounter);
-                Bitmap bitmap = makeBitmap(this, text);
+                Bitmap bitmap = makeBitmap(this, text, farbe);
 
                 MarkerOptions options = new MarkerOptions()
                         .draggable(false)
                         .position(new LatLng((float) lt, (float) lon))
                         .icon(BitmapDescriptorFactory.fromBitmap(bitmap))
                         .anchor((float) 0.5, (float) 0.5);
-                ;
                 pfad.add(mMap.addMarker(options));
             }
             drawPfad(pfad);
             farbe++;
-            MarkerCounter=0;
-
+            MarkerCounter = 0;
+        }
 
     }
 
@@ -205,25 +202,47 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
         }
     }
 
-    public Bitmap makeBitmap(Context context, String text){
-
+    public Bitmap makeBitmap(Context context, String text, int colourMode) {
         Resources resources = context.getResources();
         float scale = resources.getDisplayMetrics().density;
-        Bitmap bitmap = BitmapFactory.decodeResource(resources, R.drawable.markerroute2);
-        bitmap = bitmap.copy(ARGB_8888, true);
 
-        Canvas canvas = new  Canvas(bitmap);
+        Bitmap bitmap = BitmapFactory.decodeResource(resources, R.drawable.markerroute2);
 
         Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        paint.setColor(Color.WHITE);
         paint.setTextSize(8 * scale);
         paint.setShadowLayer(1f,0f,1f, Color.WHITE);
+        colourMode = colourMode % 4;
+        switch (colourMode) {
+            case (0):
+                bitmap = BitmapFactory.decodeResource(resources, R.drawable.markerroutegreen);
+                bitmap = bitmap.copy(ARGB_8888, true);
+                paint.setColor(Color.WHITE);
+                break;
+            case (1):
+                bitmap = BitmapFactory.decodeResource(resources, R.drawable.markerstandardcyan);
+                bitmap = bitmap.copy(ARGB_8888, true);
+                paint.setColor(Color.WHITE);
+                break;
+            case (2):
+                bitmap = BitmapFactory.decodeResource(resources, R.drawable.markerstandardmagenta);
+                bitmap = bitmap.copy(ARGB_8888, true);
+                paint.setColor(Color.WHITE);
+                break;
+            case (3):
+                bitmap = BitmapFactory.decodeResource(resources, R.drawable.markerstandardyellow);
+                bitmap = bitmap.copy(ARGB_8888, true);
+                paint.setColor(Color.WHITE);
+                break;
+
+        }
+
+        Canvas canvas = new Canvas(bitmap);
 
         Rect bounds = new Rect();
         paint.getTextBounds(text, 0, text.length(), bounds);
 
         int x = bitmap.getWidth()/2 - bounds.width()/2;
-        int y = bitmap.getHeight()/2 - bounds.height()/3;
+        int y = bitmap.getHeight()/2+bounds.height()/2;
 
         canvas.drawText(text, x, y, paint);
 
@@ -244,16 +263,12 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
                     }
                 }
 
-                pfad.get(0).setIcon(BitmapDescriptorFactory.fromResource(R.drawable.markerstart));
-                pfad.get(pfad.size()-1).setIcon(BitmapDescriptorFactory.fromResource(R.drawable.markerstart));
+        pfad.get(0).setIcon(BitmapDescriptorFactory.fromResource(R.drawable.markerstandardred));
+        pfad.get(pfad.size() - 1).setIcon(BitmapDescriptorFactory.fromResource(R.drawable.markerstandardred));
                 mMap.addPolyline(optionss);
     }
 
-    /**
-     *
-     * @param view
-     */
-    public void export_csv(View view) {
+    public void  export_csv(View view) {
         /*
          * Gets the current Date und Time, to timestamp the CSV
          */
