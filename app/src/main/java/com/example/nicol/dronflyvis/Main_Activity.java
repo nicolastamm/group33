@@ -81,12 +81,19 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
 
         PlaceAutocompleteFragment placesFragment = (PlaceAutocompleteFragment) getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
 
+
         TextView aut_comp_text = findViewById(R.id.place_autocomplete_search_input);
-        aut_comp_text.setText(" ");
+        aut_comp_text.setTextColor(Color.WHITE);
+        findViewById(R.id.place_autocomplete_fragment).setBackgroundColor(Color.argb(150, 0,0,0));
 
         ImageView searchIcon = findViewById(R.id.place_autocomplete_search_button);
-        searchIcon.setScaleX(2f);
-        searchIcon.setScaleY(2f);
+        searchIcon.setScaleX(1.5f);
+        searchIcon.setScaleY(1.5f);
+
+        ImageView clearButton = findViewById(R.id.place_autocomplete_clear_button);
+        clearButton.setScaleX(1.5f);
+        clearButton.setScaleY(1.5f);
+
 
 
 
@@ -307,36 +314,6 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
 
 
 
-            if (mMap != null) {
-
-               mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
-                   @Override
-                   public void onMapLongClick(LatLng latLng) {
-
-                       if(!drawModus &!deleteModus){
-                           Toast.makeText(
-                                   Main_Activity.this,
-                                   "Please select a mode",
-                                   Toast.LENGTH_LONG
-                           ).show();
-                       }
-                       if(deleteModus){
-                           Toast.makeText(
-                                   Main_Activity.this,
-                                   "Nothing to delete",
-                                   Toast.LENGTH_LONG
-                           ).show();
-                       }
-
-                       if(drawModus) {
-                           Main_Activity.this.setMarker("Local", latLng.latitude, latLng.longitude);
-                       }
-
-                   }
-               });
-            }
-
-
             mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
                 @Override
                 public boolean onMarkerClick(Marker marker) {
@@ -367,14 +344,12 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
                 public void onMarkerDragStart(Marker marker)
                 {
 
-                    marker.showInfoWindow();
+
                 }
 
                 @Override
                 public void onMarkerDrag(Marker marker)
                 {
-                    LatLng ll = marker.getPosition();
-                    marker.setSnippet("lat : " +ll.latitude+ " lng :" +ll.longitude+"");
 
                     if(shape != null){
                         shape.remove();
@@ -403,11 +378,9 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
 
     private void setMarker(String locality, double lat, double lng) {
         MarkerOptions options = new MarkerOptions()
-                .title("Marker")
                 .draggable(true)
                 .position(new LatLng(lat,lng))
-                .snippet("lat :" +lat+ "\nlng :" +lng+"")
-                .icon(BitmapDescriptorFactory.fromResource(R.drawable.markerstandardred))
+                .icon(BitmapDescriptorFactory.fromResource(R.drawable.markerstandard))
                 .anchor((float)0.5, (float)0.5);
 
         markers.add(mMap.addMarker(options));
@@ -516,7 +489,6 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
                         switch (colour) {
                             case (0):
                                 options = new MarkerOptions()
-                                        .title("Marker")
                                         .draggable(false)
                                         .position(new LatLng(lt, lon))
                                         .icon(BitmapDescriptorFactory.fromResource(R.drawable.markerroutegreen))
@@ -525,7 +497,6 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
                                 break;
                             case (1):
                                 options = new MarkerOptions()
-                                        .title("Marker")
                                         .draggable(false)
                                         .position(new LatLng(lt, lon))
                                         .icon(BitmapDescriptorFactory.fromResource(R.drawable.markerstandardcyan))
@@ -534,7 +505,6 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
                                 break;
                             case (2):
                                 options = new MarkerOptions()
-                                        .title("Marker")
                                         .draggable(false)
                                         .position(new LatLng(lt, lon))
                                         .icon(BitmapDescriptorFactory.fromResource(R.drawable.markerstandardmagenta))
@@ -543,7 +513,6 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
                                 break;
                             case (3):
                                 options = new MarkerOptions()
-                                        .title("Marker")
                                         .draggable(false)
                                         .position(new LatLng(lt, lon))
                                         .icon(BitmapDescriptorFactory.fromResource(R.drawable.markerstandardyellow))
@@ -564,9 +533,9 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
     public void main_activity_next(View view)
     {
         if(!polyAufgeteilt){
-            Warning warning = new Warning("wir teilen für dich das Polygon auf", "Polygon aufteilen", false, "OK", this);
+            Warning warning = new Warning("Would you like to split your polygon into multiple polygons?", "Divide polygon", false, "OK", this);
             android.app.AlertDialog alertDialog = warning.createWarning();
-            alertDialog.setTitle("Polygon zu groß!");
+            alertDialog.setTitle("Your polygon is too large!");
             alertDialog.show();
             drawPointInPoly();
             return;
