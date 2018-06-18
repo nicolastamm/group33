@@ -20,6 +20,16 @@ android {
         targetCompatibility 1.8
         sourceCompatibility 1.8
     }
+
+    buildscript {
+        repositories {
+            mavenCentral()
+        }
+    }
+
+    repositories {
+        mavenCentral()
+    }
 }
 
 dependencies {
@@ -33,4 +43,7 @@ dependencies {
     implementation 'com.google.android.gms:play-services-places:15.0.1'
     implementation files('src/main/java/jts-1.14-sources.jar')
     implementation files('src/main/java/jts-1.14.jar')
+    implementation files('src/main/java/Crouton_library.jar')
+    implementation 'de.keyboardsurfer.android.widget:crouton:1.8.5@aar'
+    implementation files('src/main/java/Crouton_library.jar')
 }
