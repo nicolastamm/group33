@@ -23,8 +23,6 @@ import java.util.ArrayList;
 public class Settings_Activity extends AppCompatActivity
 {
     private Boolean inputOk = false;
-    private String res;
-    private String aspectRatio;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -150,7 +148,7 @@ public class Settings_Activity extends AppCompatActivity
 
         return inputValues;
     }
-    public float[] getResInput()
+    public String[] getResInput()
     {
         Spinner resSpinner = (Spinner) findViewById(R.id.spinner);
         String[] selection = new String[2];
@@ -158,18 +156,8 @@ public class Settings_Activity extends AppCompatActivity
         if(!resSpinner.getSelectedItem().toString().contains("C"))
         {
             selection = resSpinner.getSelectedItem().toString().split(" ");
-            if(selection[0].equals("1280x960"))
-            {
-                result[0] = 1280 * 960;
-                result[1] = 1280/960;
-            }
-            else if(selection[0].equals("1280x720"))
-            {
-                result[0] = 1280 * 720;
-                result[1] = 1280 / 720;
-            }
         }
-        return result;
+        return selection;
     }
 
     public int getRadioButton()
@@ -210,7 +198,7 @@ public class Settings_Activity extends AppCompatActivity
     public void settings_next(View view) {
         float invalidInput = -1.0f;
         float[] inputValues = getInputValues();
-        float[] selected = getResInput();
+        String[] selected = getResInput();
 
         //Log.i("test", "" + getRadioButton());
         if(!contains(inputValues, invalidInput) && selected != null)
