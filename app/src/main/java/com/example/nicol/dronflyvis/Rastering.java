@@ -12,6 +12,8 @@ public class Rastering
     private double fov , fotoWidth , fotoHeight;
     private ArrayList<ArrayList<Node>> raster;
     private ArrayList<ArrayList<ArrayList<Node>>> rasters;
+    private ArrayList<Double[]> boundingBoxes;
+    private Double[] boundingBox;
     private GeoTest geoTest;
     
     public Rastering(ArrayList<Node> inputPolygon, double fov, float flightHeight)
@@ -49,13 +51,8 @@ public class Rastering
             else if(polygon.get(i).getLatitude() > latMax)
                 {latMax = polygon.get(i).getLatitude();}
         }
-        return new Double[]
-                {
-                        longMin,
-                        longMax,
-                        latMin,
-                        latMax
-                };
+        boundingBox = new Double[]{longMin, longMax, latMin, latMax}; // We wish to also have this stored elsewhere
+        return boundingBox;
     }
 
     private ArrayList<ArrayList<Node>> placeRaster(Double[] borderCoordinates)
@@ -180,11 +177,12 @@ public class Rastering
         double traversedLongitude = 0;
         double traversedLatitude = 0;
         rasters = new ArrayList<>();
-
+        boundingBoxes = new ArrayList<>();
         for(int i = 0 ; borderCoordinates[0] + traversedLongitude - (subPolyWidth / 2.0) <= borderCoordinates[1] + (subPolyWidth / 2.0); i++)
         {
             for(int j = 0 ; borderCoordinates[2] + traversedLatitude - (subPolyHeight / 2.0)<= borderCoordinates[3] + (subPolyHeight / 2.0); j++)
             {
+                //Add to rasters the raster inside the specified sub-BoundingBox
                 rasters.add(placeRaster(new Double[]
                         {
                                 borderCoordinates[0] + traversedLongitude,
@@ -192,6 +190,14 @@ public class Rastering
                                 borderCoordinates[2] + traversedLatitude,
                                 borderCoordinates[2] + traversedLatitude + subPolyHeight
                         }));
+                //Also save the bounding box for later use.
+                boundingBoxes.add(new Double[]
+                        {
+                                borderCoordinates[0] + traversedLongitude,
+                                borderCoordinates[0] + traversedLongitude + subPolyWidth,
+                                borderCoordinates[2] + traversedLatitude,
+                                borderCoordinates[2] + traversedLatitude + subPolyHeight
+                        });
                 traversedLatitude += subPolyHeight;
             }
             traversedLatitude = 0;
@@ -211,5 +217,13 @@ public class Rastering
     ArrayList<ArrayList<ArrayList<Node>>> getRasters()
     {
         return splitPolygon();
+    }
+
+    Double[] getBoundingBox() {
+        return boundingBox;
+    }
+
+    ArrayList<Double[]> getBoundingBoxes() {
+        return boundingBoxes;
     }
 }
