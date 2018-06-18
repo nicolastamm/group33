@@ -12,10 +12,10 @@ public class Rastering
     private double fov , fotoWidth , fotoHeight;
     private ArrayList<ArrayList<Node>> raster;
     private ArrayList<ArrayList<ArrayList<Node>>> rasters;
-    private ArrayList<Double[]> boundingBoxes;
-    private Double[] boundingBox;
+    private ArrayList<Node[]> boundingBoxes;
+    private Node[] boundingBox;
     private GeoTest geoTest;
-    
+
     public Rastering(ArrayList<Node> inputPolygon, double fov, float flightHeight)
     {
         this.polygon = inputPolygon;
@@ -27,7 +27,7 @@ public class Rastering
         fotoWidth *= 0.30; //70% horizontal overlap.
         fotoHeight *= 0.15; //85% vertical overlap.
     }
-    
+
     private Double[] searchForBorderCoordinates()
     {
         //Initialize with existing values. Dont know what the global minimum is, dont need to know
@@ -41,18 +41,28 @@ public class Rastering
         // Go through all the elements and store minima and maxima for long and lat.
         for(int i = 1 ; i < polygon.size() ; i++)
         {
-            if(polygon.get(i).getLongitude() < longMin)
-                {longMin = polygon.get(i).getLongitude();}
-            else if(polygon.get(i).getLongitude() > longMax)
-                {longMax = polygon.get(i).getLongitude();}
+            if(polygon.get(i).getLongitude() < longMin) {
+                longMin = polygon.get(i).getLongitude();
+            }
+            else if(polygon.get(i).getLongitude() > longMax) {
+                longMax = polygon.get(i).getLongitude();
+            }
 
-            if(polygon.get(i).getLatitude() < latMin)
-                {latMin = polygon.get(i).getLatitude();}
-            else if(polygon.get(i).getLatitude() > latMax)
-                {latMax = polygon.get(i).getLatitude();}
+            if(polygon.get(i).getLatitude() < latMin) {
+                latMin = polygon.get(i).getLatitude();
+            }
+            else if(polygon.get(i).getLatitude() > latMax) {
+                latMax = polygon.get(i).getLatitude();
+            }
         }
-        boundingBox = new Double[]{longMin, longMax, latMin, latMax}; // We wish to also have this stored elsewhere
-        return boundingBox;
+        boundingBox = new Node[]
+                {
+                        new Node(latMin, longMin, 2),
+                        new Node(latMin, longMax, 2),
+                        new Node(latMax, longMax, 2),
+                        new Node(latMax, longMin, 2)
+                }; // We wish to also have this stored elsewhere
+        return new Double[]{longMin, longMax, latMin, latMax};
     }
 
     private ArrayList<ArrayList<Node>> placeRaster(Double[] borderCoordinates)
@@ -87,17 +97,17 @@ public class Rastering
                                                 0
                                         ) //then this point does not border a "concavity" (FLAG = 0)
                                 );
-                    //else, and the last node added borders "concavity" (FLAG = 1)
+                        //else, and the last node added borders "concavity" (FLAG = 1)
                     else if(outputRaster.get(i).get(outputRaster.get(i).size()-1).getPositionFlag() == 1)
                         outputRaster.get(i).add
                                 (new Node
-                                                (
-                                                        potentialNodeLatitude,
-                                                        potentialNodeLongitude,
-                                                        1
-                                                ) //then this point borders a "concavity" (FLAG = 1)
+                                        (
+                                                potentialNodeLatitude,
+                                                potentialNodeLongitude,
+                                                1
+                                        ) //then this point borders a "concavity" (FLAG = 1)
                                 );
-                    // but if the column is not empty, and the last node does not border a "concavity" (FLAG = 0)
+                        // but if the column is not empty, and the last node does not border a "concavity" (FLAG = 0)
                     else
                         outputRaster.get(i).add
                                 (new Node
@@ -191,12 +201,12 @@ public class Rastering
                                 borderCoordinates[2] + traversedLatitude + subPolyHeight
                         }));
                 //Also save the bounding box for later use.
-                boundingBoxes.add(new Double[]
+                boundingBoxes.add(new Node[]
                         {
-                                borderCoordinates[0] + traversedLongitude,
-                                borderCoordinates[0] + traversedLongitude + subPolyWidth,
-                                borderCoordinates[2] + traversedLatitude,
-                                borderCoordinates[2] + traversedLatitude + subPolyHeight
+                                new Node(borderCoordinates[0] + traversedLongitude, borderCoordinates[2] + traversedLatitude, 2),
+                                new Node(borderCoordinates[0] + traversedLongitude, borderCoordinates[2] + traversedLatitude + subPolyHeight, 2),
+                                new Node(borderCoordinates[0] + traversedLongitude + subPolyWidth, borderCoordinates[2] + traversedLatitude + subPolyHeight, 2),
+                                new Node(borderCoordinates[0] + traversedLongitude + subPolyWidth, borderCoordinates[2] + traversedLatitude, 2)
                         });
                 traversedLatitude += subPolyHeight;
             }
@@ -219,11 +229,11 @@ public class Rastering
         return splitPolygon();
     }
 
-    Double[] getBoundingBox() {
+    Node[] getBoundingBox() {
         return boundingBox;
     }
 
-    ArrayList<Double[]> getBoundingBoxes() {
+    ArrayList<Node[]> getBoundingBoxes() {
         return boundingBoxes;
     }
 }
