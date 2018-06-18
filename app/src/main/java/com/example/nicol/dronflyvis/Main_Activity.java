@@ -45,6 +45,7 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
     private Boolean polyAufgeteilt = false;
     private float[] settings;
     private Node startNode;
+    private int droneFlag;
 
     ArrayList<Marker> markers = new ArrayList<Marker>();
     ArrayList<Marker> actPointsInPoly = new ArrayList<Marker>();
@@ -65,7 +66,8 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
 
         if(getIntent().getExtras() != null)
         {
-            settings = getIntent().getExtras().getFloatArray("com.example.nicol.dronflyvis.SETTINGS");
+            settings = getIntent().getExtras().getFloatArray("com.example.nicol.dronflyvis.INPUT_VALUES");
+            droneFlag = getIntent().getExtras().getInt("com.example.nicol.dronflyvis.RADIO_SELECTION");
         }
 
         ImageButton infobuch = findViewById(R.id.infobuch_main_activity);
@@ -87,10 +89,6 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
         ImageView searchIcon = findViewById(R.id.place_autocomplete_search_button);
         searchIcon.setScaleX(2f);
         searchIcon.setScaleY(2f);
-
-
-
-
         placesFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
             public void onPlaceSelected(Place place)
@@ -556,7 +554,6 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
             }
         }
 
-
         polyAufgeteilt = true;
         return;
     }
@@ -564,10 +561,18 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
     public void main_activity_next(View view)
     {
         if(!polyAufgeteilt){
-            Warning warning = new Warning("wir teilen für dich das Polygon auf", "Polygon aufteilen", false, "OK", this);
+            Warning warning = new Warning("wir teilen für dich das Polygon auf", "Polygon aufteilen", false,"Nein","Ja", this);
             android.app.AlertDialog alertDialog = warning.createWarning();
             alertDialog.setTitle("Polygon zu groß!");
             alertDialog.show();
+
+            /*Button yesBtn = alertDialog.getButton(AlertDialog.BUTTON_POSITIVE);
+            yesBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                }
+            });*/
             drawPointInPoly();
             return;
         }
@@ -596,8 +601,8 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
             intent.putExtra("com.example.nicol.dronflyvis.mapLAT","" + mMap.getCameraPosition().target.latitude);
             intent.putExtra("com.example.nicol.dronflyvis.mapLNG","" + mMap.getCameraPosition().target.longitude);
             intent.putExtra("com.example.nicol.dronflyvis.mapType", mMap.getMapType());
-            intent.putExtra("com.example.nicol.dronflyvis.SETTINGS", settings);
-
+            intent.putExtra("com.example.nicol.dronflyvis.INPUT_VALUES", settings);
+            intent.putExtra("com.example.nicol.dronflyvis.RADIO_SELECTION", droneFlag);
         startActivity(intent);
     }
 

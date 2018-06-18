@@ -12,7 +12,9 @@ public class Warning
     private String title;
     private boolean cancelable;
     private String btnMsg;
+    private int numberOfButtons;
     private Bundle bundle;
+    private String btnMsgTwo;
 
     public Warning(String message, String title, boolean cancelable, String btnMsg, Context ctx)
     {
@@ -22,7 +24,17 @@ public class Warning
         this.btnMsg = btnMsg;
         dBuilder = new AlertDialog.Builder(ctx);
     }
-    int test = 5;
+
+    public Warning(String message, String title, boolean cancelable, String btnMsg, String btnMsgTwo,Context ctx)
+    {
+        this.msg = message;
+        this.title = title;
+        this.cancelable = cancelable;
+        this.btnMsg = btnMsg;
+        dBuilder = new AlertDialog.Builder(ctx);
+        this.btnMsgTwo = btnMsgTwo;
+    }
+
 
     public AlertDialog createWarning()
     {
@@ -36,6 +48,15 @@ public class Warning
                 dialogInterface.cancel();
             }
         });
+        if(btnMsgTwo != null)
+        {
+            dBuilder.setNeutralButton(btnMsgTwo, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    dialogInterface.cancel();
+                }
+            });
+        }
 
         return dBuilder.create();
     }

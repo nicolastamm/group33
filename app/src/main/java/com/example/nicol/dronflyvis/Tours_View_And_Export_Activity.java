@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.MenuItem;
 import android.view.View;
@@ -59,6 +60,7 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
     private int mapType;
     private float[] settings;
 
+    private int droneFlag;
 
     ArrayList<Node> nodeList;
     ArrayList<Node> route;
@@ -75,13 +77,13 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
         if(getIntent().getExtras() != null)
         {
             nodeList = getIntent().getExtras().getParcelableArrayList("com.example.nicol.dronflyvis.NODELIST");
-            settings = getIntent().getExtras().getFloatArray("com.example.nicol.dronflyvis.SETTINGS");
+            settings = getIntent().getExtras().getFloatArray("com.example.nicol.dronflyvis.INPUT_VALUES");
             lng = Float.parseFloat(getIntent().getExtras().getString("com.example.nicol.dronflyvis.mapLNG"));
             lat = Float.parseFloat(getIntent().getExtras().getString("com.example.nicol.dronflyvis.mapLAT"));
             zoom = getIntent().getExtras().getFloat("com.example.nicol.dronflyvis.mapZOOM");
             mapType = getIntent().getExtras().getInt("com.example.nicol.dronflyvis.mapType");
+            droneFlag = getIntent().getExtras().getInt("com.example.nicol.dronflyvis.RADIO_SELECTION");
         }
-
 
         infobuch = findViewById(R.id.tvae_activity_infobuch_button);
         infobuch.setImageResource(R.drawable.infobuch);
@@ -129,8 +131,6 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
     }
 
 
-
-
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
@@ -138,12 +138,13 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
         mMap.getUiSettings().setMapToolbarEnabled (false);
         mMap.getUiSettings().setZoomControlsEnabled(true);
 
-
-
         mMap.setMapType(mapType);
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lat, lng), zoom));
 
-        Rastering raster = new Rastering(nodeList, (float) 78.8, 100);
+        Rastering raster = new Rastering(nodeList, (float) settings[2], settings[1]);
+        //Pixel size Log.i("test1", "" + settings[0]);
+        //fov Log.i("test1", "" + settings[2]);
+        //height Log.i("test2" + settings[1]);
         TravelingSalesman tsm = new TravelingSalesman();
 
 
@@ -279,8 +280,7 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
         String content = "";
         String directory = "";
         //Only create Export for selected drone
-        int bebopFlag = 0;
-        switch(bebopFlag) {
+        switch(droneFlag) {
             case 0:
                 content = routeForMavicPro();
                 FILE_NAME = "Route " + timeStamp + ".csv";
