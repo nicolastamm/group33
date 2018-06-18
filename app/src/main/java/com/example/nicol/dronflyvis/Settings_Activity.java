@@ -159,7 +159,7 @@ public class Settings_Activity extends AppCompatActivity
         }
         return selection;
     }
-
+    //get input from radio buttons
     public int getRadioButton()
     {
         RadioGroup radioGroup = (RadioGroup) findViewById(R.id.radioGroup);
