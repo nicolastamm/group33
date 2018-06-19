@@ -1,16 +1,24 @@
 package com.example.nicol.dronflyvis;
 
 import android.app.Activity;
+import android.graphics.Color;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
+import android.text.Html;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 public class Buch_PopUp_Activity extends Activity {
     private ViewPager mSlideViewPager;
+    private LinearLayout dotsLayout;
+
+    private TextView[] dots;
+
     private Buch_Slider buchSlider;
     private Button close;
     @Override
@@ -32,9 +40,14 @@ public class Buch_PopUp_Activity extends Activity {
 
         getWindow().setAttributes(lp);
 
+
+
         mSlideViewPager = (ViewPager)findViewById(R.id.slideViewPager);
+        dotsLayout=(LinearLayout) findViewById(R.id.slideDots);
+
         buchSlider = new Buch_Slider(this);
         mSlideViewPager.setAdapter(buchSlider);
+
 
         close = (Button)findViewById(R.id.close_buch_act);
         close.setOnClickListener(new View.OnClickListener() {
@@ -43,6 +56,42 @@ public class Buch_PopUp_Activity extends Activity {
                 finish();
             }
         });
-
+        addDots(0);
+        mSlideViewPager.addOnPageChangeListener(dotsChangeListener);
     }
+
+    public void addDots(int pos){
+
+        dots = new TextView[4];
+        dotsLayout.removeAllViews();
+
+        for(int i= 0; i<dots.length; i++){
+            dots[i] = new TextView(this);
+            dots[i].setText(Html.fromHtml("&middot;"));
+            dots[i].setTextSize(80);
+            dots[i].setTextColor(getResources().getColor(R.color.colorPrimary));
+
+            dotsLayout.addView(dots[i]);
+        }
+        if(dots.length>0){
+            dots[pos].setTextColor(Color.BLACK);
+        }
+    }
+
+    ViewPager.OnPageChangeListener dotsChangeListener = new ViewPager.OnPageChangeListener() {
+        @Override
+        public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+        }
+
+        @Override
+        public void onPageSelected(int position) {
+            addDots(position);
+        }
+
+        @Override
+        public void onPageScrollStateChanged(int state) {
+
+        }
+    };
 }
