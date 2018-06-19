@@ -319,7 +319,7 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
                 }
             }
 
-            markArray.get(0).setIcon(BitmapDescriptorFactory.fromResource(R.drawable.markerstandardred));
+
             mMap.addPolyline(options);
         }
         else{
@@ -334,7 +334,7 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
                 }
             }
 
-            markArray.get(0).setIcon(BitmapDescriptorFactory.fromResource(R.drawable.markerstandardred));
+
             mMap.addPolyline(optionss);
         }
 
