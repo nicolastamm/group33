@@ -185,27 +185,20 @@ public class Rastering
         double fotoHeightCoord = metersToLat(fotoHeight);
         double subPolyWidth = subPolycols * fotoWidthCoord;
         double subPolyHeight = subPolyrows * fotoHeightCoord;
-        double extraCols = fotoWidth * (horizontalAmountFotos % subPolycols);
-        double extraRows = fotoHeightCoord * (verticalAmountFotos % subPolyrows);
-
-        System.out.println(extraCols);
-        System.out.println(extraRows);
-
         double traversedLongitude = 0;
         double traversedLatitude = 0;
         rasters = new ArrayList<>();
-        boundingBoxes = new ArrayList<>();
-        for(int i = 0 ; borderCoordinates[0] + traversedLongitude - (subPolyWidth / 2.0) <= borderCoordinates[1] + (subPolyWidth / 2.0); i++)
+        for (; borderCoordinates[0] + traversedLongitude - (subPolyWidth / 2.0) <= borderCoordinates[1] + (subPolyWidth / 2.0); )
         {
-            for(int j = 0 ; borderCoordinates[2] + traversedLatitude - (subPolyHeight / 2.0)<= borderCoordinates[3] + (subPolyHeight / 2.0); j++)
+            for (; borderCoordinates[2] + traversedLatitude - (subPolyHeight / 2.0) <= borderCoordinates[3] + (subPolyHeight / 2.0); )
             {
                 //Add to rasters the raster inside the specified sub-BoundingBox
                 rasters.add(placeRaster(new Double[]
                         {
                                 borderCoordinates[0] + traversedLongitude,
-                                borderCoordinates[0] + traversedLongitude + subPolyWidth + Math.max(extraCols, 0),
+                                borderCoordinates[0] + traversedLongitude + subPolyWidth,
                                 borderCoordinates[2] + traversedLatitude,
-                                borderCoordinates[2] + traversedLatitude + subPolyHeight + Math.max(extraRows, 0)
+                                borderCoordinates[2] + traversedLatitude + subPolyHeight
                         }));
 
                 traversedLatitude += subPolyHeight;
