@@ -737,11 +737,7 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
             actNodeListe.add(new Node(marker.getPosition().latitude, marker.getPosition().longitude, 0));
         }
 
-        Rastering raster = new Rastering(actNodeListe, (float) 78.8, 100);
-        raster.getRasters();
-
-
-        ArrayList<Node[]> border = raster.getBoundingBoxes();
+        ArrayList<Node[]> border = Rastering.getBoundingBoxes(actNodeListe, (float) 78.8, 100);
         for(int i = 0; i<border.size();i++){
 
             PolylineOptions options2 = new PolylineOptions()
