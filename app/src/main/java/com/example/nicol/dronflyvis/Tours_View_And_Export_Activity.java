@@ -15,6 +15,7 @@ import android.os.Environment;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.view.ContextMenu;
+import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -41,6 +42,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
+import de.keyboardsurfer.android.widget.crouton.Configuration;
+import de.keyboardsurfer.android.widget.crouton.Crouton;
+import de.keyboardsurfer.android.widget.crouton.Style;
+
 import static android.graphics.Bitmap.Config.ARGB_8888;
 
 public class Tours_View_And_Export_Activity extends FragmentActivity implements OnMapReadyCallback {
@@ -61,6 +66,7 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
     private double lng;
     private int mapType;
     private float[] settings;
+    private  Boolean split;
 
 
     ArrayList<Node> nodeList;
@@ -70,6 +76,19 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.tours_view_and_export_activity);
+
+        // Define configuration options
+        Configuration croutonConfiguration = new Configuration.Builder()
+                .setDuration(3500).build();
+        // Define styles for crouton
+        Style style = new Style.Builder()
+                .setBackgroundColorValue(Color.argb(200,0,0,0))
+                .setGravity(Gravity.CENTER_HORIZONTAL)
+                .setConfiguration(croutonConfiguration)
+                .setHeight(200)
+                .setTextColorValue(Color.WHITE).build();
+        // Display style and configuration
+        Crouton.showText(Tours_View_And_Export_Activity.this, R.string.crouton_tours_activity, style);
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -83,6 +102,7 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
             lat = Float.parseFloat(getIntent().getExtras().getString("com.example.nicol.dronflyvis.mapLAT"));
             zoom = getIntent().getExtras().getFloat("com.example.nicol.dronflyvis.mapZOOM");
             mapType = getIntent().getExtras().getInt("com.example.nicol.dronflyvis.mapType");
+            split =  getIntent().getExtras().getBoolean("com.example.nicol.dronflyvis.splitPoly");
         }
 
 
@@ -138,44 +158,75 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        mMap.getUiSettings().setMapToolbarEnabled (false);
+        mMap.getUiSettings().setMapToolbarEnabled(false);
         mMap.getUiSettings().setZoomControlsEnabled(true);
-
 
 
         mMap.setMapType(mapType);
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lat, lng), zoom));
 
-        Rastering raster = new Rastering(nodeList, (float) 78.8, 100);
-        TravelingSalesman tsm = new TravelingSalesman();
+
+        if (split) {
+            Rastering raster = new Rastering(nodeList, (float) 78.8, 100);
+            TravelingSalesman tsm = new TravelingSalesman();
 
 
-        ArrayList<Marker> pfad = new ArrayList<>();
-        ArrayList<ArrayList<ArrayList<Node>>> actRaster = raster.getRasters();
-        for (ArrayList<ArrayList<Node>> i : actRaster) {
-            Node startNode = i.get(0).get(0);
-            route = tsm.travelingSalesman(i, new Node(startNode.getLatitude(), startNode.getLongitude(), 2));
+            ArrayList<Marker> pfad = new ArrayList<>();
+            ArrayList<ArrayList<ArrayList<Node>>> actRaster = raster.getRasters();
+            for (ArrayList<ArrayList<Node>> i : actRaster) {
+                Node startNode = i.get(0).get(0);
+                route = tsm.travelingSalesman(i, new Node(startNode.getLatitude(), startNode.getLongitude(), 2));
 
-            for (int j = 0; j < route.size(); j++) {
-                double lt = route.get(j).getLatitude();
-                double lon = route.get(j).getLongitude();
+                for (int j = 0; j < route.size(); j++) {
+                    double lt = route.get(j).getLatitude();
+                    double lon = route.get(j).getLongitude();
+
+                    MarkerCounter++;
+                    String text = String.valueOf(MarkerCounter);
+                    Bitmap bitmap = makeBitmap(this, text, farbe);
+
+                    MarkerOptions options = new MarkerOptions()
+                            .draggable(false)
+                            .position(new LatLng((float) lt, (float) lon))
+                            .icon(BitmapDescriptorFactory.fromBitmap(bitmap))
+                            .anchor((float) 0.5, (float) 0.5);
+                    pfad.add(mMap.addMarker(options));
+                }
+                drawPfad(pfad);
+                farbe++;
+                MarkerCounter = 0;
+            }
+
+        }
+        else{
+
+            Rastering raster = new Rastering(nodeList, (float) 78.8, 100);
+            TravelingSalesman tsm = new TravelingSalesman();
+            ArrayList<Marker> pfad = new ArrayList<>();
+            ArrayList<ArrayList<Node>>  actRaster = raster.getRaster();
+            route = tsm.travelingSalesman(actRaster,new Node(actRaster.get(0).get(0).getLatitude(),actRaster.get(0).get(0).getLongitude(),2));
+
+            for(int i = 0; i<route.size(); i++)
+            {
+                double lt = route.get(i).getLatitude();
+                double lon = route.get(i).getLongitude();
 
                 MarkerCounter++;
                 String text = String.valueOf(MarkerCounter);
-                Bitmap bitmap = makeBitmap(this, text, farbe);
+                Bitmap bitmap = makeBitmap(this, text,2);
 
                 MarkerOptions options = new MarkerOptions()
                         .draggable(false)
-                        .position(new LatLng((float) lt, (float) lon))
+                        .position(new LatLng((float)lt,(float)lon))
                         .icon(BitmapDescriptorFactory.fromBitmap(bitmap))
-                        .anchor((float) 0.5, (float) 0.5);
+                        .anchor((float)0.5, (float)0.5);;
+
+
+
                 pfad.add(mMap.addMarker(options));
             }
             drawPfad(pfad);
-            farbe++;
-            MarkerCounter = 0;
         }
-
     }
 
     @Override
@@ -210,34 +261,41 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
         float scale = resources.getDisplayMetrics().density;
 
         Bitmap bitmap = BitmapFactory.decodeResource(resources, R.drawable.markerroute2);
+        bitmap = bitmap.copy(ARGB_8888, true);
 
         Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        paint.setTextSize(8 * scale);
-        paint.setShadowLayer(1f,0f,1f, Color.WHITE);
-        colourMode = colourMode % 4;
-        switch (colourMode) {
-            case (0):
-                bitmap = BitmapFactory.decodeResource(resources, R.drawable.markerroutegreen);
-                bitmap = bitmap.copy(ARGB_8888, true);
-                paint.setColor(Color.WHITE);
-                break;
-            case (1):
-                bitmap = BitmapFactory.decodeResource(resources, R.drawable.markerstandardcyan);
-                bitmap = bitmap.copy(ARGB_8888, true);
-                paint.setColor(Color.WHITE);
-                break;
-            case (2):
-                bitmap = BitmapFactory.decodeResource(resources, R.drawable.markerstandardmagenta);
-                bitmap = bitmap.copy(ARGB_8888, true);
-                paint.setColor(Color.WHITE);
-                break;
-            case (3):
-                bitmap = BitmapFactory.decodeResource(resources, R.drawable.markerstandardyellow);
-                bitmap = bitmap.copy(ARGB_8888, true);
-                paint.setColor(Color.WHITE);
-                break;
 
+
+        if(split) {
+            colourMode = colourMode % 4;
+            switch (colourMode) {
+                case (0):
+                    bitmap = BitmapFactory.decodeResource(resources, R.drawable.markerstandardgreen);
+                    bitmap = bitmap.copy(ARGB_8888, true);
+                    paint.setColor(Color.WHITE);
+                    break;
+                case (1):
+                    bitmap = BitmapFactory.decodeResource(resources, R.drawable.markerstandardcyan);
+                    bitmap = bitmap.copy(ARGB_8888, true);
+                    paint.setColor(Color.WHITE);
+                    break;
+                case (2):
+                    bitmap = BitmapFactory.decodeResource(resources, R.drawable.markerstandardmagenta);
+                    bitmap = bitmap.copy(ARGB_8888, true);
+                    paint.setColor(Color.WHITE);
+                    break;
+                case (3):
+                    bitmap = BitmapFactory.decodeResource(resources, R.drawable.markerstandardyellow);
+                    bitmap = bitmap.copy(ARGB_8888, true);
+                    paint.setColor(Color.WHITE);
+                    break;
+
+            }
         }
+
+
+        paint.setTextSize(8 * scale);
+        paint.setColor(Color.WHITE);
 
         Canvas canvas = new Canvas(bitmap);
 
@@ -245,7 +303,7 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
         paint.getTextBounds(text, 0, text.length(), bounds);
 
         int x = bitmap.getWidth()/2 - bounds.width()/2;
-        int y = bitmap.getHeight()/2+bounds.height()/2;
+        int y = bitmap.getHeight()/2 - bounds.height()/3;
 
         canvas.drawText(text, x, y, paint);
 
@@ -256,19 +314,40 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
     {
 
         ArrayList<Marker> pfad = markArray;
-        PolylineOptions optionss = new PolylineOptions()
-                .width(7);
 
-                for(int i=0;i<pfad.size();i++ )
-                {
-                    if(pfad.get(i) != null || pfad.size()>0){
-                        optionss.add(pfad.get(i).getPosition());
-                    }
+        if(split){
+            PolylineOptions optionss = new PolylineOptions()
+                    .width(7)
+                    .color(Color.BLACK);
+            for(int i=0;i<pfad.size();i++ )
+            {
+                if(pfad.get(i) != null || pfad.size()>0){
+                    optionss.add(pfad.get(i).getPosition());
                 }
+            }
 
-        pfad.get(0).setIcon(BitmapDescriptorFactory.fromResource(R.drawable.markerstandardred));
-        pfad.get(pfad.size() - 1).setIcon(BitmapDescriptorFactory.fromResource(R.drawable.markerstandardred));
-                mMap.addPolyline(optionss);
+            pfad.get(0).setIcon(BitmapDescriptorFactory.fromResource(R.drawable.markerstandardred));
+            pfad.get(pfad.size() - 1).setIcon(BitmapDescriptorFactory.fromResource(R.drawable.markerstandardred));
+            mMap.addPolyline(optionss);
+        }
+        else{
+            PolylineOptions optionss = new PolylineOptions()
+                    .width(7)
+                    .color(Color.RED);
+
+            for(int i=0;i<pfad.size();i++ )
+            {
+                if(pfad.get(i) != null || pfad.size()>0){
+                    optionss.add(pfad.get(i).getPosition());
+                }
+            }
+
+            pfad.get(0).setIcon(BitmapDescriptorFactory.fromResource(R.drawable.markerstandardred));
+            pfad.get(pfad.size() - 1).setIcon(BitmapDescriptorFactory.fromResource(R.drawable.markerstandardred));
+            mMap.addPolyline(optionss);
+        }
+
+
     }
 
     public void  export_csv(View view) {
