@@ -1,3 +1,6 @@
+/*
+  @author RastaMan aka Nicolas Andreas Tamm Garetto aka NATG
+ */
 package com.example.nicol.dronflyvis;
 
 import java.util.ArrayList;
