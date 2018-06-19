@@ -16,7 +16,7 @@ public class Rastering
     private Node[] boundingBox;
     private GeoTest geoTest;
 
-    public Rastering(ArrayList<Node> inputPolygon, double fov, float flightHeight)
+    Rastering(ArrayList<Node> inputPolygon, double fov, float flightHeight)
     {
         this.polygon = inputPolygon;
         this.fov = fov;
@@ -28,7 +28,7 @@ public class Rastering
         fotoHeight *= 0.15; //85% vertical overlap.
     }
 
-    private static Double[] searchForBorderCoordinates(ArrayList<Node> polygon)
+    static Double[] searchForBorderCoordinates(ArrayList<Node> polygon)
     {
         //Initialize with existing values. Dont know what the global minimum is, dont need to know
         double longMin = polygon.get(0).getLongitude();
@@ -127,6 +127,15 @@ public class Rastering
         return outputRaster;
     }
 
+
+    static double metersToLat(double meters) {
+        return meters / 111325.0;
+    } // 1° of latitude is around 111.325 km.
+
+    static double metersToLong(double meters, double lat) {
+        return (meters / (111325.0 * Math.cos(Math.toRadians(lat))));
+    }
+
     public static void main(String[] args) {
         ArrayList<Node> test = new ArrayList<>();
         test.add(new Node(47.707475, 9.188631, 2));
@@ -139,93 +148,6 @@ public class Rastering
         for (ArrayList<ArrayList<Node>> thisRaster : thisRasters) {
             System.out.println(thisRaster);
         }
-    }
-
-    static ArrayList<Node[]> getBoundingBoxes(ArrayList<Node> markers, double fov, float flightHeight) {
-        ArrayList<Node[]> boundingBoxes = new ArrayList<>();
-        double fotoWidth = (2.0 * flightHeight) * (Math.tan(Math.toRadians(fov / 2.0)));
-        double fotoHeight = fotoWidth * (3.0 / 4.0); //Assuming 4:3 aspect ratio
-        fotoWidth *= 0.30; //70% horizontal overlap.
-        fotoHeight *= 0.15; //85% vertical overlap.
-        Double[] borderCoordinates = Rastering.searchForBorderCoordinates(markers);
-        double polygonHeight = Math.abs(borderCoordinates[2] - borderCoordinates[3]);
-        polygonHeight *= 111325.0;
-
-        double polygonWidth = Math.abs(borderCoordinates[0] - borderCoordinates[1]);
-        polygonWidth *= 111325.0 * Math.cos(Math.toRadians(borderCoordinates[2]));
-
-        int verticalAmountFotos = (int) Math.ceil(polygonHeight / fotoHeight);
-        int horizontalAmountFotos = (int) Math.ceil(polygonWidth / fotoWidth);
-
-        int subPolycols = 0;
-        int subPolyrows = 0;
-        for (int i = 9; i >= 0; i--) {
-            if ((i + 1) * fotoWidth < 300.0) {
-                subPolycols = i;
-                break;
-            }
-        }
-        for (int i = 11; i >= 0; i--) {
-            if ((i + 1) * fotoHeight < 300.0) {
-                subPolyrows = i;
-                break;
-            }
-        }
-
-        double fotoWidthCoord = metersToLong(fotoWidth, borderCoordinates[3]);
-        double fotoHeightCoord = metersToLat(fotoHeight);
-        double subPolyWidth = subPolycols * fotoWidthCoord;
-        double subPolyHeight = subPolyrows * fotoHeightCoord;
-
-        double traversedLongitude = 0;
-        double traversedLatitude = 0;
-        for (int i = 0; borderCoordinates[0] + traversedLongitude - (subPolyWidth / 2.0) <= borderCoordinates[1] + (subPolyWidth / 2.0); i++) {
-            for (int j = 0; borderCoordinates[2] + traversedLatitude - (subPolyHeight / 2.0) <= borderCoordinates[3] + (subPolyHeight / 2.0); j++) {
-                //Also save the bounding box for later use.
-                boundingBoxes.add(new Node[]
-                        {
-                                new Node
-                                        (
-                                                borderCoordinates[0] + traversedLongitude - metersToLong(fotoWidth / 2.0, borderCoordinates[2]),
-                                                borderCoordinates[2] + traversedLatitude - metersToLat(fotoHeight / 2.0),
-                                                2
-                                        ),
-                                new Node
-                                        (
-                                                borderCoordinates[0] + traversedLongitude - metersToLong(fotoWidth / 2.0, borderCoordinates[2]),
-                                                borderCoordinates[2] + traversedLatitude + subPolyHeight + metersToLat(fotoHeight / 2.0),
-                                                2
-                                        ),
-                                new Node
-                                        (
-                                                borderCoordinates[0] + traversedLongitude + subPolyWidth + metersToLong(fotoWidth / 2.0,
-                                                        borderCoordinates[2]), borderCoordinates[2] + traversedLatitude + subPolyHeight + metersToLat(fotoHeight / 2.0),
-                                                2
-                                        ),
-                                new Node
-                                        (
-                                                borderCoordinates[0] + traversedLongitude + subPolyWidth + metersToLong(fotoWidth / 2.0, borderCoordinates[2]),
-                                                borderCoordinates[2] + traversedLatitude - metersToLat(fotoHeight / 2.0),
-                                                2
-                                        )
-                        });
-                traversedLatitude += subPolyHeight;
-                traversedLatitude += metersToLat(fotoHeight);
-            }
-            traversedLatitude = 0;
-            traversedLongitude += subPolyWidth + metersToLong(fotoWidth, borderCoordinates[2]);
-        }
-
-        return boundingBoxes;
-    }
-
-
-    private static double metersToLat(double meters) {
-        return meters / 111325.0;
-    } // 1° of latitude is around 111.325 km.
-
-    private static double metersToLong(double meters, double lat) {
-        return (meters / (111325.0 * Math.cos(Math.toRadians(lat))));
     }
 
     private ArrayList<ArrayList<ArrayList<Node>>> splitPolygon() {
@@ -263,8 +185,11 @@ public class Rastering
         double fotoHeightCoord = metersToLat(fotoHeight);
         double subPolyWidth = subPolycols * fotoWidthCoord;
         double subPolyHeight = subPolyrows * fotoHeightCoord;
-        int extraCols = horizontalAmountFotos % subPolycols;
-        int extraRows = verticalAmountFotos % subPolyrows;
+        double extraCols = fotoWidth * (horizontalAmountFotos % subPolycols);
+        double extraRows = fotoHeightCoord * (verticalAmountFotos % subPolyrows);
+
+        System.out.println(extraCols);
+        System.out.println(extraRows);
 
         double traversedLongitude = 0;
         double traversedLatitude = 0;
@@ -278,38 +203,11 @@ public class Rastering
                 rasters.add(placeRaster(new Double[]
                         {
                                 borderCoordinates[0] + traversedLongitude,
-                                borderCoordinates[0] + traversedLongitude + subPolyWidth,
+                                borderCoordinates[0] + traversedLongitude + subPolyWidth + Math.max(extraCols, 0),
                                 borderCoordinates[2] + traversedLatitude,
-                                borderCoordinates[2] + traversedLatitude + subPolyHeight
+                                borderCoordinates[2] + traversedLatitude + subPolyHeight + Math.max(extraRows, 0)
                         }));
-                //Also save the bounding box for later use.
-                boundingBoxes.add(new Node[]
-                        {
-                                new Node
-                                        (
-                                                borderCoordinates[0] + traversedLongitude - metersToLong(fotoWidth / 2.0, borderCoordinates[2]),
-                                                borderCoordinates[2] + traversedLatitude - metersToLat(fotoHeight / 2.0),
-                                                2
-                                        ),
-                                new Node
-                                        (
-                                                borderCoordinates[0] + traversedLongitude - metersToLong(fotoWidth / 2.0, borderCoordinates[2]),
-                                                borderCoordinates[2] + traversedLatitude + subPolyHeight + metersToLat(fotoHeight / 2.0),
-                                                2
-                                        ),
-                                new Node
-                                        (
-                                                borderCoordinates[0] + traversedLongitude + subPolyWidth + metersToLong(fotoWidth / 2.0,
-                                                        borderCoordinates[2]), borderCoordinates[2] + traversedLatitude + subPolyHeight + metersToLat(fotoHeight / 2.0),
-                                                2
-                                        ),
-                                new Node
-                                        (
-                                                borderCoordinates[0] + traversedLongitude + subPolyWidth + metersToLong(fotoWidth / 2.0, borderCoordinates[2]),
-                                                borderCoordinates[2] + traversedLatitude - metersToLat(fotoHeight / 2.0),
-                                                2
-                                        )
-                        });
+
                 traversedLatitude += subPolyHeight;
                 traversedLatitude += metersToLat(fotoHeight);
             }
@@ -320,13 +218,8 @@ public class Rastering
         return rasters;
     }
 
-    ArrayList<ArrayList<ArrayList<Node>>> getRasters()
-    {
+    ArrayList<ArrayList<ArrayList<Node>>> getRasters() {
         return splitPolygon();
-    }
-
-    Node[] getBoundingBox() {
-        return boundingBox;
     }
 
     public ArrayList<ArrayList<Node>> getRaster() {
