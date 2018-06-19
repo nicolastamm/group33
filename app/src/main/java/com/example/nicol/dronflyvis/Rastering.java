@@ -205,25 +205,25 @@ public class Rastering
                         {
                                 new Node
                                         (
-                                                borderCoordinates[0] + traversedLongitude - metersToLong(fotoHeight / 2.0, borderCoordinates[2]),
+                                                borderCoordinates[0] + traversedLongitude - metersToLong(fotoWidth / 2.0, borderCoordinates[2]),
                                                 borderCoordinates[2] + traversedLatitude - metersToLat(fotoHeight / 2.0),
                                                 2
                                         ),
                                 new Node
                                         (
-                                                borderCoordinates[0] + traversedLongitude - metersToLong(fotoHeight / 2.0, borderCoordinates[2]),
+                                                borderCoordinates[0] + traversedLongitude - metersToLong(fotoWidth / 2.0, borderCoordinates[2]),
                                                 borderCoordinates[2] + traversedLatitude + subPolyHeight + metersToLat(fotoHeight / 2.0),
                                                 2
                                         ),
                                 new Node
                                         (
-                                                borderCoordinates[0] + traversedLongitude + subPolyWidth + metersToLong(fotoHeight / 2.0,
+                                                borderCoordinates[0] + traversedLongitude + subPolyWidth + metersToLong(fotoWidth / 2.0,
                                                         borderCoordinates[2]), borderCoordinates[2] + traversedLatitude + subPolyHeight + metersToLat(fotoHeight / 2.0),
                                                 2
                                         ),
                                 new Node
                                         (
-                                                borderCoordinates[0] + traversedLongitude + subPolyWidth + metersToLong(fotoHeight / 2.0, borderCoordinates[2]),
+                                                borderCoordinates[0] + traversedLongitude + subPolyWidth + metersToLong(fotoWidth / 2.0, borderCoordinates[2]),
                                                 borderCoordinates[2] + traversedLatitude - metersToLat(fotoHeight / 2.0),
                                                 2
                                         )
