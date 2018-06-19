@@ -216,8 +216,7 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
                         .draggable(false)
                         .position(new LatLng((float)lt,(float)lon))
                         .icon(BitmapDescriptorFactory.fromBitmap(bitmap))
-                        .anchor((float)0.5, (float)0.5);;
-
+                        .anchor((float) 0.5, (float) 0.5);
 
 
                 pfad.add(mMap.addMarker(options));
@@ -309,38 +308,33 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
 
     private void drawPfad(ArrayList<Marker> markArray)
     {
-
-        ArrayList<Marker> pfad = markArray;
-
         if(split){
-            PolylineOptions optionss = new PolylineOptions()
+            PolylineOptions options = new PolylineOptions()
                     .width(7)
                     .color(Color.BLACK);
-            for(int i=0;i<pfad.size();i++ )
+            for (int i = 0; i < markArray.size(); i++)
             {
-                if(pfad.get(i) != null || pfad.size()>0){
-                    optionss.add(pfad.get(i).getPosition());
+                if (markArray.get(i) != null || markArray.size() > 0) {
+                    options.add(markArray.get(i).getPosition());
                 }
             }
 
-            pfad.get(0).setIcon(BitmapDescriptorFactory.fromResource(R.drawable.markerstandardred));
-            pfad.get(pfad.size() - 1).setIcon(BitmapDescriptorFactory.fromResource(R.drawable.markerstandardred));
-            mMap.addPolyline(optionss);
+            markArray.get(0).setIcon(BitmapDescriptorFactory.fromResource(R.drawable.markerstandardred));
+            mMap.addPolyline(options);
         }
         else{
             PolylineOptions optionss = new PolylineOptions()
                     .width(7)
                     .color(Color.RED);
 
-            for(int i=0;i<pfad.size();i++ )
+            for (int i = 0; i < markArray.size(); i++)
             {
-                if(pfad.get(i) != null || pfad.size()>0){
-                    optionss.add(pfad.get(i).getPosition());
+                if (markArray.get(i) != null || markArray.size() > 0) {
+                    optionss.add(markArray.get(i).getPosition());
                 }
             }
 
-            pfad.get(0).setIcon(BitmapDescriptorFactory.fromResource(R.drawable.markerstandardred));
-            pfad.get(pfad.size() - 1).setIcon(BitmapDescriptorFactory.fromResource(R.drawable.markerstandardred));
+            markArray.get(0).setIcon(BitmapDescriptorFactory.fromResource(R.drawable.markerstandardred));
             mMap.addPolyline(optionss);
         }
 

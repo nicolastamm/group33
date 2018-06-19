@@ -666,16 +666,13 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
 
         Rastering raster = new Rastering(actNodeListe, (float) 78.8, 100);
 
-        ArrayList<ArrayList<ArrayList<Node>>> actRuster = raster.getRasters();
+        ArrayList<ArrayList<Node>> actRaster = raster.getRaster();
 
         int anzahl = 0;
-        for (ArrayList<ArrayList<Node>> i : actRuster) {
-
-            for (ArrayList<Node> x : i) {
-                for (Node j : x) {
+        for (ArrayList<Node> i : actRaster) {
+            for (Node j : i) {
                         anzahl++;
                     }
-                }
             }
         return anzahl;
     }

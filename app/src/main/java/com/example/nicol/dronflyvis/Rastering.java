@@ -209,9 +209,10 @@ public class Rastering
                                 new Node(borderCoordinates[0] + traversedLongitude + subPolyWidth, borderCoordinates[2] + traversedLatitude, 2)
                         });
                 traversedLatitude += subPolyHeight;
+                traversedLatitude += metersToLat(fotoHeight);
             }
             traversedLatitude = 0;
-            traversedLongitude += subPolyWidth;
+            traversedLongitude += subPolyWidth + metersToLong(fotoWidth, borderCoordinates[2]);
         }
         rasters.removeIf(ArrayList::isEmpty);
         return rasters;
