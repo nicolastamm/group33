@@ -58,12 +58,12 @@
             android:onClick="tvae_back"
             android:text="back" />
 
-        <Button
+        <ImageButton
             android:id="@+id/tvae_activity_change_button"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="1"
-            android:text="change" />
+            app:srcCompat="@drawable/map" />
 
         <Button
             android:id="@+id/tvae_avtivity_export_button"
