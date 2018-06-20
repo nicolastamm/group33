@@ -32,6 +32,8 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.PolygonOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 
 import java.util.ArrayList;
 
@@ -49,9 +51,14 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
     private Boolean polyAufteilung = false;
     private float[] settings;
     private Node startNode;
+    private int droneFlag;
 
     ArrayList<Marker> markers = new ArrayList<Marker>();
     ArrayList<Marker> actPointsInPoly = new ArrayList<Marker>();
+
+    ArrayList<Marker> actBoderMarkers = new ArrayList<Marker>();
+    ArrayList<Polyline> actPolyLynes = new ArrayList<Polyline>();
+
 
 
     Polygon shape;
@@ -83,7 +90,8 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
 
         if(getIntent().getExtras() != null)
         {
-            settings = getIntent().getExtras().getFloatArray("com.example.nicol.dronflyvis.SETTINGS");
+            settings = getIntent().getExtras().getFloatArray("com.example.nicol.dronflyvis.INPUT_VALUES");
+            droneFlag = getIntent().getExtras().getInt("com.example.nicol.dronflyvis.RADIO_SELECTION");
         }
 
         ImageButton infobuch = findViewById(R.id.infobuch_main_activity);
@@ -394,13 +402,26 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
                 @Override
                 public void onMarkerDrag(Marker marker)
                 {
+                    if(actPointsInPoly!=null){
+                        for (int i = 0; i < actPointsInPoly.size(); i++) {
+                            Marker m = actPointsInPoly.get(i);
+                            m.remove();
+                            m = null;
+                        }
+                        actPointsInPoly.removeAll(actPointsInPoly);
+                    }
 
                     if(shape != null){
                         shape.remove();
                         shape=null;
                     }
+
+                    if(polyAufteilung) {
+                        drawBoundingBoxes();
+                    }
+
                     drawPolygon();
-                    // drawPointInPoly();
+
                 }
 
                 @Override
@@ -410,10 +431,19 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
                         shape.remove();
                         shape=null;
                     }
+
                     drawPolygon();
 
                     if(polyAufteilung) {
                         drawPointInPoly();
+
+                        if(actPolyLynes!=null){
+                            for(int i = 0; i<actPolyLynes.size();i++){
+                                actPolyLynes.get(i).remove();
+                            }
+                            actPolyLynes=null;
+                            actPolyLynes = new ArrayList<Polyline>();
+                        }
                     }
 
                 }
@@ -461,7 +491,7 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
     private void drawPolygon()
     {
         PolygonOptions options = new PolygonOptions()
-                .fillColor(0x66FF8C00)
+                //.fillColor(0x66FF8C00)
                 .strokeWidth(4)
                 .strokeColor(Color.BLACK);
 
@@ -594,32 +624,21 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
         }
 
         if(countPointInPoly()>99 & !polyAufteilung){
-            AlertDialog.Builder dBuilder = new AlertDialog.Builder(Main_Activity.this);
-
-            dBuilder.setTitle("Polygon is too large!");
-            dBuilder.setMessage("Would you like to split your polygon into several polygons?")
-                    .setCancelable(false)
-                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            drawPointInPoly();
-                            polyAufteilung = true;
-                            dialogInterface.cancel();
-                        }})
-                    .setNegativeButton("No", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            dialogInterface.cancel();
-                        }
-                    });
-
-            AlertDialog alertDialog = dBuilder.create();
+            Warning warning = new Warning("Would you like to split your polygon into several polygons?", "Polygon too large", false, "Yes", "No",this);
+            android.app.AlertDialog alertDialog = warning.createWarning();
             alertDialog.setTitle("Polygon is too large!");
             alertDialog.show();
+            Button positiveBtn = alertDialog.getButton(DialogInterface.BUTTON_POSITIVE);
+            positiveBtn.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    alertDialog.dismiss();
+                    drawPointInPoly();
+                    polyAufteilung = true;
+                }
+            });
             return;
+
         }
-
-
 
         ArrayList<Node> nodeList = new ArrayList<Node>();
 
@@ -638,6 +657,7 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
             intent.putExtra("com.example.nicol.dronflyvis.mapType", mMap.getMapType());
             intent.putExtra("com.example.nicol.dronflyvis.SETTINGS", settings);
             intent.putExtra("com.example.nicol.dronflyvis.splitPoly", polyAufteilung);
+            intent.putExtra("com.example.nicol.dronflyvis.RADIO_SELECTION", droneFlag);
 
         startActivity(intent);
     }
@@ -666,16 +686,13 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
 
         Rastering raster = new Rastering(actNodeListe, (float) 78.8, 100);
 
-        ArrayList<ArrayList<ArrayList<Node>>> actRuster = raster.getRasters();
+        ArrayList<ArrayList<Node>> actRaster = raster.getRaster();
 
         int anzahl = 0;
-        for (ArrayList<ArrayList<Node>> i : actRuster) {
-
-            for (ArrayList<Node> x : i) {
-                for (Node j : x) {
+        for (ArrayList<Node> i : actRaster) {
+            for (Node j : i) {
                         anzahl++;
                     }
-                }
             }
         return anzahl;
     }
@@ -692,6 +709,44 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
 
         }
     }
+
+    public void drawBoundingBoxes(){
+
+        if(actPolyLynes!=null){
+            for(int i = 0; i<actPolyLynes.size();i++){
+                actPolyLynes.get(i).remove();
+            }
+
+            actPolyLynes=null;
+            actPolyLynes = new ArrayList<Polyline>();
+
+        }
+
+
+        ArrayList<Node> actNodeListe = new ArrayList<Node>();
+        for(Marker marker : markers)
+        {
+            actNodeListe.add(new Node(marker.getPosition().latitude, marker.getPosition().longitude, 0));
+        }
+
+        ArrayList<Node[]> border = Rastering.getBoundingBoxes(actNodeListe, (float) 78.8, 100);
+        for(int i = 0; i<border.size();i++){
+
+            PolylineOptions options2 = new PolylineOptions()
+                    .width(7)
+                    .color(Color.RED);
+            for(int j=0;j<4;j++ )
+            {
+                    options2.add(new LatLng( border.get(i)[j].getLongitude(),border.get(i)[j].getLatitude()));
+            }
+            options2.add(new LatLng( border.get(i)[0].getLongitude(),border.get(i)[0].getLatitude()));
+            actPolyLynes.add(mMap.addPolyline(options2));
+        }
+
+    }
+
+
+
 
     public void main_activity_back(View view)
     {

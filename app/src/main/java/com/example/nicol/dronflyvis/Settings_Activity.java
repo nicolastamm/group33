@@ -1,6 +1,7 @@
 package com.example.nicol.dronflyvis;
 
 import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -63,7 +64,28 @@ public class Settings_Activity extends AppCompatActivity
         inputTexts.add(altitude);
         inputTexts.add(fov);
         inputTexts.add(pixelSize);
-
+        RadioGroup radioGroup = (RadioGroup) findViewById(R.id.radioGroup);
+        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener()
+        {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                RadioButton checkedRadioButton = (RadioButton)group.findViewById(checkedId);
+                boolean isChecked = checkedRadioButton.isChecked();
+                if (isChecked)
+                {
+                    fov.setText("" + checkedId);
+                }
+                switch(checkedId)
+                {
+                    case 2131165319: fov.setText("" + 170); //checkedID for bepob
+                    break;
+                    case 2131165318: fov.setText("" + 78.8); //checkedId for mavic
+                    break;
+                    default: fov.setText("");
+                    break;
+                }
+            }
+        });
         for(final EditText txt : inputTexts)
         {
             txt.addTextChangedListener(new TextWatcher() {
@@ -81,31 +103,52 @@ public class Settings_Activity extends AppCompatActivity
                     {
                         if(Double.parseDouble(charSequence.toString()) > 100)
                         {
-                            Warning altitudeWarning = new Warning("Altitude is larger than 100 meters, are you sure you want to continue?", "Altitude too large", true, "OK", Settings_Activity.this);
+                            Warning altitudeWarning = new Warning("Altitude is larger than 100 meters, are you sure you want to continue?", "Altitude too large", true, "Yes","No", Settings_Activity.this);
                             AlertDialog alertDialog = altitudeWarning.createWarning();
                             alertDialog.setTitle("Altitude larger than 100 meters");
                             alertDialog.show();
-
+                            Button negativeBtn = alertDialog.getButton(DialogInterface.BUTTON_NEGATIVE);
+                            negativeBtn.setOnClickListener(new View.OnClickListener() {
+                                public void onClick(View v) {
+                                    alertDialog.dismiss();
+                                    txt.setText("");
+                                }
+                            });
                         }
                     }
-
+                    else if(txt == inputTexts.get(1) && !(charSequence.toString().equals("")) && !(charSequence.toString().equals(".")))
+                    {
+                        if(Double.parseDouble(charSequence.toString()) > 175)
+                        {
+                            Warning altitudeWarning = new Warning("FOV bigger than 175 degrees not supported", "FOV too large", true, "Ok", Settings_Activity.this);
+                            AlertDialog alertDialog = altitudeWarning.createWarning();
+                            alertDialog.setTitle("FOV larger than 175 degrees");
+                            alertDialog.show();
+                            Button negativeBtn = alertDialog.getButton(DialogInterface.BUTTON_POSITIVE);
+                            negativeBtn.setOnClickListener(new View.OnClickListener() {
+                                public void onClick(View v) {
+                                    alertDialog.dismiss();
+                                    txt.setText("175");
+                                }
+                            });
+                        }
+                    }
                 }
-
                 @Override
                 public void afterTextChanged(Editable editable)
                 {
                     if(txt == inputTexts.get(0))
                     {
-                        if (editable.toString().equals("."))
-                        {
+                        if (editable.toString().equals(".")) {
                             txt.setText("0" + editable.toString());
                         }
                     }
-                    /*if(inputTexts.get(0).getText().toString().trim().length() > 0 && inputTexts.get(1).getText().toString().trim().length() > 0)
+                    if(inputTexts.get(0).getText().toString().trim().length() > 0 && inputTexts.get(1).getText().toString().trim().length() > 0)
                     {
-                            calculatePixelSize(inputTexts.get(0), inputTexts.get(1), inputText.get(2));
-                    }*/
-
+                            inputTexts.get(2).removeTextChangedListener(this);
+                            calculatePixelSize(inputTexts.get(0), inputTexts.get(1), inputTexts.get(2));
+                            inputTexts.get(2).addTextChangedListener(this);
+                    }
                 }
             });
         }
@@ -121,11 +164,18 @@ public class Settings_Activity extends AppCompatActivity
         double fotoWidth = 2* altitude * Math.tan(Math.toRadians(fov/2.0));
         double fotoHeight = fotoWidth * (3.0/4.0);
 
-        double pixelSize = (fotoWidth * fotoHeight) / (3000 * 4000);
+        double pixelSize = Math.sqrt(((fotoWidth/ 4000) * 100) * ((fotoHeight/3000) * 100));
         resultText.setText(pixelSize + "");
     }
 
+    private void calculateFov(EditText editText1,EditText editText2, EditText resultText)
+    {
+        Editable altitudeEdit = editText1.getText();
+        Editable pixelSizeEdit = editText2.getText();
 
+        double altitude= Double.parseDouble(altitudeEdit.toString());
+        double pixelSize = Double.parseDouble(pixelSizeEdit.toString());
+    }
     public float[] getInputValues()
     {
         int[] inputIds = {R.id.editText, R.id.editText3, R.id.editText4};
@@ -200,7 +250,7 @@ public class Settings_Activity extends AppCompatActivity
         float[] inputValues = getInputValues();
         String[] selected = getResInput();
 
-        //Log.i("test", "" + getRadioButton());
+        Log.i("test", "" + inputValues[1]);
         if(!contains(inputValues, invalidInput) && selected != null)
         {
             inputOk = true;

@@ -32,7 +32,6 @@ public class Buch_Slider extends PagerAdapter{
             "Export"
     };
 
-
     public String[] act_discr = {
             "In this section you can search for an arbitrary location which you may want to map out later on. "
                     + "\n \nBelow you've got a change-button for changing the map type between a satellite, hybrid, normal and terrain aspect."
