@@ -45,13 +45,9 @@ public class Settings_Activity extends AppCompatActivity
             }
         });
 
-        String[] cr = {"Choose your camera resolution","1280x960 (4:3)"," 1280x720 (16:9)", "1280x853.33 (3:2)","1280x548.57 (21:9)"};
 
-        Spinner MySpinner = (Spinner)findViewById(R.id.spinner);
-        ArrayAdapter<String> myAdapter = new
-                ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, cr);
-        myAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        MySpinner.setAdapter(myAdapter);
+
+
 
         final ArrayList<EditText> inputTexts = new ArrayList<>();
 
@@ -181,7 +177,7 @@ public class Settings_Activity extends AppCompatActivity
         int[] inputIds = {R.id.editText, R.id.editText3, R.id.editText4};
         int i = 0;
         float[] inputValues = new float[]{-1,-1,-1};
-        getResInput();
+        //getResInput();
         for(int id : inputIds)
         {
             EditText inputText = (EditText) findViewById(id);
@@ -198,6 +194,7 @@ public class Settings_Activity extends AppCompatActivity
 
         return inputValues;
     }
+    /**
     public String[] getResInput()
     {
         Spinner resSpinner = (Spinner) findViewById(R.id.spinner);
@@ -209,6 +206,7 @@ public class Settings_Activity extends AppCompatActivity
         }
         return selection;
     }
+     */
     //get input from radio buttons
     public int getRadioButton()
     {
@@ -248,10 +246,10 @@ public class Settings_Activity extends AppCompatActivity
     public void settings_next(View view) {
         float invalidInput = -1.0f;
         float[] inputValues = getInputValues();
-        String[] selected = getResInput();
+       // String[] selected = getResInput();
 
         Log.i("test", "" + inputValues[1]);
-        if(!contains(inputValues, invalidInput) && selected != null)
+        if(!contains(inputValues, invalidInput))// && selected != null)
         {
             inputOk = true;
         }
