@@ -116,7 +116,7 @@ public class Settings_Activity extends AppCompatActivity
                             });
                         }
                     }
-                    else if(txt == inputTexts.get(1) && !(charSequence.toString().equals("")) && !(charSequence.toString().equals(".")))
+                    /**else if(txt == inputTexts.get(1) && !(charSequence.toString().equals("")) && !(charSequence.toString().equals(".")))
                     {
                         if(Double.parseDouble(charSequence.toString()) > 175)
                         {
@@ -132,7 +132,7 @@ public class Settings_Activity extends AppCompatActivity
                                 }
                             });
                         }
-                    }
+                    }**/
                 }
                 @Override
                 public void afterTextChanged(Editable editable)
