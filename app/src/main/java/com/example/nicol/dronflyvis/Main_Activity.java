@@ -650,7 +650,6 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
 
 
         ArrayList<Node> nodeList = new ArrayList<Node>();
-
         Intent intent = new Intent(this, Tours_View_And_Export_Activity.class);
 
             for(Marker marker : markers)
