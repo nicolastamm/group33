@@ -50,7 +50,7 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
     private Boolean pinModus = false;
     private Boolean polyAufteilung = false;
     private float[] settings;
-    private Node startNode;
+    private Boolean shapefill = true;
 
     ArrayList<Marker> markers = new ArrayList<Marker>();
     ArrayList<Marker> actPointsInPoly = new ArrayList<Marker>();
@@ -145,12 +145,16 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
         final ImageButton drawImageButton = findViewById(R.id.draw);
         final ImageButton clearImageButton = findViewById(R.id.clear);
         final ImageButton importImageButton = findViewById(R.id.importo);
+        final ImageButton splitImageButton = findViewById(R.id.split);
+        final ImageButton mapImageButton = findViewById(R.id.main_act_change_button);
 
         pinImageButton.setImageResource(R.drawable.pinicon);
         deleteImageButton.setImageResource(R.drawable.deleteicon);
         drawImageButton.setImageResource(R.drawable.drawselectedicon);
         clearImageButton.setImageResource(R.drawable.clear_image_button_style);
         importImageButton.setImageResource(R.drawable.import_image_button);
+        splitImageButton.setImageResource(R.drawable.nosplit);
+        mapImageButton.setImageResource(R.drawable.map_image_button_style);
 
 
         pinImageButton.setOnClickListener(new View.OnClickListener() {
@@ -237,6 +241,61 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
             }
         });
 
+        splitImageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(polyAufteilung){
+                    splitImageButton.setImageResource(R.drawable.nosplit);
+
+                    polyAufteilung = false;
+                    deletePointsInPoly();
+
+                    // Define configuration options
+                    Configuration croutonConfiguration = new Configuration.Builder()
+                            .setDuration(1000).build();
+                    // Define styles for crouton
+                    Style style = new Style.Builder()
+                            .setBackgroundColorValue(Color.argb(200,0,0,0))
+                            .setGravity(Gravity.CENTER_HORIZONTAL)
+                            .setConfiguration(croutonConfiguration)
+                            .setHeight(200)
+                            .setTextColorValue(Color.WHITE).build();
+                    // Display style and configuration
+                    Crouton.showText(Main_Activity.this, R.string.crouton_normal_mode , style);
+                }
+                else{
+                    splitImageButton.setImageResource(R.drawable.split);
+
+                    // Define configuration options
+                    Configuration croutonConfiguration = new Configuration.Builder()
+                            .setDuration(1000).build();
+                    // Define styles for crouton
+                    Style style = new Style.Builder()
+                            .setBackgroundColorValue(Color.argb(200,0,0,0))
+                            .setGravity(Gravity.CENTER_HORIZONTAL)
+                            .setConfiguration(croutonConfiguration)
+                            .setHeight(200)
+                            .setTextColorValue(Color.WHITE).build();
+                    // Display style and configuration
+                    Crouton.showText(Main_Activity.this, R.string.crouton_split_mode , style);
+
+                    if(markers != null){
+                       if(markers.size() >= 3) {
+                           drawPointInPoly();
+                       }
+                    }
+                    polyAufteilung = true;
+
+
+
+
+                }
+
+            }
+        });
+
+
+
         importImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -251,9 +310,9 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
         });
 
 
-        Button searchButton = findViewById(R.id.main_act_change_button);
 
-        searchButton.setOnClickListener(new View.OnClickListener() {
+
+        mapImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
@@ -277,8 +336,8 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
             }
         });
 
-        registerForContextMenu(searchButton);
-        searchButton.setOnLongClickListener(new View.OnLongClickListener() {
+        registerForContextMenu(mapImageButton);
+        mapImageButton.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
                 return false;
@@ -418,6 +477,10 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
                         drawBoundingBoxes();
                     }
 
+                    if(polyAufteilung){
+                        shapefill = false;
+                    }
+
                     drawPolygon();
 
                 }
@@ -425,12 +488,11 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
                 @Override
                 public void onMarkerDragEnd(Marker marker)
                 {
+
                     if(shape != null){
                         shape.remove();
                         shape=null;
                     }
-
-                    drawPolygon();
 
                     if(polyAufteilung) {
                         drawPointInPoly();
@@ -442,7 +504,11 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
                             actPolyLynes=null;
                             actPolyLynes = new ArrayList<Polyline>();
                         }
+
+                        shapefill = true;
                     }
+
+                    drawPolygon();
 
                 }
             });
@@ -489,17 +555,23 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
     private void drawPolygon()
     {
         PolygonOptions options = new PolygonOptions()
-                //.fillColor(0x66FF8C00)
-                .strokeWidth(4)
+                .strokeWidth(8)
                 .strokeColor(Color.BLACK);
+
+        if(shapefill){
+            options.fillColor(0x66FF8C00);
+        }
+        else{
+            options.fillColor(Color.argb(0,0,0,0));
+        }
 
         for(int i=0;i<markers.size();i++ )
         {
             if(markers.size()>0){
                 options.add(markers.get(i).getPosition());
             }
-        }
 
+        }
         shape = mMap.addPolygon(options);
     }
 
@@ -632,6 +704,24 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
                         public void onClick(DialogInterface dialogInterface, int i) {
                             drawPointInPoly();
                             polyAufteilung = true;
+
+                            final ImageButton splitImageButtonAlert = findViewById(R.id.split);
+                            splitImageButtonAlert.setImageResource(R.drawable.split);
+
+                            // Define configuration options
+                            Configuration croutonConfiguration = new Configuration.Builder()
+                                    .setDuration(3500).build();
+                            // Define styles for crouton
+                            Style style = new Style.Builder()
+                                    .setBackgroundColorValue(Color.argb(200,0,0,0))
+                                    .setGravity(Gravity.CENTER_HORIZONTAL)
+                                    .setConfiguration(croutonConfiguration)
+                                    .setHeight(200)
+                                    .setTextColorValue(Color.WHITE).build();
+                            // Display style and configuration
+                            Crouton.showText(Main_Activity.this, R.string.crouton_split_mode , style);
+
+
                             dialogInterface.cancel();
                         }})
                     .setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -675,6 +765,16 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
         if(shape!=null) {
             shape.remove();
 
+            for (int i = 0; i < markers.size(); i++) {
+                Marker m = markers.get(i);
+                m.remove();
+                m = null;
+            }
+            markers.removeAll(markers);
+
+        }
+
+        if(markers != null){
             for (int i = 0; i < markers.size(); i++) {
                 Marker m = markers.get(i);
                 m.remove();
@@ -754,15 +854,8 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
     }
 
 
-
-
     public void main_activity_back(View view)
     {
-        if(polyAufteilung){
-            polyAufteilung = false;
-            deletePointsInPoly();
-            return;
-        }
         onBackPressed();
     }
 

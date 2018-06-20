@@ -53,6 +53,7 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
 
 
     private ImageButton infobuch;
+    private ImageButton mapImageButton;
     private GoogleMap mMap;
     public int MarkerCounter= -2;
     private double height = 100.0;
@@ -113,9 +114,9 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
             }
         });
 
-        Button changeButton = findViewById(R.id.tvae_activity_change_button);
-
-        changeButton.setOnClickListener(new View.OnClickListener() {
+        mapImageButton = findViewById(R.id.tvae_activity_change_button);
+        mapImageButton.setImageResource(R.drawable.map_image_button_style);
+        mapImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
@@ -138,9 +139,9 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
             }
         });
 
-        registerForContextMenu(changeButton);
+        registerForContextMenu(mapImageButton);
 
-        changeButton.setOnLongClickListener(new View.OnLongClickListener() {
+        mapImageButton.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
                 return false;
@@ -300,7 +301,7 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
         paint.getTextBounds(text, 0, text.length(), bounds);
 
         int x = bitmap.getWidth()/2 - bounds.width()/2;
-        int y = bitmap.getHeight()/2 - bounds.height()/3;
+        int y = bitmap.getHeight()/2 + bounds.height()/2;
 
         canvas.drawText(text, x, y, paint);
 
@@ -311,8 +312,8 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
     {
         if(split){
             PolylineOptions options = new PolylineOptions()
-                    .width(7)
-                    .color(Color.BLACK);
+                    .width(10);
+
             for (int i = 0; i < markArray.size(); i++)
             {
                 if (markArray.get(i) != null || markArray.size() > 0) {
@@ -320,12 +321,28 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
                 }
             }
 
+            int lineColor = farbe % 4;
+            switch (lineColor){
+                case (0):
+                    options.color(getColor(R.color.green));
+                    break;
+                case (1):
+                    options.color(getColor(R.color.cyan));
+                    break;
+                case (2):
+                    options.color(getColor(R.color.magenta));
+                    break;
+                case (3):
+                    options.color(getColor(R.color.yellow));
+                    break;
+            }
+
 
             mMap.addPolyline(options);
         }
         else{
             PolylineOptions optionss = new PolylineOptions()
-                    .width(7)
+                    .width(10)
                     .color(Color.RED);
 
             for (int i = 0; i < markArray.size(); i++)
