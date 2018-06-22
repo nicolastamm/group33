@@ -202,8 +202,8 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
 
         }
         else{
-
-            Rastering raster = new Rastering(nodeList, settings[2], settings[1]);
+            Rastering raster = new Rastering(nodeList, (float) 78.8, 100);
+            //Rastering raster = new Rastering(nodeList, settings[2], settings[1]);
             TravelingSalesman tsm = new TravelingSalesman();
             ArrayList<Marker> pfad = new ArrayList<>();
             ArrayList<ArrayList<Node>>  actRaster = raster.getRaster();
