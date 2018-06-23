@@ -10,12 +10,12 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
-import android.os.Bundle;
-import android.util.Log;
 import android.view.ContextMenu;
+import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -32,25 +32,33 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-
+/*
+import de.keyboardsurfer.android.widget.crouton.Configuration;
+import de.keyboardsurfer.android.widget.crouton.Crouton;
+import de.keyboardsurfer.android.widget.crouton.Style;
+*/
 import static android.graphics.Bitmap.Config.ARGB_8888;
 
 public class Tours_View_And_Export_Activity extends FragmentActivity implements OnMapReadyCallback {
 
-    private static final int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 1;
-    private static  String FILE_NAME = "DronPfad.txt";
+    private static final int REQUEST_WRITE_EXTERNAL_STORAGE = 1;
+    private static  String FILE_NAME = "";
 
 
     private ImageButton infobuch;
+    //private ImageButton mapImageButton;
     private GoogleMap mMap;
-    public int MarkerCounter= 0;
+    public int MarkerCounter= -2;
     private double height = 100.0;
     public int farbe = 0;
 
@@ -59,15 +67,31 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
     private double lng;
     private int mapType;
     private float[] settings;
+    private  Boolean split;
+    private int droneFlag;
 
 
     ArrayList<Node> nodeList;
     ArrayList<Node> route;
+    ArrayList<ArrayList<Node>> allRoutes = new ArrayList<ArrayList<Node>>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.tours_view_and_export_activity);
+/*
+        // Define configuration options
+        Configuration croutonConfiguration = new Configuration.Builder()
+                .setDuration(3500).build();
+        // Define styles for crouton
+        Style style = new Style.Builder()
+                .setBackgroundColorValue(Color.argb(200,0,0,0))
+                .setGravity(Gravity.CENTER_HORIZONTAL)
+                .setConfiguration(croutonConfiguration)
+                .setHeight(200)
+                .setTextColorValue(Color.WHITE).build();
+        // Display style and configuration
+        Crouton.showText(Tours_View_And_Export_Activity.this, R.string.crouton_tours_activity, style);*/
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -81,10 +105,11 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
             lat = Float.parseFloat(getIntent().getExtras().getString("com.example.nicol.dronflyvis.mapLAT"));
             zoom = getIntent().getExtras().getFloat("com.example.nicol.dronflyvis.mapZOOM");
             mapType = getIntent().getExtras().getInt("com.example.nicol.dronflyvis.mapType");
+            split =  getIntent().getExtras().getBoolean("com.example.nicol.dronflyvis.splitPoly");
         }
 
 
-        infobuch = (ImageButton)findViewById(R.id.tvae_activity_infobuch_button);
+        infobuch = findViewById(R.id.tvae_activity_infobuch_button);
         infobuch.setImageResource(R.drawable.infobuch);
         infobuch.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -94,7 +119,7 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
             }
         });
 
-        Button changeButton = (Button)findViewById(R.id.tvae_activity_change_button);
+        Button changeButton = findViewById(R.id.tvae_activity_change_button);
 
         changeButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -136,47 +161,77 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        mMap.getUiSettings().setMapToolbarEnabled (false);
+        mMap.getUiSettings().setMapToolbarEnabled(false);
         mMap.getUiSettings().setZoomControlsEnabled(true);
-
 
 
         mMap.setMapType(mapType);
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lat, lng), zoom));
 
-        Rastering raster = new Rastering(nodeList, (float) 78.8, 100);
-        TravelingSalesman tsm = new TravelingSalesman();
 
-        for(int k=0;k<3;k++) {
+        if (split) {
+            Rastering raster = new Rastering(nodeList, (float) 78.8, 100);
+            TravelingSalesman tsm = new TravelingSalesman();
+
+
+
+            ArrayList<ArrayList<ArrayList<Node>>> actRaster = raster.getRasters();
+            for (ArrayList<ArrayList<Node>> i : actRaster) {
+                ArrayList<Marker> pfad = new ArrayList<>();
+                Node startNode = i.get(0).get(0);
+                route = tsm.travelingSalesman(i, new Node(startNode.getLatitude(), startNode.getLongitude(), 2));
+                allRoutes.add(route);
+
+                for (int j = 0; j < route.size(); j++) {
+                    double lt = route.get(j).getLatitude();
+                    double lon = route.get(j).getLongitude();
+
+                    MarkerCounter++;
+                    String text = String.valueOf(MarkerCounter);
+                    Bitmap bitmap = makeBitmap(this, text, farbe);
+
+                    MarkerOptions options = new MarkerOptions()
+                            .draggable(false)
+                            .position(new LatLng((float) lt, (float) lon))
+                            .icon(BitmapDescriptorFactory.fromBitmap(bitmap))
+                            .anchor((float) 0.5, (float) 0.5);
+                    pfad.add(mMap.addMarker(options));
+                }
+                drawPfad(pfad);
+                farbe++;
+                MarkerCounter = -2;
+            }
+
+        }
+        else{
+
+            Rastering raster = new Rastering(nodeList, (float) 78.8, 100);
+            TravelingSalesman tsm = new TravelingSalesman();
             ArrayList<Marker> pfad = new ArrayList<>();
-            ArrayList<Node> route;
-            ArrayList<ArrayList<Node>> actRuster = raster.getRasters()[k];
-            Node startNode = actRuster.get(0).get(0);
-            route = tsm.travelingSalesman(actRuster, new Node(startNode.getLatitude(), startNode.getLongitude(), 2));
+            ArrayList<ArrayList<Node>>  actRaster = raster.getRaster();
+            route = tsm.travelingSalesman(actRaster,new Node(actRaster.get(0).get(0).getLatitude(),actRaster.get(0).get(0).getLongitude(),2));
+            allRoutes.add(route);
 
-
-
-            for (int i = 0; i < route.size(); i++) {
+            for(int i = 0; i<route.size(); i++)
+            {
                 double lt = route.get(i).getLatitude();
                 double lon = route.get(i).getLongitude();
 
                 MarkerCounter++;
                 String text = String.valueOf(MarkerCounter);
-                Bitmap bitmap = makeBitmap(this, text);
+                Bitmap bitmap = makeBitmap(this, text,2);
 
                 MarkerOptions options = new MarkerOptions()
                         .draggable(false)
-                        .position(new LatLng((float) lt, (float) lon))
+                        .position(new LatLng((float)lt,(float)lon))
                         .icon(BitmapDescriptorFactory.fromBitmap(bitmap))
                         .anchor((float) 0.5, (float) 0.5);
-                ;
+
+
                 pfad.add(mMap.addMarker(options));
             }
             drawPfad(pfad);
-            farbe++;
-            MarkerCounter=0;
         }
-
     }
 
     @Override
@@ -206,19 +261,48 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
         }
     }
 
-    public Bitmap makeBitmap(Context context, String text){
-
+    public Bitmap makeBitmap(Context context, String text, int colourMode) {
         Resources resources = context.getResources();
         float scale = resources.getDisplayMetrics().density;
+
         Bitmap bitmap = BitmapFactory.decodeResource(resources, R.drawable.markerroute2);
         bitmap = bitmap.copy(ARGB_8888, true);
 
-        Canvas canvas = new  Canvas(bitmap);
-
         Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        paint.setColor(Color.WHITE);
+
+
+        if(split) {
+            colourMode = colourMode % 4;
+            switch (colourMode) {
+                case (0):
+                    bitmap = BitmapFactory.decodeResource(resources, R.drawable.markerstandardgreen);
+                    bitmap = bitmap.copy(ARGB_8888, true);
+                    paint.setColor(Color.WHITE);
+                    break;
+                case (1):
+                    bitmap = BitmapFactory.decodeResource(resources, R.drawable.markerstandardcyan);
+                    bitmap = bitmap.copy(ARGB_8888, true);
+                    paint.setColor(Color.WHITE);
+                    break;
+                case (2):
+                    bitmap = BitmapFactory.decodeResource(resources, R.drawable.markerstandardmagenta);
+                    bitmap = bitmap.copy(ARGB_8888, true);
+                    paint.setColor(Color.WHITE);
+                    break;
+                case (3):
+                    bitmap = BitmapFactory.decodeResource(resources, R.drawable.markerstandardyellow);
+                    bitmap = bitmap.copy(ARGB_8888, true);
+                    paint.setColor(Color.WHITE);
+                    break;
+
+            }
+        }
+
+
         paint.setTextSize(8 * scale);
-        paint.setShadowLayer(1f,0f,1f, Color.WHITE);
+        paint.setColor(Color.WHITE);
+
+        Canvas canvas = new Canvas(bitmap);
 
         Rect bounds = new Rect();
         paint.getTextBounds(text, 0, text.length(), bounds);
@@ -233,44 +317,49 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
 
     private void drawPfad(ArrayList<Marker> markArray)
     {
-
-        ArrayList<Marker> pfad = markArray;
-        PolylineOptions optionss = new PolylineOptions()
-                .width(7);
-
-        switch(farbe){
-            case(0):
+        if(split){
+            PolylineOptions options = new PolylineOptions()
+                    .width(7)
+                    .color(Color.BLACK);
+            for (int i = 0; i < markArray.size(); i++)
             {
-                optionss.color(Color.RED);
-                break;
-            }
-            case(1):
-            {
-                optionss.color(Color.BLUE);
-                break;
-            }
-            case(2):
-            {
-                optionss.color(Color.YELLOW);
-                break;
+                if (markArray.get(i) != null || markArray.size() > 0) {
+                    options.add(markArray.get(i).getPosition());
+                }
             }
 
 
+            mMap.addPolyline(options);
+        }
+        else{
+            PolylineOptions optionss = new PolylineOptions()
+                    .width(7)
+                    .color(Color.RED);
+
+            for (int i = 0; i < markArray.size(); i++)
+            {
+                if (markArray.get(i) != null || markArray.size() > 0) {
+                    optionss.add(markArray.get(i).getPosition());
+                }
+            }
+
+
+            mMap.addPolyline(optionss);
         }
 
-                for(int i=0;i<pfad.size();i++ )
-                {
-                    if(pfad.get(i) != null || pfad.size()>0){
-                        optionss.add(pfad.get(i).getPosition());
-                    }
-                }
 
-                pfad.get(0).setIcon(BitmapDescriptorFactory.fromResource(R.drawable.markerstart));
-                pfad.get(pfad.size()-1).setIcon(BitmapDescriptorFactory.fromResource(R.drawable.markerstart));
-                mMap.addPolyline(optionss);
     }
 
-    public void export_csv(View view) {
+
+    public void  export_csv(View view) {
+        //Request storage permissions during runtime
+        ActivityCompat.requestPermissions( Tours_View_And_Export_Activity.this ,new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                REQUEST_WRITE_EXTERNAL_STORAGE);
+
+        //Request storage permissions during runtime
+        ActivityCompat.requestPermissions( Tours_View_And_Export_Activity.this ,new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                REQUEST_WRITE_EXTERNAL_STORAGE);
+
         /*
          * Gets the current Date und Time, to timestamp the CSV
          */
@@ -278,6 +367,116 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
         Date currentTime = new Date();
         String timeStamp = "" + format.format(currentTime);
 
+        String content = "";
+        String directory = "";
+
+        for(int i = 0; i < allRoutes.size(); ++i)
+        {
+            //Only create Export for selected drone
+            switch(droneFlag) {
+                case 0:
+                    content = routeForMavicPro(allRoutes.get(i));
+
+                    if(i != 0)
+                    {
+                        FILE_NAME = "Route " + timeStamp + "(" + i + ").csv";
+                    }
+                    else
+                    {
+                        FILE_NAME = "Route " + timeStamp + ".csv";
+                    }
+
+                    directory = "DJI/";
+                    break;
+                case 1:
+                    content = routeForBebop(allRoutes.get(i));
+
+                    if(i != 0)
+                    {
+                        FILE_NAME = timeStamp + "(" + i + ") Route";
+                    }
+                    else
+                    {
+                        FILE_NAME = timeStamp + " Route";
+                    }
+                    directory = "ARPro3/";
+                    break;
+                default:
+                    content = "";
+                    Toast.makeText(this,"Invalid Drone selected",Toast.LENGTH_LONG).show();
+                    break;
+            }
+
+            //Get the path to the directory to save the CSV
+            File file = android.os.Environment.getExternalStorageDirectory();
+            String path = file.getAbsolutePath() + "/DroneTours/" + directory;
+            file = new File(path);
+            //If there is no folder, create a new one
+            file.mkdirs();
+            file = new File(path + FILE_NAME);
+
+            //Create a new File to later write in the data
+            try
+            {
+                file.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+                Toast.makeText(this,"CouldNotCreateFile",Toast.LENGTH_LONG).show();
+            }
+            FileOutputStream fos = null;
+
+            /*
+             *
+             */
+            if(droneFlag == 1)
+            {
+                InputStream in = getResources().openRawResource(R.raw.ar3pro);
+                BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+                String ar = "";
+                try
+                {
+                    while (reader.readLine() != null)
+                    {
+                        ar += reader.readLine();
+                    }
+                } catch (IOException e)
+                {
+                    e.printStackTrace();
+                }
+                content = ar + content;
+            }
+
+            //write data to file
+            try
+            {
+                fos = new FileOutputStream(file);
+                fos.write(content.getBytes());
+
+                Toast.makeText(this,"File saved at: " + file,Toast.LENGTH_LONG).show();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+                Toast.makeText(this,"FileNotFound, please tyr again to export",Toast.LENGTH_LONG).show();
+            } catch (IOException e) {
+                e.printStackTrace();
+                Toast.makeText(this,"IOException, during write to file",Toast.LENGTH_LONG).show();
+            } finally{
+                if(fos != null){
+                    try {
+                        fos.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Creates the Content for the CSV, which is needed for LitchiOnline
+     * @return the content used for the CSV File
+     */
+    private String routeForMavicPro(ArrayList<Node> route)
+    {
         String content;
         content = "latitude,longitude,altitude.m.,heading.deg.,curvesize.m.,rotationdir,gimbalmode,"
                 + "gimbalpitchangle,";
@@ -296,53 +495,28 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
                     + ",0,0,0,0,0,1,0,-1,0,-1,0,-1,0,-1,0,-1,0,-1,0,-1,0,-1,0,-1,0,-1,0,-1,0,-1,0,-1,0,-1,0\r\n";
         }
 
+        return content;
+    }
 
-        FILE_NAME = "Route " + timeStamp + ".csv";
-
-        //Request storage permissions during runtime
-        ActivityCompat.requestPermissions( Tours_View_And_Export_Activity.this ,new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE);
-
-        //Get the path to the directory to save the CSV
-        String path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/DroneTours/";
-        File file = new File(path);
-
-        //If there is no folder, create a new one
-        file.mkdirs();
-        file = new File(path + FILE_NAME);
-
-        //Create a new File to later write in the data
-        try
+    /**
+     * Creates the Content for the CSV, which is needed for AR Pro 3
+     * @return the content used for the CSV File
+     */
+    private String routeForBebop(ArrayList<Node> route)
+    {
+        String content = null;
+        // iterates through the whole list and writes every Nodes Longitude and Latitude
+        for (int i = 0; i < route.size() - 1; ++i)
         {
-            file.createNewFile();
-        } catch (IOException e) {
-            e.printStackTrace();
-            Toast.makeText(this,"CouldNotCreateFile",Toast.LENGTH_LONG).show();
+            Node add = route.get(i);
+            content += height + ",0,4,0," + i + ",0,0,0,0,0,-1,5,1,"
+                    + (float)add.getLatitude() + "," + (float)add.getLongitude() + ",false,99,30\r\n";
         }
-        FileOutputStream fos = null;
+        Node add = route.get(route.size() - 1);
+        content += height + ",0,4,0," + (route.size() - 1) + ",0,0,0,0,0,-1,5,1,"
+                + (float)add.getLatitude() + "," + (float)add.getLongitude() + ",false," + Integer.MIN_VALUE + ",0";
 
-        //write data to file
-        try
-        {
-            fos = new FileOutputStream(file);
-            fos.write(content.getBytes());
-
-            Toast.makeText(this,"File saved at: " + file,Toast.LENGTH_LONG).show();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-            Toast.makeText(this,"FileNotFound, please tyr again to export",Toast.LENGTH_LONG).show();
-        } catch (IOException e) {
-            e.printStackTrace();
-            Toast.makeText(this,"IOException, during write to file",Toast.LENGTH_LONG).show();
-        } finally{
-            if(fos != null){
-                try {
-                    fos.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
+        return content;
     }
 
     public void tvae_back(View view){

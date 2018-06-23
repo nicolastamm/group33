@@ -45,9 +45,9 @@ public class Node implements Parcelable
     };
 
     /**
-     * @param positionFlags the flag to set
+     * @param positionFlag the flag to set
      */
-    public void setPositionFlag(int positionFlags)
+    public void setPositionFlag(int positionFlag)
     {
         this.positionFlag = positionFlag;
     }
