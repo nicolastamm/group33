@@ -7,16 +7,16 @@ import java.util.ArrayList;
  */
 public class Rastering
 {
-    private ArrayList<Node> polygon;
+    private static ArrayList<Node> polygon;
     private float flightHeight;
     private double fov , fotoWidth , fotoHeight;
     private ArrayList<ArrayList<Node>> raster;
     private ArrayList<ArrayList<ArrayList<Node>>> rasters;
-    private ArrayList<Double[]> boundingBoxes;
-    private Double[] boundingBox;
+    private ArrayList<Node[]> boundingBoxes;
+    private Node[] boundingBox;
     private GeoTest geoTest;
-    
-    public Rastering(ArrayList<Node> inputPolygon, double fov, float flightHeight)
+
+    Rastering(ArrayList<Node> inputPolygon, double fov, float flightHeight)
     {
         this.polygon = inputPolygon;
         this.fov = fov;
@@ -27,8 +27,8 @@ public class Rastering
         fotoWidth *= 0.30; //70% horizontal overlap.
         fotoHeight *= 0.15; //85% vertical overlap.
     }
-    
-    private Double[] searchForBorderCoordinates()
+
+    static Double[] searchForBorderCoordinates(ArrayList<Node> polygon)
     {
         //Initialize with existing values. Dont know what the global minimum is, dont need to know
         double longMin = polygon.get(0).getLongitude();
@@ -41,18 +41,21 @@ public class Rastering
         // Go through all the elements and store minima and maxima for long and lat.
         for(int i = 1 ; i < polygon.size() ; i++)
         {
-            if(polygon.get(i).getLongitude() < longMin)
-                {longMin = polygon.get(i).getLongitude();}
-            else if(polygon.get(i).getLongitude() > longMax)
-                {longMax = polygon.get(i).getLongitude();}
+            if(polygon.get(i).getLongitude() < longMin) {
+                longMin = polygon.get(i).getLongitude();
+            }
+            else if(polygon.get(i).getLongitude() > longMax) {
+                longMax = polygon.get(i).getLongitude();
+            }
 
-            if(polygon.get(i).getLatitude() < latMin)
-                {latMin = polygon.get(i).getLatitude();}
-            else if(polygon.get(i).getLatitude() > latMax)
-                {latMax = polygon.get(i).getLatitude();}
+            if(polygon.get(i).getLatitude() < latMin) {
+                latMin = polygon.get(i).getLatitude();
+            }
+            else if(polygon.get(i).getLatitude() > latMax) {
+                latMax = polygon.get(i).getLatitude();
+            }
         }
-        boundingBox = new Double[]{longMin, longMax, latMin, latMax}; // We wish to also have this stored elsewhere
-        return boundingBox;
+        return new Double[]{longMin, longMax, latMin, latMax};
     }
 
     private ArrayList<ArrayList<Node>> placeRaster(Double[] borderCoordinates)
@@ -87,17 +90,17 @@ public class Rastering
                                                 0
                                         ) //then this point does not border a "concavity" (FLAG = 0)
                                 );
-                    //else, and the last node added borders "concavity" (FLAG = 1)
+                        //else, and the last node added borders "concavity" (FLAG = 1)
                     else if(outputRaster.get(i).get(outputRaster.get(i).size()-1).getPositionFlag() == 1)
                         outputRaster.get(i).add
                                 (new Node
-                                                (
-                                                        potentialNodeLatitude,
-                                                        potentialNodeLongitude,
-                                                        1
-                                                ) //then this point borders a "concavity" (FLAG = 1)
+                                        (
+                                                potentialNodeLatitude,
+                                                potentialNodeLongitude,
+                                                1
+                                        ) //then this point borders a "concavity" (FLAG = 1)
                                 );
-                    // but if the column is not empty, and the last node does not border a "concavity" (FLAG = 0)
+                        // but if the column is not empty, and the last node does not border a "concavity" (FLAG = 0)
                     else
                         outputRaster.get(i).add
                                 (new Node
@@ -124,6 +127,15 @@ public class Rastering
         return outputRaster;
     }
 
+
+    static double metersToLat(double meters) {
+        return meters / 111325.0;
+    } // 1° of latitude is around 111.325 km.
+
+    static double metersToLong(double meters, double lat) {
+        return (meters / (111325.0 * Math.cos(Math.toRadians(lat))));
+    }
+
     public static void main(String[] args) {
         ArrayList<Node> test = new ArrayList<>();
         test.add(new Node(47.707475, 9.188631, 2));
@@ -139,7 +151,7 @@ public class Rastering
     }
 
     private ArrayList<ArrayList<ArrayList<Node>>> splitPolygon() {
-        Double[] borderCoordinates = searchForBorderCoordinates();
+        Double[] borderCoordinates = searchForBorderCoordinates(polygon);
 
         double polygonHeight = Math.abs(borderCoordinates[2] - borderCoordinates[3]);
         polygonHeight *= 111325.0;
@@ -173,14 +185,12 @@ public class Rastering
         double fotoHeightCoord = metersToLat(fotoHeight);
         double subPolyWidth = subPolycols * fotoWidthCoord;
         double subPolyHeight = subPolyrows * fotoHeightCoord;
-
         double traversedLongitude = 0;
         double traversedLatitude = 0;
         rasters = new ArrayList<>();
-        boundingBoxes = new ArrayList<>();
-        for(int i = 0 ; borderCoordinates[0] + traversedLongitude - (subPolyWidth / 2.0) <= borderCoordinates[1] + (subPolyWidth / 2.0); i++)
+        for (; borderCoordinates[0] + traversedLongitude - (subPolyWidth / 2.0) <= borderCoordinates[1] + (subPolyWidth / 2.0); )
         {
-            for(int j = 0 ; borderCoordinates[2] + traversedLatitude - (subPolyHeight / 2.0)<= borderCoordinates[3] + (subPolyHeight / 2.0); j++)
+            for (; borderCoordinates[2] + traversedLatitude - (subPolyHeight / 2.0) <= borderCoordinates[3] + (subPolyHeight / 2.0); )
             {
                 //Add to rasters the raster inside the specified sub-BoundingBox
                 rasters.add(placeRaster(new Double[]
@@ -190,40 +200,27 @@ public class Rastering
                                 borderCoordinates[2] + traversedLatitude,
                                 borderCoordinates[2] + traversedLatitude + subPolyHeight
                         }));
-                //Also save the bounding box for later use.
-                boundingBoxes.add(new Double[]
-                        {
-                                borderCoordinates[0] + traversedLongitude,
-                                borderCoordinates[0] + traversedLongitude + subPolyWidth,
-                                borderCoordinates[2] + traversedLatitude,
-                                borderCoordinates[2] + traversedLatitude + subPolyHeight
-                        });
+
                 traversedLatitude += subPolyHeight;
+                traversedLatitude += metersToLat(fotoHeight);
             }
             traversedLatitude = 0;
-            traversedLongitude += subPolyWidth;
+            traversedLongitude += subPolyWidth + metersToLong(fotoWidth, borderCoordinates[2]);
         }
         rasters.removeIf(ArrayList::isEmpty);
         return rasters;
     }
 
-    private static double metersToLat(double meters) {return meters / 111325.0;} // 1° of latitude is around 111.325 km.
-    private static double metersToLong(double meters , double lat) {return (meters / (111325.0 * Math.cos(Math.toRadians(lat))));}
-    public  ArrayList<ArrayList<Node>> getRaster()
-    {
-        return placeRaster(searchForBorderCoordinates());
-    }
-
-    ArrayList<ArrayList<ArrayList<Node>>> getRasters()
-    {
+    ArrayList<ArrayList<ArrayList<Node>>> getRasters() {
         return splitPolygon();
     }
 
-    Double[] getBoundingBox() {
-        return boundingBox;
+    public static ArrayList<Node> getPolygon()
+    {
+        return polygon;
     }
 
-    ArrayList<Double[]> getBoundingBoxes() {
-        return boundingBoxes;
+    public ArrayList<ArrayList<Node>> getRaster() {
+        return placeRaster(searchForBorderCoordinates(polygon));
     }
 }

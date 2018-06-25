@@ -12,7 +12,7 @@ public class TravelingSalesman
 	Node startNode;
 	float ourTSPLength = 0;
 	float cheapestLength;
-	float farthestLength;
+	float farthestLength = Float.MAX_VALUE;
 
 	/**
 	 * Calculates an approximately optimal route using three different algorithms: <br>
@@ -24,36 +24,53 @@ public class TravelingSalesman
 	 */
 	public ArrayList<Node> travelingSalesman(ArrayList<ArrayList<Node>> grid, Node startNode)
 	{
+		if(grid.isEmpty())
+		{
+			return Rastering.getPolygon();
+		}
+
 		this.startNode = startNode;
+
+		for(int i = 0; i < grid.size(); ++i)
+		{
+			for(int j = 0; j < grid.get(i).size(); ++j)
+			{
+				if(grid.get(i).get(j) ==  startNode)
+				{
+					grid.get(i).remove(j);
+
+					//System.out.println("Removed StartNode from Grid");
+
+					break;
+				}
+			}
+		}
+
 		SubTour cheapestTour;
 		ArrayList<Node> cheapest = twoDimToOneDim((ArrayList<ArrayList<Node>>) grid.clone());
 		cheapestTour = cheapestInsertion(cheapest);
 
 		SubTour farthestTour;
 		ArrayList<Node> farthest = twoDimToOneDim((ArrayList<ArrayList<Node>>) grid.clone());
-		farthestTour = farthestInsertion(farthest);
+		//farthestTour = farthestInsertion(farthest);
 
 		ArrayList<Node> ourTSPRoute;
 		ArrayList<ArrayList<Node>> ourtsp = (ArrayList<ArrayList<Node>>) grid.clone();
 		ourTSPRoute = ourTSP(ourtsp);
 
-		System.out.println(cheapestLength + " " + farthestLength + " " +  ourTSPLength);
-
 		if(cheapestLength < farthestLength && cheapestLength < ourTSPLength)
 		{
-			System.out.println("cheapest");
 			return cheapestTour.getTour();
 		}
 		else if(farthestLength < cheapestLength && farthestLength < ourTSPLength)
 		{
-			System.out.println("Farthest");
-			return farthestTour.getTour();
+		//	return farthestTour.getTour();
 		}
 		else
 		{
-			System.out.println("Our");
 			return ourTSPRoute;
 		}
+		return new ArrayList<Node>();
 	}
 
 	/**
@@ -69,7 +86,10 @@ public class TravelingSalesman
 		{
 			for(int j = 0; j < grid.get(i).size(); ++j)
 			{
-				oneDim.add(grid.get(i).get(j));
+				if(startNode != grid.get(i).get(j))
+				{
+					oneDim.add(grid.get(i).get(j));
+				}
 			}
 		}
 
@@ -163,12 +183,6 @@ public class TravelingSalesman
 
 		double[] dists = new double[5];
 
-		if(grid.isEmpty())
-		{
-			return tour;
-		}
-
-
 		Iterator<Node> gridIter = grid.iterator();
 		Node act;
 		double currentDist;
@@ -239,14 +253,8 @@ public class TravelingSalesman
 
 		double[] dists = new double[5];
 
-		if(grid.isEmpty())
-		{
-			return tour;
-		}
-
-
 		Iterator<Node> gridIter = grid.iterator();
-		Node act = null;
+		Node act;
 		double currentDist;
 		double dist = Double.MIN_VALUE;
 		Node farthestNeighbour = null;
@@ -283,6 +291,7 @@ public class TravelingSalesman
 		while(!grid.isEmpty())
 		{
 			gridIter = grid.iterator();
+			dist = Double.MIN_VALUE;
 			while(gridIter.hasNext())
 			{
 				act = gridIter.next();
@@ -294,14 +303,14 @@ public class TravelingSalesman
 					farthestNeighbour = act;
 				}
 			}
-			if(grid.size() == 1)
+			/*if(grid.size() == 1)
 			{
-				dists = searchInsertPos(tour, act);
-				farthestDists = dists;
+				act = grid.get(0);
+				farthestDists = searchInsertPos(tour, act);
 				tour.addNode(act, (int)farthestDists[0], farthestDists[4], farthestDists[2], farthestDists[3]);
-				grid.remove(farthestNeighbour);
+				grid.remove(act);
 				break;
-			}
+			}*/
 
 			tour.addNode(farthestNeighbour, (int)farthestDists[0], farthestDists[4], farthestDists[2], farthestDists[3]);
 			grid.remove(farthestNeighbour);
@@ -441,6 +450,7 @@ public class TravelingSalesman
 				while(actIter.hasNext())
 				{
 					Node elem = actIter.next();
+					/*
 					if(elem.getPositionFlag() == 1)
 					{
 						ourTSPLength += distance(route.get(route.size() - 1), elem);
@@ -448,8 +458,8 @@ public class TravelingSalesman
 						actIter.remove();
 						splitted.add(act);
 						split = true;
-						break;
-					}
+						//break;
+					}*/
 
 					ourTSPLength += distance(route.get(route.size() - 1), elem);
 					route.add(elem);
@@ -471,11 +481,11 @@ public class TravelingSalesman
 				while(lastColumnIter.hasNext())
 				{
 					Node elem = lastColumnIter.next();
+					/*
 					if(elem.getPositionFlag() == 1)
 					{
-						System.out.println(""+elem.getPositionFlag());
-						break;
-					}
+						//break;
+					}*/
 
 					ourTSPLength += distance(route.get(route.size() - 1), elem);
 					route.add(elem);
@@ -537,7 +547,7 @@ public class TravelingSalesman
 				while(actIter.hasNext())
 				{
 					Node elem = actIter.next();
-					if(elem.getPositionFlag() == 1)
+					/*if(elem.getPositionFlag() == 1)
 					{
 						ourTSPLength += distance(route.get(route.size() - 1), elem);
 						route.add(elem);
@@ -545,7 +555,7 @@ public class TravelingSalesman
 						splitted.add(act);
 						split = true;
 						break;
-					}
+					}*/
 
 					ourTSPLength += distance(route.get(route.size() - 1), elem);
 					route.add(elem);
@@ -580,12 +590,11 @@ public class TravelingSalesman
 				while(firstColumnIter.hasNext())
 				{
 					Node elem = firstColumnIter.next();
+					/*
 					if(elem.getPositionFlag() == 1)
 					{
-						System.out.println(""+elem.getPositionFlag());
-						break;
-					}
-
+						//break;
+					}*/
 
 					ourTSPLength += distance(route.get(route.size() - 1), elem);
 					route.add(elem);
