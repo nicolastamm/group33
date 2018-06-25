@@ -89,7 +89,7 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
 
         if(getIntent().getExtras() != null)
         {
-            settings = getIntent().getExtras().getFloatArray("com.example.nicol.dronflyvis.SETTINGS");
+            settings = getIntent().getExtras().getFloatArray("com.example.nicol.dronflyvis.INPUT_VALUES");
         }
 
         ImageButton infobuch = findViewById(R.id.infobuch_main_activity);
@@ -613,8 +613,8 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
             actNodeListe.add(new Node(marker.getPosition().latitude, marker.getPosition().longitude, 0));
         }
 
-        Rastering raster = new Rastering(actNodeListe, (float) 78.8, 100);
-
+        //Rastering raster = new Rastering(actNodeListe, (float) 78.8, 100);
+        Rastering raster = new Rastering(actNodeListe, settings[2], settings[1]);
         ArrayList<ArrayList<ArrayList<Node>>> actRuster = raster.getRasters();
 
         int colour = -1;
@@ -727,6 +727,27 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
                     .setNegativeButton("No", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
+
+                            ArrayList<Node> nodeList = new ArrayList<Node>();
+                            Intent intent = new Intent(Main_Activity.this, Tours_View_And_Export_Activity.class);
+
+                            for(Marker marker : markers)
+                            {
+                                nodeList.add(new Node(marker.getPosition().latitude, marker.getPosition().longitude, 0));
+                            }
+
+                            intent.putParcelableArrayListExtra("com.example.nicol.dronflyvis.NODELIST", nodeList);
+                            intent.putExtra("com.example.nicol.dronflyvis.BEARING", mMap.getCameraPosition().bearing);
+                            intent.putExtra("com.example.nicol.dronflyvis.mapZOOM", mMap.getCameraPosition().zoom);
+                            intent.putExtra("com.example.nicol.dronflyvis.mapLAT","" + mMap.getCameraPosition().target.latitude);
+                            intent.putExtra("com.example.nicol.dronflyvis.mapLNG","" + mMap.getCameraPosition().target.longitude);
+                            intent.putExtra("com.example.nicol.dronflyvis.mapType", mMap.getMapType());
+                            intent.putExtra("com.example.nicol.dronflyvis.SETTINGS", settings);
+                            intent.putExtra("com.example.nicol.dronflyvis.splitPoly", polyAufteilung);
+
+                            startActivity(intent);
+
+
                             dialogInterface.cancel();
                         }
                     });
@@ -791,7 +812,7 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
             actNodeListe.add(new Node(marker.getPosition().latitude, marker.getPosition().longitude, 0));
         }
 
-        Rastering raster = new Rastering(actNodeListe, (float) 78.8, 100);
+        Rastering raster = new Rastering(actNodeListe, settings[2], settings[1]);
 
         ArrayList<ArrayList<Node>> actRaster = raster.getRaster();
 
@@ -813,7 +834,6 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
                 m = null;
             }
             actPointsInPoly.removeAll(actPointsInPoly);
-
         }
     }
 

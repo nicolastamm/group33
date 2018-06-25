@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Gravity;
 import android.view.MenuItem;
@@ -102,7 +103,7 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
             zoom = getIntent().getExtras().getFloat("com.example.nicol.dronflyvis.mapZOOM");
             mapType = getIntent().getExtras().getInt("com.example.nicol.dronflyvis.mapType");
             split =  getIntent().getExtras().getBoolean("com.example.nicol.dronflyvis.splitPoly");
-            //droneFlag = getIntent().getExtras().getInt("com.example.nicol.dronflyvis.RADIO_SELECTION");
+            droneFlag = getIntent().getExtras().getInt("com.example.nicol.dronflyvis.RADIO_SELECTION");
         }
 
 
@@ -165,11 +166,11 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
 
 
         if (split) {
-            //Rastering raster = new Rastering(nodeList, (float) settings[2], settings[1]);
+            Rastering raster = new Rastering(nodeList, (float) settings[2], settings[1]);
             //Dies bereitet grade Probleme !!
             // Problemme in dem Settings Array !
 
-            Rastering raster = new Rastering(nodeList, (float) 78.8, 100);
+            //Rastering raster = new Rastering(nodeList, (float) 78.8, 100);
             TravelingSalesman tsm = new TravelingSalesman();
 
 
@@ -202,8 +203,10 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
 
         }
         else{
-            Rastering raster = new Rastering(nodeList, (float) 78.8, 100);
-            //Rastering raster = new Rastering(nodeList, settings[2], settings[1]);
+            //Rastering raster = new Rastering(nodeList, (float) 78.8, 100);
+            Log.i("test" ,"" + settings[1]);
+            Log.i("test1" ,"" + settings[2]);
+            Rastering raster = new Rastering(nodeList, settings[2], settings[1]);
             TravelingSalesman tsm = new TravelingSalesman();
             ArrayList<Marker> pfad = new ArrayList<>();
             ArrayList<ArrayList<Node>>  actRaster = raster.getRaster();
