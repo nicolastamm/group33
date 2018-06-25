@@ -223,7 +223,6 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
             {
                 route = tsm.travelingSalesman(actRaster,new Node(actRaster.get(0).get(0).getLatitude(),actRaster.get(0).get(0).getLongitude(),2), nodeList);
             }
-            route = tsm.travelingSalesman(actRaster,new Node(actRaster.get(0).get(0).getLatitude(),actRaster.get(0).get(0).getLongitude(),2));
             allRoutes.add(route);
 
             for(int i = 0; i<route.size(); i++)

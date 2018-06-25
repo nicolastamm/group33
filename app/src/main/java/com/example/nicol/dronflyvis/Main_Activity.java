@@ -630,7 +630,7 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
                                 .title("Marker")
                                 .draggable(false)
                                 .position(new LatLng(lt, lon))
-                                .icon(BitmapDescriptorFactory.fromResource(R.drawable.markerstandardred))
+                                .icon(BitmapDescriptorFactory.fromResource(R.drawable.markerstandardmagenta))
                                 .anchor((float) 0.5, (float) 0.5);
 
                         actPointsInPoly.add(mMap.addMarker(options));
