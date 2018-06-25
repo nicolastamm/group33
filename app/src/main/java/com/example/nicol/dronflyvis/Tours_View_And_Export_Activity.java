@@ -430,7 +430,7 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
              */
             if(droneFlag == 1)
             {
-                InputStream in = getResources().openRawResource(R.raw.ar3pro);
+                InputStream in = getResources().openRawResource(R.raw.arpro3);
                 BufferedReader reader = new BufferedReader(new InputStreamReader(in));
                 String ar = "";
                 try
