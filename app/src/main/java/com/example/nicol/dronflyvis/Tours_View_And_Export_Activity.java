@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Gravity;
 import android.view.MenuItem;
@@ -42,11 +43,11 @@ import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-/*
+
 import de.keyboardsurfer.android.widget.crouton.Configuration;
 import de.keyboardsurfer.android.widget.crouton.Crouton;
 import de.keyboardsurfer.android.widget.crouton.Style;
-*/
+
 import static android.graphics.Bitmap.Config.ARGB_8888;
 
 public class Tours_View_And_Export_Activity extends FragmentActivity implements OnMapReadyCallback {
@@ -56,7 +57,7 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
 
 
     private ImageButton infobuch;
-    //private ImageButton mapImageButton;
+    private ImageButton mapImageButton;
     private GoogleMap mMap;
     public int MarkerCounter= -2;
     private double height = 100.0;
@@ -79,7 +80,7 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.tours_view_and_export_activity);
-/*
+
         // Define configuration options
         Configuration croutonConfiguration = new Configuration.Builder()
                 .setDuration(3500).build();
@@ -91,7 +92,7 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
                 .setHeight(200)
                 .setTextColorValue(Color.WHITE).build();
         // Display style and configuration
-        Crouton.showText(Tours_View_And_Export_Activity.this, R.string.crouton_tours_activity, style);*/
+        Crouton.showText(Tours_View_And_Export_Activity.this, R.string.crouton_tours_activity, style);
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -106,6 +107,7 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
             zoom = getIntent().getExtras().getFloat("com.example.nicol.dronflyvis.mapZOOM");
             mapType = getIntent().getExtras().getInt("com.example.nicol.dronflyvis.mapType");
             split =  getIntent().getExtras().getBoolean("com.example.nicol.dronflyvis.splitPoly");
+            droneFlag = getIntent().getExtras().getInt("com.example.nicol.dronflyvis.RADIO_SELECTION");
         }
 
 
@@ -119,9 +121,9 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
             }
         });
 
-        Button changeButton = findViewById(R.id.tvae_activity_change_button);
-
-        changeButton.setOnClickListener(new View.OnClickListener() {
+        mapImageButton = findViewById(R.id.tvae_activity_change_button);
+        mapImageButton.setImageResource(R.drawable.map_image_button_style);
+        mapImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
@@ -144,9 +146,9 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
             }
         });
 
-        registerForContextMenu(changeButton);
+        registerForContextMenu(mapImageButton);
 
-        changeButton.setOnLongClickListener(new View.OnLongClickListener() {
+        mapImageButton.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
                 return false;
@@ -170,7 +172,11 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
 
 
         if (split) {
-            Rastering raster = new Rastering(nodeList, (float) 78.8, 100);
+            Rastering raster = new Rastering(nodeList, (float) settings[2], settings[1]);
+            //Dies bereitet grade Probleme !!
+            // Problemme in dem Settings Array !
+
+            //Rastering raster = new Rastering(nodeList, (float) 78.8, 100);
             TravelingSalesman tsm = new TravelingSalesman();
 
 
@@ -179,7 +185,7 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
             for (ArrayList<ArrayList<Node>> i : actRaster) {
                 ArrayList<Marker> pfad = new ArrayList<>();
                 Node startNode = i.get(0).get(0);
-                route = tsm.travelingSalesman(i, new Node(startNode.getLatitude(), startNode.getLongitude(), 2));
+                route = tsm.travelingSalesman(i, new Node(startNode.getLatitude(), startNode.getLongitude(), 2) , nodeList);
                 allRoutes.add(route);
 
                 for (int j = 0; j < route.size(); j++) {
@@ -205,10 +211,18 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
         }
         else{
 
-            Rastering raster = new Rastering(nodeList, (float) 78.8, 100);
+            Rastering raster = new Rastering(nodeList, settings[2], settings[1]);
             TravelingSalesman tsm = new TravelingSalesman();
             ArrayList<Marker> pfad = new ArrayList<>();
             ArrayList<ArrayList<Node>>  actRaster = raster.getRaster();
+            if(actRaster.isEmpty())
+            {
+                route = nodeList;
+            }
+            else
+            {
+                route = tsm.travelingSalesman(actRaster,new Node(actRaster.get(0).get(0).getLatitude(),actRaster.get(0).get(0).getLongitude(),2), nodeList);
+            }
             route = tsm.travelingSalesman(actRaster,new Node(actRaster.get(0).get(0).getLatitude(),actRaster.get(0).get(0).getLongitude(),2));
             allRoutes.add(route);
 
@@ -308,7 +322,7 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
         paint.getTextBounds(text, 0, text.length(), bounds);
 
         int x = bitmap.getWidth()/2 - bounds.width()/2;
-        int y = bitmap.getHeight()/2 - bounds.height()/3;
+        int y = bitmap.getHeight()/2 + bounds.height()/2;
 
         canvas.drawText(text, x, y, paint);
 
@@ -319,8 +333,8 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
     {
         if(split){
             PolylineOptions options = new PolylineOptions()
-                    .width(7)
-                    .color(Color.BLACK);
+                    .width(10);
+
             for (int i = 0; i < markArray.size(); i++)
             {
                 if (markArray.get(i) != null || markArray.size() > 0) {
@@ -328,12 +342,28 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
                 }
             }
 
+            int lineColor = farbe % 4;
+            switch (lineColor){
+                case (0):
+                    options.color(getColor(R.color.green));
+                    break;
+                case (1):
+                    options.color(getColor(R.color.cyan));
+                    break;
+                case (2):
+                    options.color(getColor(R.color.magenta));
+                    break;
+                case (3):
+                    options.color(getColor(R.color.yellow));
+                    break;
+            }
+
 
             mMap.addPolyline(options);
         }
         else{
             PolylineOptions optionss = new PolylineOptions()
-                    .width(7)
+                    .width(10)
                     .color(Color.RED);
 
             for (int i = 0; i < markArray.size(); i++)

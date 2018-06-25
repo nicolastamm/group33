@@ -3,7 +3,9 @@
     <string name="title_activity_act4">Map</string>
     <string name="title_activity_act5">Map</string>
 
-    <string name="crouton_main_activity">Choose your Location \nDraw your polygon \nImport one of your polygons</string>
-    <string name="crouton_tours_activity">Your optimal calculated tour \nExport tour to your phone</string>
+    <string name="crouton_main_activity">Choose your Location \nDraw polygon </string>
+    <string name="crouton_tours_activity">Export tour</string>
+    <string name="crouton_split_mode">Split mode</string>
+    <string name="crouton_normal_mode">Normal mode</string>
 
 </resources>

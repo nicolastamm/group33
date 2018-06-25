@@ -7,7 +7,7 @@ import java.util.ArrayList;
  */
 public class Rastering
 {
-    private static ArrayList<Node> polygon;
+    private ArrayList<Node> polygon;
     private float flightHeight;
     private double fov , fotoWidth , fotoHeight;
     private ArrayList<ArrayList<Node>> raster;
@@ -213,11 +213,6 @@ public class Rastering
 
     ArrayList<ArrayList<ArrayList<Node>>> getRasters() {
         return splitPolygon();
-    }
-
-    public static ArrayList<Node> getPolygon()
-    {
-        return polygon;
     }
 
     public ArrayList<ArrayList<Node>> getRaster() {
