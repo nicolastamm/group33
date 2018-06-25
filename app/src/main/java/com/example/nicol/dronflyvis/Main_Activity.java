@@ -32,13 +32,15 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.PolygonOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 
 import java.util.ArrayList;
-
+/*
 import de.keyboardsurfer.android.widget.crouton.Configuration;
 import de.keyboardsurfer.android.widget.crouton.Crouton;
 import de.keyboardsurfer.android.widget.crouton.Style;
-
+*/
 
 public class Main_Activity extends FragmentActivity implements OnMapReadyCallback {
 
@@ -53,6 +55,10 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
     ArrayList<Marker> markers = new ArrayList<Marker>();
     ArrayList<Marker> actPointsInPoly = new ArrayList<Marker>();
 
+    ArrayList<Marker> actBoderMarkers = new ArrayList<Marker>();
+    ArrayList<Polyline> actPolyLynes = new ArrayList<Polyline>();
+
+
 
     Polygon shape;
 
@@ -62,7 +68,7 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity);
 
-
+/*
         // Define configuration options
         Configuration croutonConfiguration = new Configuration.Builder()
                 .setDuration(3500).build();
@@ -74,7 +80,7 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
                 .setHeight(200)
                 .setTextColorValue(Color.WHITE).build();
         // Display style and configuration
-        Crouton.showText(Main_Activity.this, R.string.crouton_main_activity , style);
+        Crouton.showText(Main_Activity.this, R.string.crouton_main_activity , style);*/
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -394,13 +400,26 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
                 @Override
                 public void onMarkerDrag(Marker marker)
                 {
+                    if(actPointsInPoly!=null){
+                        for (int i = 0; i < actPointsInPoly.size(); i++) {
+                            Marker m = actPointsInPoly.get(i);
+                            m.remove();
+                            m = null;
+                        }
+                        actPointsInPoly.removeAll(actPointsInPoly);
+                    }
 
                     if(shape != null){
                         shape.remove();
                         shape=null;
                     }
+
+                    if(polyAufteilung) {
+                        drawBoundingBoxes();
+                    }
+
                     drawPolygon();
-                    // drawPointInPoly();
+
                 }
 
                 @Override
@@ -410,10 +429,19 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
                         shape.remove();
                         shape=null;
                     }
+
                     drawPolygon();
 
                     if(polyAufteilung) {
                         drawPointInPoly();
+
+                        if(actPolyLynes!=null){
+                            for(int i = 0; i<actPolyLynes.size();i++){
+                                actPolyLynes.get(i).remove();
+                            }
+                            actPolyLynes=null;
+                            actPolyLynes = new ArrayList<Polyline>();
+                        }
                     }
 
                 }
@@ -461,7 +489,7 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
     private void drawPolygon()
     {
         PolygonOptions options = new PolygonOptions()
-                .fillColor(0x66FF8C00)
+                //.fillColor(0x66FF8C00)
                 .strokeWidth(4)
                 .strokeColor(Color.BLACK);
 
@@ -666,16 +694,13 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
 
         Rastering raster = new Rastering(actNodeListe, (float) 78.8, 100);
 
-        ArrayList<ArrayList<ArrayList<Node>>> actRuster = raster.getRasters();
+        ArrayList<ArrayList<Node>> actRaster = raster.getRaster();
 
         int anzahl = 0;
-        for (ArrayList<ArrayList<Node>> i : actRuster) {
-
-            for (ArrayList<Node> x : i) {
-                for (Node j : x) {
+        for (ArrayList<Node> i : actRaster) {
+            for (Node j : i) {
                         anzahl++;
                     }
-                }
             }
         return anzahl;
     }
@@ -692,6 +717,44 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
 
         }
     }
+
+    public void drawBoundingBoxes(){
+
+        if(actPolyLynes!=null){
+            for(int i = 0; i<actPolyLynes.size();i++){
+                actPolyLynes.get(i).remove();
+            }
+
+            actPolyLynes=null;
+            actPolyLynes = new ArrayList<Polyline>();
+
+        }
+
+
+        ArrayList<Node> actNodeListe = new ArrayList<Node>();
+        for(Marker marker : markers)
+        {
+            actNodeListe.add(new Node(marker.getPosition().latitude, marker.getPosition().longitude, 0));
+        }
+
+        ArrayList<Node[]> border = BoundingBoxesGenerator.getBoundingBoxes(actNodeListe, (float) 78.8, 100);
+        for(int i = 0; i<border.size();i++){
+
+            PolylineOptions options2 = new PolylineOptions()
+                    .width(7)
+                    .color(Color.RED);
+            for(int j=0;j<4;j++ )
+            {
+                    options2.add(new LatLng( border.get(i)[j].getLongitude(),border.get(i)[j].getLatitude()));
+            }
+            options2.add(new LatLng( border.get(i)[0].getLongitude(),border.get(i)[0].getLatitude()));
+            actPolyLynes.add(mMap.addPolyline(options2));
+        }
+
+    }
+
+
+
 
     public void main_activity_back(View view)
     {

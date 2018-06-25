@@ -32,33 +32,34 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 
+import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.channels.FileChannel;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-
+/*
 import de.keyboardsurfer.android.widget.crouton.Configuration;
 import de.keyboardsurfer.android.widget.crouton.Crouton;
 import de.keyboardsurfer.android.widget.crouton.Style;
-
+*/
 import static android.graphics.Bitmap.Config.ARGB_8888;
 
 public class Tours_View_And_Export_Activity extends FragmentActivity implements OnMapReadyCallback {
 
     private static final int REQUEST_WRITE_EXTERNAL_STORAGE = 1;
-    private static  String FILE_NAME = "DronPfad.txt";
+    private static  String FILE_NAME = "";
 
 
     private ImageButton infobuch;
+    //private ImageButton mapImageButton;
     private GoogleMap mMap;
-    public int MarkerCounter= 0;
+    public int MarkerCounter= -2;
     private double height = 100.0;
-    private int bebopFlag = 0;
     public int farbe = 0;
 
     private float zoom;
@@ -67,16 +68,18 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
     private int mapType;
     private float[] settings;
     private  Boolean split;
+    private int droneFlag;
 
 
     ArrayList<Node> nodeList;
     ArrayList<Node> route;
+    ArrayList<ArrayList<Node>> allRoutes = new ArrayList<ArrayList<Node>>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.tours_view_and_export_activity);
-
+/*
         // Define configuration options
         Configuration croutonConfiguration = new Configuration.Builder()
                 .setDuration(3500).build();
@@ -88,7 +91,7 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
                 .setHeight(200)
                 .setTextColorValue(Color.WHITE).build();
         // Display style and configuration
-        Crouton.showText(Tours_View_And_Export_Activity.this, R.string.crouton_tours_activity, style);
+        Crouton.showText(Tours_View_And_Export_Activity.this, R.string.crouton_tours_activity, style);*/
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -171,11 +174,13 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
             TravelingSalesman tsm = new TravelingSalesman();
 
 
-            ArrayList<Marker> pfad = new ArrayList<>();
+
             ArrayList<ArrayList<ArrayList<Node>>> actRaster = raster.getRasters();
             for (ArrayList<ArrayList<Node>> i : actRaster) {
+                ArrayList<Marker> pfad = new ArrayList<>();
                 Node startNode = i.get(0).get(0);
                 route = tsm.travelingSalesman(i, new Node(startNode.getLatitude(), startNode.getLongitude(), 2));
+                allRoutes.add(route);
 
                 for (int j = 0; j < route.size(); j++) {
                     double lt = route.get(j).getLatitude();
@@ -194,7 +199,7 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
                 }
                 drawPfad(pfad);
                 farbe++;
-                MarkerCounter = 0;
+                MarkerCounter = -2;
             }
 
         }
@@ -205,6 +210,7 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
             ArrayList<Marker> pfad = new ArrayList<>();
             ArrayList<ArrayList<Node>>  actRaster = raster.getRaster();
             route = tsm.travelingSalesman(actRaster,new Node(actRaster.get(0).get(0).getLatitude(),actRaster.get(0).get(0).getLongitude(),2));
+            allRoutes.add(route);
 
             for(int i = 0; i<route.size(); i++)
             {
@@ -219,8 +225,7 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
                         .draggable(false)
                         .position(new LatLng((float)lt,(float)lon))
                         .icon(BitmapDescriptorFactory.fromBitmap(bitmap))
-                        .anchor((float)0.5, (float)0.5);;
-
+                        .anchor((float) 0.5, (float) 0.5);
 
 
                 pfad.add(mMap.addMarker(options));
@@ -312,43 +317,39 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
 
     private void drawPfad(ArrayList<Marker> markArray)
     {
-
-        ArrayList<Marker> pfad = markArray;
-
         if(split){
-            PolylineOptions optionss = new PolylineOptions()
+            PolylineOptions options = new PolylineOptions()
                     .width(7)
                     .color(Color.BLACK);
-            for(int i=0;i<pfad.size();i++ )
+            for (int i = 0; i < markArray.size(); i++)
             {
-                if(pfad.get(i) != null || pfad.size()>0){
-                    optionss.add(pfad.get(i).getPosition());
+                if (markArray.get(i) != null || markArray.size() > 0) {
+                    options.add(markArray.get(i).getPosition());
                 }
             }
 
-            pfad.get(0).setIcon(BitmapDescriptorFactory.fromResource(R.drawable.markerstandardred));
-            pfad.get(pfad.size() - 1).setIcon(BitmapDescriptorFactory.fromResource(R.drawable.markerstandardred));
-            mMap.addPolyline(optionss);
+
+            mMap.addPolyline(options);
         }
         else{
             PolylineOptions optionss = new PolylineOptions()
                     .width(7)
                     .color(Color.RED);
 
-            for(int i=0;i<pfad.size();i++ )
+            for (int i = 0; i < markArray.size(); i++)
             {
-                if(pfad.get(i) != null || pfad.size()>0){
-                    optionss.add(pfad.get(i).getPosition());
+                if (markArray.get(i) != null || markArray.size() > 0) {
+                    optionss.add(markArray.get(i).getPosition());
                 }
             }
 
-            pfad.get(0).setIcon(BitmapDescriptorFactory.fromResource(R.drawable.markerstandardred));
-            pfad.get(pfad.size() - 1).setIcon(BitmapDescriptorFactory.fromResource(R.drawable.markerstandardred));
+
             mMap.addPolyline(optionss);
         }
 
 
     }
+
 
     public void  export_csv(View view) {
         //Request storage permissions during runtime
@@ -369,70 +370,102 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
         String content = "";
         String directory = "";
 
-        //Only create Export for selected drone
-        switch(bebopFlag) {
-            case 0:
-                content = routeForMavicPro();
-                FILE_NAME = "Route " + timeStamp + ".csv";
-                directory = "DJI/";
-                break;
-            case 1:
-                content = routeForBebop();
-                FILE_NAME += timeStamp + " Route";
-                directory = "ARPro3/";
-                break;
-            default:
-                content = "";
-                Toast.makeText(this,"Invalid Drone selected",Toast.LENGTH_LONG).show();
-                break;
-        }
-
-        //Get the path to the directory to save the CSV
-        String path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/DroneTours/";
-        File file = new File(path + directory);
-
-        //If there is no folder, create a new one
-        file.mkdirs();
-        file = new File(path + FILE_NAME);
-
-        //Create a new File to later write in the data
-        try
+        for(int i = 0; i < allRoutes.size(); ++i)
         {
-            file.createNewFile();
-        } catch (IOException e) {
-            e.printStackTrace();
-            Toast.makeText(this,"CouldNotCreateFile",Toast.LENGTH_LONG).show();
-        }
-        FileOutputStream fos = null;
+            //Only create Export for selected drone
+            switch(droneFlag) {
+                case 0:
+                    content = routeForMavicPro(allRoutes.get(i));
 
-        /*
-         *
-         */
-        if(bebopFlag == 1)
-        {
-            File inF = new File("/home/user/inputFile.txt");
-            //copyFile(inF, file);
-        }
+                    if(i != 0)
+                    {
+                        FILE_NAME = "Route " + timeStamp + "(" + i + ").csv";
+                    }
+                    else
+                    {
+                        FILE_NAME = "Route " + timeStamp + ".csv";
+                    }
 
-        //write data to file
-        try
-        {
-            fos = new FileOutputStream(file);
-            fos.write(content.getBytes());
+                    directory = "DJI/";
+                    break;
+                case 1:
+                    content = routeForBebop(allRoutes.get(i));
 
-            Toast.makeText(this,"File saved at: " + file,Toast.LENGTH_LONG).show();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-            Toast.makeText(this,"FileNotFound, please tyr again to export",Toast.LENGTH_LONG).show();
-        } catch (IOException e) {
-            e.printStackTrace();
-            Toast.makeText(this,"IOException, during write to file",Toast.LENGTH_LONG).show();
-        } finally{
-            if(fos != null){
-                try {
-                    fos.close();
-                } catch (IOException e) {
+                    if(i != 0)
+                    {
+                        FILE_NAME = timeStamp + "(" + i + ") Route";
+                    }
+                    else
+                    {
+                        FILE_NAME = timeStamp + " Route";
+                    }
+                    directory = "ARPro3/";
+                    break;
+                default:
+                    content = "";
+                    Toast.makeText(this,"Invalid Drone selected",Toast.LENGTH_LONG).show();
+                    break;
+            }
+
+            //Get the path to the directory to save the CSV
+            File file = android.os.Environment.getExternalStorageDirectory();
+            String path = file.getAbsolutePath() + "/DroneTours/" + directory;
+            file = new File(path);
+            //If there is no folder, create a new one
+            file.mkdirs();
+            file = new File(path + FILE_NAME);
+
+            //Create a new File to later write in the data
+            try
+            {
+                file.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+                Toast.makeText(this,"CouldNotCreateFile",Toast.LENGTH_LONG).show();
+            }
+            FileOutputStream fos = null;
+
+            /*
+             *
+             */
+            if(droneFlag == 1)
+            {
+                InputStream in = getResources().openRawResource(R.raw.ar3pro);
+                BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+                String ar = "";
+                try
+                {
+                    while (reader.readLine() != null)
+                    {
+                        ar += reader.readLine();
+                    }
+                } catch (IOException e)
+                {
                     e.printStackTrace();
+                }
+                content = ar + content;
+            }
+
+            //write data to file
+            try
+            {
+                fos = new FileOutputStream(file);
+                fos.write(content.getBytes());
+
+                Toast.makeText(this,"File saved at: " + file,Toast.LENGTH_LONG).show();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+                Toast.makeText(this,"FileNotFound, please tyr again to export",Toast.LENGTH_LONG).show();
+            } catch (IOException e) {
+                e.printStackTrace();
+                Toast.makeText(this,"IOException, during write to file",Toast.LENGTH_LONG).show();
+            } finally{
+                if(fos != null){
+                    try {
+                        fos.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         }
@@ -442,7 +475,7 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
      * Creates the Content for the CSV, which is needed for LitchiOnline
      * @return the content used for the CSV File
      */
-    private String routeForMavicPro()
+    private String routeForMavicPro(ArrayList<Node> route)
     {
         String content;
         content = "latitude,longitude,altitude.m.,heading.deg.,curvesize.m.,rotationdir,gimbalmode,"
@@ -469,7 +502,7 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
      * Creates the Content for the CSV, which is needed for AR Pro 3
      * @return the content used for the CSV File
      */
-    private String routeForBebop()
+    private String routeForBebop(ArrayList<Node> route)
     {
         String content = null;
         // iterates through the whole list and writes every Nodes Longitude and Latitude
@@ -484,40 +517,6 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
                 + (float)add.getLatitude() + "," + (float)add.getLongitude() + ",false," + Integer.MIN_VALUE + ",0";
 
         return content;
-    }
-
-    /**
-     *
-     * @param in
-     * @param out
-     */
-    private void copyFile(File in, File out)
-    {
-        FileChannel inChannel = null;
-        FileChannel outChannel = null;
-        try
-        {
-            inChannel = new FileInputStream(in).getChannel();
-            outChannel = new FileOutputStream(out).getChannel();
-            inChannel.transferTo(0, inChannel.size(), outChannel);
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace();
-            Toast.makeText(this,"IOException, during write to file",Toast.LENGTH_LONG).show();
-        }
-        finally
-        {
-            try
-            {
-                if (inChannel != null)
-                    inChannel.close();
-                if (outChannel != null)
-                    outChannel.close();
-            }
-            catch (IOException e)
-            {}
-        }
     }
 
     public void tvae_back(View view){
