@@ -54,7 +54,7 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
 
     private ImageButton infobuch;
     private GoogleMap mMap;
-    public int MarkerCounter= 0;
+    public int MarkerCounter= -2;
     private double height = 100.0;
     public int farbe = 0;
 
@@ -168,9 +168,10 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
             TravelingSalesman tsm = new TravelingSalesman();
 
 
-            ArrayList<Marker> pfad = new ArrayList<>();
+
             ArrayList<ArrayList<ArrayList<Node>>> actRaster = raster.getRasters();
             for (ArrayList<ArrayList<Node>> i : actRaster) {
+                ArrayList<Marker> pfad = new ArrayList<>();
                 Node startNode = i.get(0).get(0);
                 route = tsm.travelingSalesman(i, new Node(startNode.getLatitude(), startNode.getLongitude(), 2));
 
@@ -191,7 +192,7 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
                 }
                 drawPfad(pfad);
                 farbe++;
-                MarkerCounter = 0;
+                MarkerCounter = -2;
             }
 
         }
