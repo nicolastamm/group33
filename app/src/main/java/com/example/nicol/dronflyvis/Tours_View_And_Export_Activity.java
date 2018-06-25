@@ -179,7 +179,7 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
             for (ArrayList<ArrayList<Node>> i : actRaster) {
                 ArrayList<Marker> pfad = new ArrayList<>();
                 Node startNode = i.get(0).get(0);
-                route = tsm.travelingSalesman(i, new Node(startNode.getLatitude(), startNode.getLongitude(), 2));
+                route = tsm.travelingSalesman(i, new Node(startNode.getLatitude(), startNode.getLongitude(), 2) , nodeList);
 
                 for (int j = 0; j < route.size(); j++) {
                     double lt = route.get(j).getLatitude();
@@ -210,7 +210,14 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
             TravelingSalesman tsm = new TravelingSalesman();
             ArrayList<Marker> pfad = new ArrayList<>();
             ArrayList<ArrayList<Node>>  actRaster = raster.getRaster();
-            route = tsm.travelingSalesman(actRaster,new Node(actRaster.get(0).get(0).getLatitude(),actRaster.get(0).get(0).getLongitude(),2));
+            if(actRaster.isEmpty())
+            {
+                route = nodeList;
+            }
+            else
+            {
+                route = tsm.travelingSalesman(actRaster,new Node(actRaster.get(0).get(0).getLatitude(),actRaster.get(0).get(0).getLongitude(),2), nodeList);
+            }
 
             for(int i = 0; i<route.size(); i++)
             {
