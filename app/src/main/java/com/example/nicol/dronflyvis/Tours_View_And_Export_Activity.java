@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Gravity;
 import android.view.MenuItem;
@@ -33,11 +34,9 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.channels.FileChannel;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -55,10 +54,10 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
 
 
     private ImageButton infobuch;
+    private ImageButton mapImageButton;
     private GoogleMap mMap;
-    public int MarkerCounter= 0;
+    public int MarkerCounter= -2;
     private double height = 100.0;
-    private int bebopFlag = 0;
     public int farbe = 0;
 
     private float zoom;
@@ -67,6 +66,7 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
     private int mapType;
     private float[] settings;
     private  Boolean split;
+    private int droneFlag;
 
 
     ArrayList<Node> nodeList;
@@ -103,6 +103,7 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
             zoom = getIntent().getExtras().getFloat("com.example.nicol.dronflyvis.mapZOOM");
             mapType = getIntent().getExtras().getInt("com.example.nicol.dronflyvis.mapType");
             split =  getIntent().getExtras().getBoolean("com.example.nicol.dronflyvis.splitPoly");
+            droneFlag = getIntent().getExtras().getInt("com.example.nicol.dronflyvis.RADIO_SELECTION");
         }
 
 
@@ -116,9 +117,9 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
             }
         });
 
-        Button changeButton = findViewById(R.id.tvae_activity_change_button);
-
-        changeButton.setOnClickListener(new View.OnClickListener() {
+        mapImageButton = findViewById(R.id.tvae_activity_change_button);
+        mapImageButton.setImageResource(R.drawable.map_image_button_style);
+        mapImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
@@ -141,17 +142,15 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
             }
         });
 
-        registerForContextMenu(changeButton);
+        registerForContextMenu(mapImageButton);
 
-        changeButton.setOnLongClickListener(new View.OnLongClickListener() {
+        mapImageButton.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
                 return false;
             }
         });
     }
-
-
 
 
     @Override
@@ -167,13 +166,18 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
 
 
         if (split) {
-            Rastering raster = new Rastering(nodeList, (float) 78.8, 100);
+            Rastering raster = new Rastering(nodeList, (float) settings[2], settings[1]);
+            //Dies bereitet grade Probleme !!
+            // Problemme in dem Settings Array !
+
+            //Rastering raster = new Rastering(nodeList, (float) 78.8, 100);
             TravelingSalesman tsm = new TravelingSalesman();
 
 
-            ArrayList<Marker> pfad = new ArrayList<>();
+
             ArrayList<ArrayList<ArrayList<Node>>> actRaster = raster.getRasters();
             for (ArrayList<ArrayList<Node>> i : actRaster) {
+                ArrayList<Marker> pfad = new ArrayList<>();
                 Node startNode = i.get(0).get(0);
                 route = tsm.travelingSalesman(i, new Node(startNode.getLatitude(), startNode.getLongitude(), 2));
 
@@ -194,13 +198,15 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
                 }
                 drawPfad(pfad);
                 farbe++;
-                MarkerCounter = 0;
+                MarkerCounter = -2;
             }
 
         }
         else{
-
-            Rastering raster = new Rastering(nodeList, (float) 78.8, 100);
+            //Rastering raster = new Rastering(nodeList, (float) 78.8, 100);
+            //Log.i("test" ,"" + settings[1]);
+            //Log.i("test1" ,"" + settings[2]);
+            Rastering raster = new Rastering(nodeList, settings[2], settings[1]);
             TravelingSalesman tsm = new TravelingSalesman();
             ArrayList<Marker> pfad = new ArrayList<>();
             ArrayList<ArrayList<Node>>  actRaster = raster.getRaster();
@@ -219,8 +225,7 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
                         .draggable(false)
                         .position(new LatLng((float)lt,(float)lon))
                         .icon(BitmapDescriptorFactory.fromBitmap(bitmap))
-                        .anchor((float)0.5, (float)0.5);;
-
+                        .anchor((float) 0.5, (float) 0.5);
 
 
                 pfad.add(mMap.addMarker(options));
@@ -292,8 +297,6 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
 
             }
         }
-
-
         paint.setTextSize(8 * scale);
         paint.setColor(Color.WHITE);
 
@@ -303,47 +306,57 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
         paint.getTextBounds(text, 0, text.length(), bounds);
 
         int x = bitmap.getWidth()/2 - bounds.width()/2;
-        int y = bitmap.getHeight()/2 - bounds.height()/3;
+        int y = bitmap.getHeight()/2 + bounds.height()/2;
 
         canvas.drawText(text, x, y, paint);
 
         return bitmap;
     }
-
     private void drawPfad(ArrayList<Marker> markArray)
     {
-
-        ArrayList<Marker> pfad = markArray;
-
         if(split){
-            PolylineOptions optionss = new PolylineOptions()
-                    .width(7)
-                    .color(Color.BLACK);
-            for(int i=0;i<pfad.size();i++ )
+            PolylineOptions options = new PolylineOptions()
+                    .width(10);
+
+            for (int i = 0; i < markArray.size(); i++)
             {
-                if(pfad.get(i) != null || pfad.size()>0){
-                    optionss.add(pfad.get(i).getPosition());
+                if (markArray.get(i) != null || markArray.size() > 0) {
+                    options.add(markArray.get(i).getPosition());
                 }
             }
 
-            pfad.get(0).setIcon(BitmapDescriptorFactory.fromResource(R.drawable.markerstandardred));
-            pfad.get(pfad.size() - 1).setIcon(BitmapDescriptorFactory.fromResource(R.drawable.markerstandardred));
-            mMap.addPolyline(optionss);
+            int lineColor = farbe % 4;
+            switch (lineColor){
+                case (0):
+                    options.color(getColor(R.color.green));
+                    break;
+                case (1):
+                    options.color(getColor(R.color.cyan));
+                    break;
+                case (2):
+                    options.color(getColor(R.color.magenta));
+                    break;
+                case (3):
+                    options.color(getColor(R.color.yellow));
+                    break;
+            }
+
+
+            mMap.addPolyline(options);
         }
         else{
             PolylineOptions optionss = new PolylineOptions()
-                    .width(7)
+                    .width(10)
                     .color(Color.RED);
 
-            for(int i=0;i<pfad.size();i++ )
+            for (int i = 0; i < markArray.size(); i++)
             {
-                if(pfad.get(i) != null || pfad.size()>0){
-                    optionss.add(pfad.get(i).getPosition());
+                if (markArray.get(i) != null || markArray.size() > 0) {
+                    optionss.add(markArray.get(i).getPosition());
                 }
             }
 
-            pfad.get(0).setIcon(BitmapDescriptorFactory.fromResource(R.drawable.markerstandardred));
-            pfad.get(pfad.size() - 1).setIcon(BitmapDescriptorFactory.fromResource(R.drawable.markerstandardred));
+
             mMap.addPolyline(optionss);
         }
 
@@ -351,14 +364,6 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
     }
 
     public void  export_csv(View view) {
-        //Request storage permissions during runtime
-        ActivityCompat.requestPermissions( Tours_View_And_Export_Activity.this ,new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                REQUEST_WRITE_EXTERNAL_STORAGE);
-
-        //Request storage permissions during runtime
-        ActivityCompat.requestPermissions( Tours_View_And_Export_Activity.this ,new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
-                REQUEST_WRITE_EXTERNAL_STORAGE);
-
         /*
          * Gets the current Date und Time, to timestamp the CSV
          */
@@ -368,8 +373,8 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
 
         String content = "";
         String directory = "";
-
         //Only create Export for selected drone
+        int bebopFlag = droneFlag;
         switch(bebopFlag) {
             case 0:
                 content = routeForMavicPro();
@@ -386,6 +391,10 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
                 Toast.makeText(this,"Invalid Drone selected",Toast.LENGTH_LONG).show();
                 break;
         }
+
+        //Request storage permissions during runtime
+        ActivityCompat.requestPermissions( Tours_View_And_Export_Activity.this ,new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                REQUEST_WRITE_EXTERNAL_STORAGE);
 
         //Get the path to the directory to save the CSV
         String path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/DroneTours/";
@@ -404,15 +413,6 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
             Toast.makeText(this,"CouldNotCreateFile",Toast.LENGTH_LONG).show();
         }
         FileOutputStream fos = null;
-
-        /*
-         *
-         */
-        if(bebopFlag == 1)
-        {
-            File inF = new File("/home/user/inputFile.txt");
-            //copyFile(inF, file);
-        }
 
         //write data to file
         try
@@ -484,40 +484,6 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
                 + (float)add.getLatitude() + "," + (float)add.getLongitude() + ",false," + Integer.MIN_VALUE + ",0";
 
         return content;
-    }
-
-    /**
-     *
-     * @param in
-     * @param out
-     */
-    private void copyFile(File in, File out)
-    {
-        FileChannel inChannel = null;
-        FileChannel outChannel = null;
-        try
-        {
-            inChannel = new FileInputStream(in).getChannel();
-            outChannel = new FileOutputStream(out).getChannel();
-            inChannel.transferTo(0, inChannel.size(), outChannel);
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace();
-            Toast.makeText(this,"IOException, during write to file",Toast.LENGTH_LONG).show();
-        }
-        finally
-        {
-            try
-            {
-                if (inChannel != null)
-                    inChannel.close();
-                if (outChannel != null)
-                    outChannel.close();
-            }
-            catch (IOException e)
-            {}
-        }
     }
 
     public void tvae_back(View view){
