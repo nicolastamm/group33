@@ -392,7 +392,7 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
         /*
          * Gets the current Date und Time, to timestamp the CSV
          */
-        SimpleDateFormat format = new SimpleDateFormat("dd.MM.yy' 'HH.mm");
+        SimpleDateFormat format = new SimpleDateFormat("dd-MM-yy' 'HH-mm");
         Date currentTime = new Date();
         String timeStamp = "" + format.format(currentTime);
 
@@ -484,7 +484,7 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
                 Toast.makeText(this,"File saved at: " + file,Toast.LENGTH_LONG).show();
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
-                Toast.makeText(this,"FileNotFound, please tyr again to export",Toast.LENGTH_LONG).show();
+                Toast.makeText(this,"FileNotFound, please try again to export",Toast.LENGTH_LONG).show();
             } catch (IOException e) {
                 e.printStackTrace();
                 Toast.makeText(this,"IOException, during write to file",Toast.LENGTH_LONG).show();
@@ -495,6 +495,54 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
+                }
+            }
+        }  //end for
+
+        String filename = "Polygon " + timeStamp + ".csv";
+        File poly = this.getFilesDir();
+        //If there is no folder, create a new one
+        poly.mkdirs();
+        poly = new File(poly.getAbsolutePath() + "/" + filename);
+
+        try
+        {
+            poly.createNewFile();
+            Toast.makeText(this,""+ poly,Toast.LENGTH_LONG).show();
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+            Toast.makeText(this,"CouldNotCreateFile",Toast.LENGTH_LONG).show();
+        }
+
+        FileOutputStream fos = null;
+        content = "";
+
+        for(int i = 0; i < nodeList.size(); i++)
+        {
+            content += nodeList.get(i).getLatitude() + "," + nodeList.get(i).getLongitude() + "\n";
+        }
+
+        //write data to file
+        try
+        {
+            fos = openFileOutput(filename, Context.MODE_PRIVATE);
+            fos.write(content.getBytes());
+
+            Toast.makeText(this,"File saved at: " + poly ,Toast.LENGTH_LONG).show();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            Toast.makeText(this,"FileNotFound, please try again to export",Toast.LENGTH_LONG).show();
+        } catch (IOException e) {
+            e.printStackTrace();
+            Toast.makeText(this,"IOException, during write to file",Toast.LENGTH_LONG).show();
+        } finally{
+            if(fos != null){
+                try {
+                    fos.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
             }
         }

@@ -19,7 +19,9 @@ public class TravelingSalesman
      * 1. cheapestInsertion <br>
      * 2. farthestInsertion <br>
      * 3. an other algorithm designed by ourselves, this one only works for a grid of points
-     * @param grid stores the route points
+     * @param grid stores the route
+     * @param startNode the first node for the tour
+     * @param inputPoly the edge-nodes of the drawn Polygon, to test if one of the tours leaves the polygon
      * @return an ArrayList which stores the order of the route points
      */
     public ArrayList<Node> travelingSalesman(ArrayList<ArrayList<Node>> grid, Node startNode , ArrayList<Node> inputPoly)
