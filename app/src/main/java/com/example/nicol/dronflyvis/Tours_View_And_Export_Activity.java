@@ -385,10 +385,6 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
         ActivityCompat.requestPermissions( Tours_View_And_Export_Activity.this ,new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
                 REQUEST_WRITE_EXTERNAL_STORAGE);
 
-        //Request storage permissions during runtime
-        ActivityCompat.requestPermissions( Tours_View_And_Export_Activity.this ,new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
-                REQUEST_WRITE_EXTERNAL_STORAGE);
-
         /*
          * Gets the current Date und Time, to timestamp the CSV
          */
@@ -501,14 +497,16 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
 
         String filename = "Polygon " + timeStamp + ".csv";
         File poly = this.getFilesDir();
+        String polyPath = poly.getAbsolutePath() + "/Polygons";
+        poly = new File(polyPath);
+
         //If there is no folder, create a new one
         poly.mkdirs();
-        poly = new File(poly.getAbsolutePath() + "/" + filename);
+        poly = new File(polyPath + "/" + filename);
 
         try
         {
             poly.createNewFile();
-            Toast.makeText(this,""+ poly,Toast.LENGTH_LONG).show();
         }
         catch (IOException e)
         {

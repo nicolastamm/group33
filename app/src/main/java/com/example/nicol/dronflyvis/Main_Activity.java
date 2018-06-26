@@ -1,9 +1,11 @@
 package com.example.nicol.dronflyvis;
 
+import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
@@ -35,6 +37,12 @@ import com.google.android.gms.maps.model.PolygonOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 import de.keyboardsurfer.android.widget.crouton.Configuration;
@@ -299,13 +307,56 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
         importImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                //Request storage permissions during runtime
+                ActivityCompat.requestPermissions( Main_Activity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
 
+                File poly = Main_Activity.this.getFilesDir();
+                String polyPath = poly.getAbsolutePath() + "/Polygons";
+                poly = new File(polyPath);
 
-                // Outputman: for imports of polygons
+                //Instead app crashes if no polygon got saved before
+                poly.mkdirs();
+                String file = "";
+                File[] files = poly.listFiles();
+                if(files.length > 0)
+                {
+                    poly = files[0];
+                    file = poly.getName();
+                    try {
+                        String line;
+                        String[] latLong;
+                        BufferedReader reader = new BufferedReader(new FileReader(poly));
 
-
-
-
+                        /*
+                         * read the input line by line
+                         */
+                        while((line = reader.readLine()) != null)
+                        {
+                            latLong = line.split(",");
+                            Double lat = Double.parseDouble(latLong[0]);
+                            Double lng = Double.parseDouble(latLong[1]);
+                            //Main_Activity.this.setMarker("Local", lat, lng);
+                            Toast.makeText(Main_Activity.this, "Import Polygon: " + lat + lng ,Toast.LENGTH_LONG).show();
+                        }
+                    }
+                    catch (FileNotFoundException e)
+                    {
+                        Toast.makeText(Main_Activity.this, "FileNotFound File Reader" ,Toast.LENGTH_LONG).show();
+                        e.printStackTrace();
+                    }
+                    catch (IOException e)
+                    {
+                        Toast.makeText(Main_Activity.this, "IOExec read line" ,Toast.LENGTH_LONG).show();
+                        e.printStackTrace();
+                    }
+                }
+/*
+                for(int i = 0; i < files.length; i++)
+                {
+                    allFiles += files[i].getName() + " ";
+                }
+*/
+                Toast.makeText(Main_Activity.this, "Import Polygon: " + file ,Toast.LENGTH_LONG).show();
             }
         });
 
