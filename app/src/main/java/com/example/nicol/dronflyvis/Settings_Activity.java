@@ -250,7 +250,6 @@ public class Settings_Activity extends AppCompatActivity
         float[] inputValues = getInputValues();
         String[] selected = getResInput();
 
-        Log.i("test", "" + inputValues[1]);
         if(!contains(inputValues, invalidInput) && selected != null)
         {
             inputOk = true;

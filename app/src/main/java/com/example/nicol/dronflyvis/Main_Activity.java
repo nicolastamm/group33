@@ -121,9 +121,6 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
         clearButton.setScaleY(1.5f);
 
 
-
-
-
         placesFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
             public void onPlaceSelected(Place place)
@@ -743,9 +740,6 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
         }
 
     }
-
-
-
 
     public void main_activity_back(View view)
     {

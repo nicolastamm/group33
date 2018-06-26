@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Gravity;
 import android.view.MenuItem;
@@ -103,7 +104,6 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
             split =  getIntent().getExtras().getBoolean("com.example.nicol.dronflyvis.splitPoly");
             droneFlag = getIntent().getExtras().getInt("com.example.nicol.dronflyvis.RADIO_SELECTION");
         }
-
 
         infobuch = findViewById(R.id.tvae_activity_infobuch_button);
         infobuch.setImageResource(R.drawable.infobuch);
