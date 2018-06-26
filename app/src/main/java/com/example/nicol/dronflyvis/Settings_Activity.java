@@ -37,6 +37,7 @@ public class Settings_Activity extends AppCompatActivity
         Button nextBtn = (Button) findViewById(R.id.settings_next_button);
         Button aboutUs = (Button) findViewById(R.id.about_us_button);
 
+
         aboutUs.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -46,6 +47,7 @@ public class Settings_Activity extends AppCompatActivity
         });
 
         String[] cr = {"Choose your camera resolution","1280x960 (4:3)"," 1280x720 (16:9)", "1280x853.33 (3:2)","1280x548.57 (21:9)"};
+
 
         Spinner MySpinner = (Spinner)findViewById(R.id.spinner);
         ArrayAdapter<String> myAdapter = new
@@ -58,8 +60,6 @@ public class Settings_Activity extends AppCompatActivity
         EditText altitude = (EditText) findViewById(R.id.editText3);
         EditText fov = (EditText) findViewById(R.id.editText4);
         EditText pixelSize = (EditText) findViewById(R.id.editText);
-
-        //String res = MySpinner.getSelectedItem().toString();
 
         inputTexts.add(altitude);
         inputTexts.add(fov);
@@ -116,7 +116,7 @@ public class Settings_Activity extends AppCompatActivity
                             });
                         }
                     }
-                    /**else if(txt == inputTexts.get(1) && !(charSequence.toString().equals("")) && !(charSequence.toString().equals(".")))
+                    /**if(txt == inputTexts.get(1) && !(charSequence.toString().equals("")) && !(charSequence.toString().equals(".")))
                     {
                         if(Double.parseDouble(charSequence.toString()) > 175)
                         {
@@ -255,13 +255,14 @@ public class Settings_Activity extends AppCompatActivity
         {
             inputOk = true;
         }
+
         if(inputOk) {
             Intent intent = new Intent(this, Main_Activity.class);
             intent.putExtra("com.example.nicol.dronflyvis.INPUT_VALUES", getInputValues());
             intent.putExtra("com.example.nicol.dronflyvis.RADIO_SELECTION", getRadioButton());
-
             startActivity(intent);
         }
+
         else
         {
             Warning warning = new Warning("Fill in the empty fields before you continue.", "Please fill in missing values", true, "OK", this);

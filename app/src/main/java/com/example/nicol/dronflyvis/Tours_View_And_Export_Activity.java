@@ -64,6 +64,7 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
     private int mapType;
     private float[] settings;
     private  Boolean split;
+    private int droneFlag;
 
 
     ArrayList<Node> nodeList;
@@ -100,6 +101,7 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
             zoom = getIntent().getExtras().getFloat("com.example.nicol.dronflyvis.mapZOOM");
             mapType = getIntent().getExtras().getInt("com.example.nicol.dronflyvis.mapType");
             split =  getIntent().getExtras().getBoolean("com.example.nicol.dronflyvis.splitPoly");
+            droneFlag = getIntent().getExtras().getInt("com.example.nicol.dronflyvis.RADIO_SELECTION");
         }
 
 
@@ -149,8 +151,6 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
     }
 
 
-
-
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
@@ -164,7 +164,7 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
 
 
         if (split) {
-            Rastering raster = new Rastering(nodeList, (float) 78.8, 100);
+            Rastering raster = new Rastering(nodeList, (float) settings[2], settings[1]);
             TravelingSalesman tsm = new TravelingSalesman();
 
 
@@ -198,7 +198,7 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
         }
         else{
 
-            Rastering raster = new Rastering(nodeList, (float) 78.8, 100);
+            Rastering raster = new Rastering(nodeList, settings[2], settings[1]);
             TravelingSalesman tsm = new TravelingSalesman();
             ArrayList<Marker> pfad = new ArrayList<>();
             ArrayList<ArrayList<Node>>  actRaster = raster.getRaster();
@@ -359,7 +359,7 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
         String content = "";
         String directory = "";
         //Only create Export for selected drone
-        int bebopFlag = 0;
+        int bebopFlag = droneFlag;
         switch(bebopFlag) {
             case 0:
                 content = routeForMavicPro();
