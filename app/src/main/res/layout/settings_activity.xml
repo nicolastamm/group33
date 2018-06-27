@@ -194,7 +194,7 @@
                 android:layout_marginStart="32dp"
                 android:backgroundTint="#FF8C00"
                 android:ems="10"
-                android:hint="overlap horizental"
+                android:hint="overlap horizontal"
                 android:inputType="textPersonName"
                 app:layout_constraintBottom_toTopOf="@+id/editText3"
                 app:layout_constraintEnd_toStartOf="@+id/editText7"
