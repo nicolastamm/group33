@@ -41,7 +41,6 @@ import de.keyboardsurfer.android.widget.crouton.Configuration;
 import de.keyboardsurfer.android.widget.crouton.Crouton;
 import de.keyboardsurfer.android.widget.crouton.Style;
 
-
 public class Main_Activity extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
@@ -57,8 +56,6 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
 
     ArrayList<Marker> actBoderMarkers = new ArrayList<Marker>();
     ArrayList<Polyline> actPolyLynes = new ArrayList<Polyline>();
-
-
 
     Polygon shape;
 
@@ -105,7 +102,6 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
 
         PlaceAutocompleteFragment placesFragment = (PlaceAutocompleteFragment) getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
 
-
         TextView aut_comp_text = findViewById(R.id.place_autocomplete_search_input);
         aut_comp_text.setTextColor(Color.WHITE);
         findViewById(R.id.place_autocomplete_fragment).setBackgroundColor(Color.argb(150, 0,0,0));
@@ -117,10 +113,6 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
         ImageView clearButton = findViewById(R.id.place_autocomplete_clear_button);
         clearButton.setScaleX(1.5f);
         clearButton.setScaleY(1.5f);
-
-
-
-
 
         placesFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
@@ -192,7 +184,6 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
                     }
             }
         });
-
 
         drawImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -285,27 +276,15 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
                        }
                     }
                     polyAufteilung = true;
-
-
-
-
                 }
 
             }
         });
 
-
-
         importImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-
                 // Outputman: for imports of polygons
-
-
-
-
             }
         });
 
@@ -630,7 +609,7 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
                                 .title("Marker")
                                 .draggable(false)
                                 .position(new LatLng(lt, lon))
-                                .icon(BitmapDescriptorFactory.fromResource(R.drawable.markerstandardmagenta))
+                                .icon(BitmapDescriptorFactory.fromResource(R.drawable.markerstartred))
                                 .anchor((float) 0.5, (float) 0.5);
 
                         actPointsInPoly.add(mMap.addMarker(options));
@@ -697,9 +676,15 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
             AlertDialog.Builder dBuilder = new AlertDialog.Builder(Main_Activity.this);
 
             dBuilder.setTitle("Polygon is too large!");
-            dBuilder.setMessage("Would you like to split your polygon into several polygons?")
+            dBuilder.setMessage("Your polygon has more than 99 points! Would you like to split it?")
                     .setCancelable(false)
-                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    .setNeutralButton("Abort", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            dialogInterface.cancel();
+                        }
+                    })
+                    .setPositiveButton("Split", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
                             drawPointInPoly();
@@ -724,7 +709,7 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
 
                             dialogInterface.cancel();
                         }})
-                    .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    .setNegativeButton("Don't split", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
 
@@ -871,8 +856,6 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
         }
 
     }
-
-
     public void main_activity_back(View view)
     {
         onBackPressed();
