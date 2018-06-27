@@ -31,8 +31,8 @@ public class Settings_Activity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.settings_activity);
 
-        RadioButton bepob = (RadioButton) findViewById(R.id.radioButton4);
-        RadioButton mavic = (RadioButton) findViewById(R.id.radioButton3);
+        //RadioButton bepob = (RadioButton) findViewById(R.id.radioButton4);
+        //RadioButton mavic = (RadioButton) findViewById(R.id.radioButton3);
 
         Button nextBtn = (Button) findViewById(R.id.settings_next_button);
         Button aboutUs = (Button) findViewById(R.id.about_us_button);
@@ -44,12 +44,10 @@ public class Settings_Activity extends AppCompatActivity
                 startActivity(intent);
             }
         });
-
-
-
-
-
         final ArrayList<EditText> inputTexts = new ArrayList<>();
+
+        EditText resText1 = (EditText) findViewById(R.id.editText2);
+        EditText resText2 = (EditText) findViewById(R.id.editText5);
 
         EditText altitude = (EditText) findViewById(R.id.editText3);
         EditText fov = (EditText) findViewById(R.id.editText4);
@@ -60,6 +58,8 @@ public class Settings_Activity extends AppCompatActivity
         inputTexts.add(altitude);
         inputTexts.add(fov);
         inputTexts.add(pixelSize);
+        inputTexts.add(resText1);
+        inputTexts.add(resText2);
         RadioGroup radioGroup = (RadioGroup) findViewById(R.id.radioGroup);
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener()
         {
@@ -71,17 +71,19 @@ public class Settings_Activity extends AppCompatActivity
                 {
                     fov.setText("" + checkedId);
                 }
+                Log.i("test", checkedId + "");
                 switch(checkedId)
                 {
-                    case 2131165319: fov.setText("" + 170); //checkedID for bepob
-                    break;
-                    case 2131165318: fov.setText("" + 78.8); //checkedId for mavic
-                    break;
+                    case 2131165321: fov.setText("" + 180); //checkedID for bepob
+                        break;
+                    case 2131165320: fov.setText("" + 78.8); //checkedId for mavic
+                        break;
                     default: fov.setText("");
-                    break;
+                        break;
                 }
             }
         });
+
         for(final EditText txt : inputTexts)
         {
             txt.addTextChangedListener(new TextWatcher() {
@@ -112,6 +114,7 @@ public class Settings_Activity extends AppCompatActivity
                             });
                         }
                     }
+
                     /**if(txt == inputTexts.get(1) && !(charSequence.toString().equals("")) && !(charSequence.toString().equals(".")))
                     {
                         if(Double.parseDouble(charSequence.toString()) > 175)
@@ -142,7 +145,7 @@ public class Settings_Activity extends AppCompatActivity
                     if(inputTexts.get(0).getText().toString().trim().length() > 0 && inputTexts.get(1).getText().toString().trim().length() > 0)
                     {
                             inputTexts.get(2).removeTextChangedListener(this);
-                            calculatePixelSize(inputTexts.get(0), inputTexts.get(1), inputTexts.get(2));
+                            calculatePixelSize(inputTexts.get(0), inputTexts.get(1), inputTexts.get(3), inputTexts.get(4),inputTexts.get(2));
                             inputTexts.get(2).addTextChangedListener(this);
                     }
                 }
@@ -150,20 +153,36 @@ public class Settings_Activity extends AppCompatActivity
         }
 
     }
-    private void calculatePixelSize(EditText editText1,EditText editText2, EditText resultText)
+    private void calculatePixelSize(EditText editText1,EditText editText2, EditText editText3, EditText editText4,EditText resultText)
     {
         Editable altitudeEdit = editText1.getText();
         Editable fovEdit = editText2.getText();
+        //Editable firstRes = editText3.getText();
+        //Editable secondRes = editText4.getText();
 
         double altitude= Double.parseDouble(altitudeEdit.toString());
         double fov= Double.parseDouble(fovEdit.toString());
+        //double first = Double.parseDouble(firstRes.toString());
+        //double second = Double.parseDouble(secondRes.toString());
+        //double arFirst = first / getGcd(first, second);
+        //double arSecond = first / getGcd(first, second);
         double fotoWidth = 2* altitude * Math.tan(Math.toRadians(fov/2.0));
         double fotoHeight = fotoWidth * (3.0/4.0);
 
         double pixelSize = Math.sqrt(((fotoWidth/ 4000) * 100) * ((fotoHeight/3000) * 100));
         resultText.setText(pixelSize + "");
     }
-
+    private double getGcd(double a,double b)
+    {
+        if(b ==0)
+        {
+            return a;
+        }
+        else
+        {
+            return getGcd(b, a % b);
+        }
+    }
     private void calculateFov(EditText editText1,EditText editText2, EditText resultText)
     {
         Editable altitudeEdit = editText1.getText();
@@ -194,19 +213,8 @@ public class Settings_Activity extends AppCompatActivity
 
         return inputValues;
     }
-    /**
-    public String[] getResInput()
-    {
-        Spinner resSpinner = (Spinner) findViewById(R.id.spinner);
-        String[] selection = new String[2];
-        float[] result = new float[2];
-        if(!resSpinner.getSelectedItem().toString().contains("C"))
-        {
-            selection = resSpinner.getSelectedItem().toString().split(" ");
-        }
-        return selection;
-    }
-     */
+
+
     //get input from radio buttons
     public int getRadioButton()
     {
