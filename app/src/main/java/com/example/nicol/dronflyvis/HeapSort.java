@@ -45,13 +45,16 @@ public class HeapSort
 	}
 
 	/**
-	 * Starts the Heapsort 
+	 * First ensures the heap property <br>
+	 * After that it swaps the first element of the heap (the largest)
+	 * with the last Element of the heap, decreases the size of the heap by 1
+	 * and the again ensures the heap property
 	 * @param i first index of the list to sort
 	 * @param j last index
 	 */
 	private void sortList(int i, int j) 
 	{
-		start();
+		start();		//ensures the heap property
 		int k = j;
 		while(k >= 1)
 		{
@@ -65,8 +68,8 @@ public class HeapSort
 	 * refreshes the sink criteria of the Heapsort
 	 * @if is the Minimumheapsort
 	 * @else is the Maximumheapsort
-	 * @param i
-	 * @param j
+	 * @param i the index of the first element in the heap
+	 * @param j the index of the last element in the heap
 	 */
 	private void sink(int i, int j) 
 	{

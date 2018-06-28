@@ -264,7 +264,7 @@ public class TravelingSalesman
         Iterator<Node> gridIter = grid.iterator();
         Node act = null;
         double currentDist;
-        double dist = Double.MIN_VALUE;
+        double dist = -1;
         Node farthestNeighbour = null;
 
         System.out.println("Farthest");
@@ -290,7 +290,7 @@ public class TravelingSalesman
 
         double[] farthestDists = new double[5];
         gridIter = grid.iterator();
-        dist = Double.MIN_VALUE;
+        dist = -1;
         farthestNeighbour = null;
 
         /*
@@ -301,7 +301,7 @@ public class TravelingSalesman
         while(!grid.isEmpty())
         {
             gridIter = grid.iterator();
-            dist = -Double.MIN_VALUE;
+            dist = -1;
             while(gridIter.hasNext())
             {
                 act = gridIter.next();
@@ -315,6 +315,10 @@ public class TravelingSalesman
                 }
             }
 
+            /*
+             **********Special case**********
+             * Without it it sometimes crash
+             */
             if(grid.size() == 1 && act != farthestNeighbour)
             {
                 farthestDists = searchInsertPos(tour, act);

@@ -525,7 +525,8 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
         //write data to file
         try
         {
-            fos = openFileOutput(filename, Context.MODE_PRIVATE);
+            fos = openFileOutput(filename, Context.MODE_APPEND);
+            Toast.makeText(this,"Content: " + content ,Toast.LENGTH_LONG).show();
             fos.write(content.getBytes());
 
             Toast.makeText(this,"File saved at: " + poly ,Toast.LENGTH_LONG).show();
