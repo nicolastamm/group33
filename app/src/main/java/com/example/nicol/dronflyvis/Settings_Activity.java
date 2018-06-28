@@ -45,16 +45,11 @@ public class Settings_Activity extends AppCompatActivity
             }
         });
 
-
-
-
-
         final ArrayList<EditText> inputTexts = new ArrayList<>();
 
         EditText altitude = (EditText) findViewById(R.id.editText3);
         EditText fov = (EditText) findViewById(R.id.editText4);
         EditText pixelSize = (EditText) findViewById(R.id.editText);
-
         //String res = MySpinner.getSelectedItem().toString();
 
         inputTexts.add(altitude);
@@ -71,11 +66,12 @@ public class Settings_Activity extends AppCompatActivity
                 {
                     fov.setText("" + checkedId);
                 }
+                Log.i("test", "" + checkedId);
                 switch(checkedId)
                 {
-                    case 2131165319: fov.setText("" + 170); //checkedID for bepob
+                    case 2131165321: fov.setText("" + 180); //checkedID for bepob
                     break;
-                    case 2131165318: fov.setText("" + 78.8); //checkedId for mavic
+                    case 2131165320: fov.setText("" + 78.8); //checkedId for mavic
                     break;
                     default: fov.setText("");
                     break;

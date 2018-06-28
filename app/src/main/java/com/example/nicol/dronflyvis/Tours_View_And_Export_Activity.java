@@ -60,7 +60,6 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
     private ImageButton mapImageButton;
     private GoogleMap mMap;
     public int MarkerCounter= -2;
-    private double height = 100.0;
     public int farbe = 0;
 
     private float zoom;
@@ -484,7 +483,7 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
                 Toast.makeText(this,"File saved at: " + file,Toast.LENGTH_LONG).show();
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
-                Toast.makeText(this,"FileNotFound, please tyr again to export",Toast.LENGTH_LONG).show();
+                Toast.makeText(this,"FileNotFound, please try again to export",Toast.LENGTH_LONG).show();
             } catch (IOException e) {
                 e.printStackTrace();
                 Toast.makeText(this,"IOException, during write to file",Toast.LENGTH_LONG).show();
@@ -520,7 +519,7 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
         for (int i = 0; i < route.size(); ++i)
         {
             Node add = route.get(i);
-            content += add.getLatitude() + "," + add.getLongitude() + "," + height
+            content += add.getLatitude() + "," + add.getLongitude() + "," + settings[1]
                     + ",0,0,0,0,0,1,0,-1,0,-1,0,-1,0,-1,0,-1,0,-1,0,-1,0,-1,0,-1,0,-1,0,-1,0,-1,0,-1,0,-1,0\r\n";
         }
 
@@ -538,11 +537,11 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
         for (int i = 0; i < route.size() - 1; ++i)
         {
             Node add = route.get(i);
-            content += height + ",0,4,0," + i + ",0,0,0,0,0,-1,5,1,"
+            content += settings[1] + ",0,4,0," + i + ",0,0,0,0,0,-1,5,1,"
                     + (float)add.getLatitude() + "," + (float)add.getLongitude() + ",false,99,30\r\n";
         }
         Node add = route.get(route.size() - 1);
-        content += height + ",0,4,0," + (route.size() - 1) + ",0,0,0,0,0,-1,5,1,"
+        content += settings[1] + ",0,4,0," + (route.size() - 1) + ",0,0,0,0,0,-1,5,1,"
                 + (float)add.getLatitude() + "," + (float)add.getLongitude() + ",false," + Integer.MIN_VALUE + ",0";
 
         return content;
