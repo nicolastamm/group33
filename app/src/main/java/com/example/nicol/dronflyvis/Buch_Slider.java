@@ -71,9 +71,10 @@ public class Buch_Slider extends PagerAdapter{
         header.setText(act_headers[position]);
         discr.setText(act_discr[position]);
         header.setTextColor(Color.BLACK);
-        header.setTextSize(25);
+
         discr.setTextColor(Color.BLACK);
-        discr.setTextSize(16);
+
+
 
         container.addView(view);
 
