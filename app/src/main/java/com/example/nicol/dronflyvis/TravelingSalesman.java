@@ -48,13 +48,17 @@ public class TravelingSalesman
             }
         }
 
+        ArrayList<ArrayList<Node>> grid1 = grid;
+        ArrayList<ArrayList<Node>> grid2 = grid;
+
+
         SubTour cheapestTour;
-        ArrayList<Node> cheapest = twoDimToOneDim((ArrayList<ArrayList<Node>>) grid.clone());
+        ArrayList<Node> cheapest = twoDimToOneDim(grid1);
         cheapestTour = cheapestInsertion(cheapest);
 
         SubTour farthestTour;
-        ArrayList<Node> farthest = twoDimToOneDim((ArrayList<ArrayList<Node>>) grid.clone());
-        //farthestTour = farthestInsertion(farthest);
+        ArrayList<Node> farthest = twoDimToOneDim(grid2);
+        farthestTour = farthestInsertion(farthest);
 
         ArrayList<Node> ourTSPRoute;
         ArrayList<ArrayList<Node>> ourtsp = (ArrayList<ArrayList<Node>>) grid.clone();
@@ -66,13 +70,13 @@ public class TravelingSalesman
         }
         else if(farthestLength < cheapestLength && farthestLength < ourTSPLength)
         {
-            //	return farthestTour.getTour();
+            return farthestTour.getTour();
         }
         else
         {
             return ourTSPRoute;
         }
-        return new ArrayList<Node>();
+        //return new ArrayList<Node>();
     }
 
     /**
@@ -223,6 +227,7 @@ public class TravelingSalesman
         while(!grid.isEmpty())
         {
             gridIter = grid.iterator();
+            dist = Double.MAX_VALUE;
             while(gridIter.hasNext())
             {
                 act = gridIter.next();
@@ -231,6 +236,7 @@ public class TravelingSalesman
                 if(dists[1] < dist)
                 {
                     closestDists = dists;
+                    dist = closestDists[1];
                     closestNeighbour = act;
                 }
             }
@@ -256,10 +262,12 @@ public class TravelingSalesman
         double[] dists = new double[5];
 
         Iterator<Node> gridIter = grid.iterator();
-        Node act;
+        Node act = null;
         double currentDist;
         double dist = Double.MIN_VALUE;
         Node farthestNeighbour = null;
+
+        System.out.println("Farthest");
 
         /*
          * add the first Node into the SubTour
@@ -293,7 +301,7 @@ public class TravelingSalesman
         while(!grid.isEmpty())
         {
             gridIter = grid.iterator();
-            dist = Double.MIN_VALUE;
+            dist = -Double.MIN_VALUE;
             while(gridIter.hasNext())
             {
                 act = gridIter.next();
@@ -302,17 +310,16 @@ public class TravelingSalesman
                 if(dists[1] > dist)
                 {
                     farthestDists = dists;
+                    dist = farthestDists[1];
                     farthestNeighbour = act;
                 }
             }
-			/*if(grid.size() == 1)
-			{
-				act = grid.get(0);
-				farthestDists = searchInsertPos(tour, act);
-				tour.addNode(act, (int)farthestDists[0], farthestDists[4], farthestDists[2], farthestDists[3]);
-				grid.remove(act);
-				break;
-			}*/
+
+            if(grid.size() == 1 && act != farthestNeighbour)
+            {
+                farthestDists = searchInsertPos(tour, act);
+                farthestNeighbour = act;
+            }
 
             tour.addNode(farthestNeighbour, (int)farthestDists[0], farthestDists[4], farthestDists[2], farthestDists[3]);
             grid.remove(farthestNeighbour);
