@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<android.support.constraint.ConstraintLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -12,307 +12,260 @@
         android:id="@+id/imageView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="1"
         android:scaleType="centerCrop"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentBottom="true"
         app:srcCompat="@drawable/wald2" />
 
-    <LinearLayout
 
-        android:id="@+id/linearLayout4"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/imageView"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentTop="true"
+        android:layout_above="@id/linearLayout">
 
-        <android.support.constraint.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <ImageView
-                android:id="@+id/imageView4"
-                android:layout_width="61dp"
-                android:layout_height="42dp"
-                android:layout_marginStart="86dp"
-                android:layout_marginTop="30dp"
-                android:layout_weight="1"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/textView"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/settingswhite" />
-
-            <TextView
-                android:id="@+id/textView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="86dp"
-                android:layout_marginTop="30dp"
-                android:layout_weight="1"
-                android:text="Settings"
-                android:textAppearance="@style/TextAppearance.AppCompat.Button"
-                android:textSize="30sp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/imageView4"
-                app:layout_constraintTop_toTopOf="parent" />
-
-        </android.support.constraint.ConstraintLayout>
-
-        <android.support.constraint.ConstraintLayout
-
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            android:orientation="vertical" >
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center">
+
+                <ImageView
+                    android:id="@+id/imageView4"
+                    android:layout_width="61dp"
+                    android:layout_height="42dp"
+                    android:layout_marginStart="86dp"
+                    android:layout_marginTop="30dp"
+                    android:layout_marginBottom="20dp"
+                    app:srcCompat="@drawable/settingswhite" />
+
+                <TextView
+                    android:id="@+id/textView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="86dp"
+                    android:layout_marginTop="30dp"
+                    android:layout_marginBottom="20dp"
+                    android:text="Settings"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Button"
+                    android:textSize="30sp"/>
+
+            </LinearLayout>
 
 
             <RadioGroup
                 android:id="@+id/radioGroup"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="32dp"
-                android:layout_marginHorizontal="32dp"
-                android:layout_marginStart="32dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginStart="20dp"
                 android:layout_marginTop="20dp"
-                android:orientation="horizontal"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
+                android:gravity="center"
+                android:orientation="horizontal">
 
 
                 <RadioButton
                     android:id="@+id/radioButton3"
                     android:layout_width="136dp"
-                    android:layout_height="120dp"
-                    android:layout_marginBottom="8dp"
-                    android:layout_marginEnd="32dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_weight="1"
+                    android:layout_height="128dp"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginLeft="0dp"
+                    android:layout_marginRight="28dp"
+                    android:layout_marginTop="10dp"
                     android:background="#90000000"
                     android:buttonTint="#FF8C00"
                     android:text="Dji Mavic Pro"
-                    android:textStyle="bold"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="0.234" />
+                    android:textStyle="bold" />
 
                 <RadioButton
                     android:id="@+id/radioButton4"
                     android:layout_width="138dp"
-                    android:layout_height="120dp"
-                    android:layout_marginBottom="8dp"
-                    android:layout_marginStart="40dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_weight="1"
+                    android:layout_height="128dp"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginLeft="28dp"
+                    android:layout_marginRight="0dp"
+                    android:layout_marginTop="10dp"
                     android:background="#90000000"
                     android:buttonTint="#FF8C00"
                     android:text="Parrot Bebop 1"
-                    android:textStyle="bold"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="0.234" />
+                    android:textStyle="bold"/>
+
 
             </RadioGroup>
-        </android.support.constraint.ConstraintLayout>
 
-        <android.support.constraint.ConstraintLayout
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:layout_marginTop="20dp">
+
+                <EditText
+                    android:id="@+id/editText2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:layout_marginEnd="6dp"
+                    android:layout_marginStart="32dp"
+                    android:backgroundTint="#FF8C00"
+                    android:ems="10"
+                    android:hint="pixelwidth"
+                    android:inputType="number"
+                    android:textSize="18sp"
+                    android:layout_alignParentStart="true"
+                    android:layout_toLeftOf="@id/textView4"/>
+
+                <TextView
+                    android:id="@+id/textView4"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginBottom="4dp"
+                    android:backgroundTint="#FF8C00"
+                    android:text="X"
+                    android:textSize="20sp"
+                    android:layout_alignBottom="@id/editText2"
+                    android:layout_centerHorizontal="true"/>
+
+                <EditText
+                    android:id="@+id/editText5"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:layout_marginEnd="32dp"
+                    android:layout_marginStart="6dp"
+                    android:backgroundTint="#FF8C00"
+                    android:ems="10"
+                    android:hint="pixelheight"
+                    android:inputType="number"
+                    android:textSize="18sp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_toRightOf="@id/textView4"/>
+
+            </RelativeLayout>
+
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center">
+
+                <EditText
+                    android:id="@+id/editText6"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:layout_marginEnd="4dp"
+                    android:layout_marginStart="32dp"
+                    android:backgroundTint="#FF8C00"
+                    android:ems="10"
+                    android:hint="overlap width %"
+                    android:inputType="number"
+                    android:textSize="17sp"
+                    android:layout_alignParentStart="true"
+                    android:layout_toLeftOf="@id/nothing"/>
+
+                <TextView
+                    android:id="@+id/nothing"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"/>
+
+                <EditText
+                    android:id="@+id/editText7"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:layout_marginEnd="32dp"
+                    android:layout_marginStart="4dp"
+                    android:backgroundTint="#FF8C00"
+                    android:ems="10"
+                    android:hint="overlap height %"
+                    android:inputType="number"
+                    android:textSize="17sp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_toRightOf="@id/nothing"/>
+
+            </RelativeLayout>
+
+
+
+                <EditText
+                    android:id="@+id/editText3"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:layout_marginEnd="32dp"
+                    android:layout_marginStart="32dp"
+                    android:backgroundTint="#FF8C00"
+                    android:ems="10"
+                    android:hint="flight height in meters"
+                    android:inputType="number|numberDecimal"
+                    android:singleLine="true"
+                    android:textSize="18sp" />
+
+                <EditText
+                    android:id="@+id/editText4"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:layout_marginEnd="32dp"
+                    android:layout_marginStart="32dp"
+                    android:backgroundTint="#FF8C00"
+                    android:ems="10"
+                    android:hint="field of view in degrees"
+                    android:inputType="number|numberDecimal"
+                    android:textSize="18sp"/>
+
+                <EditText
+                    android:id="@+id/editText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="32dp"
+                    android:layout_marginEnd="32dp"
+                    android:layout_marginStart="32dp"
+                    android:backgroundTint="#FF8C00"
+                    android:ems="10"
+                    android:hint="pixelsize in centimeters"
+                    android:inputType="number|numberDecimal"
+                    android:textSize="18sp" />
+
+        </LinearLayout>
+    </ScrollView>
+
+
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:orientation="horizontal"
+        android:layout_alignParentBottom="true">
+
+        <Button
+            android:id="@+id/about_us_button"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            android:layout_weight="1"
+            android:text="About us" />
 
-            <EditText
-                android:id="@+id/editText2"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                android:layout_marginEnd="6dp"
-                android:layout_marginStart="32dp"
-                android:backgroundTint="#FF8C00"
-                android:ems="10"
-                android:hint="pixelwidth"
-                android:inputType="number"
-                android:textSize="18sp"
-                app:layout_constraintBottom_toTopOf="@+id/editText6"
-                app:layout_constraintEnd_toStartOf="@+id/textView4"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+        <Button
+            android:id="@+id/settings_next_button"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:onClick="settings_next"
+            android:text="next" />
 
-            <TextView
-                android:id="@+id/textView4"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="24dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginStart="8dp"
-                android:backgroundTint="#FF8C00"
-                android:text="X"
-                android:textSize="20sp"
-                app:layout_constraintBottom_toTopOf="@+id/editText6"
-                app:layout_constraintEnd_toStartOf="@+id/editText5"
-                app:layout_constraintHorizontal_bias="0.545"
-                app:layout_constraintStart_toEndOf="@+id/editText2"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <EditText
-                android:id="@+id/editText5"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                android:layout_marginEnd="32dp"
-                android:layout_marginStart="6dp"
-                android:backgroundTint="#FF8C00"
-                android:ems="10"
-                android:hint="pixelheight"
-                android:inputType="number"
-                android:textSize="18sp"
-                app:layout_constraintBottom_toTopOf="@+id/editText7"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/textView4"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <EditText
-                android:id="@+id/editText6"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                android:layout_marginEnd="4dp"
-                android:layout_marginStart="32dp"
-                android:backgroundTint="#FF8C00"
-                android:ems="10"
-                android:hint="overlap width %"
-                android:inputType="number"
-                android:textSize="17sp"
-                app:layout_constraintBottom_toTopOf="@+id/editText3"
-                app:layout_constraintEnd_toStartOf="@+id/editText7"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/editText2" />
-
-            <EditText
-                android:id="@+id/editText7"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                android:layout_marginEnd="32dp"
-                android:layout_marginStart="4dp"
-                android:backgroundTint="#FF8C00"
-                android:ems="10"
-                android:hint="overlap height %"
-                android:inputType="number"
-                android:textSize="17sp"
-                app:layout_constraintBottom_toTopOf="@+id/editText3"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/editText6"
-                app:layout_constraintTop_toBottomOf="@+id/editText5" />
-
-
-            <EditText
-                android:id="@+id/editText3"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                android:layout_marginEnd="32dp"
-                android:layout_marginStart="32dp"
-                android:backgroundTint="#FF8C00"
-                android:ems="10"
-                android:hint="flight height in meters"
-                android:inputType="number|numberDecimal"
-                android:singleLine="true"
-                android:textSize="18sp"
-                app:layout_constraintBottom_toTopOf="@+id/editText4"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/editText6" />
-
-            <EditText
-                android:id="@+id/editText4"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                android:layout_marginEnd="32dp"
-                android:layout_marginStart="32dp"
-                android:backgroundTint="#FF8C00"
-                android:ems="10"
-                android:hint="field of view in degrees"
-                android:inputType="number|numberDecimal"
-                android:textSize="18sp"
-                app:layout_constraintBottom_toTopOf="@+id/editText"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/editText3" />
-
-            <EditText
-                android:id="@+id/editText"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="32dp"
-                android:layout_marginEnd="32dp"
-                android:layout_marginStart="32dp"
-                android:backgroundTint="#FF8C00"
-                android:ems="10"
-                android:hint="pixelsize in centimeters"
-                android:inputType="number|numberDecimal"
-                android:textSize="18sp"
-                app:layout_constraintBottom_toTopOf="@+id/linearLayout"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/editText4" />
-
-            <LinearLayout
-                android:id="@+id/linearLayout"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:orientation="horizontal"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="1.0">
-
-                <Button
-                    android:id="@+id/about_us_button"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:text="About us" />
-
-                <Button
-                    android:id="@+id/settings_next_button"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:onClick="settings_next"
-                    android:text="next" />
-
-            </LinearLayout>
-
-
-
-        </android.support.constraint.ConstraintLayout>
     </LinearLayout>
 
 
-</android.support.constraint.ConstraintLayout>
+</RelativeLayout>
