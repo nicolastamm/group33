@@ -30,7 +30,6 @@ public class Settings_Activity extends AppCompatActivity
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.settings_activity);
-
         RadioButton bepob = (RadioButton) findViewById(R.id.radioButton4);
         RadioButton mavic = (RadioButton) findViewById(R.id.radioButton3);
 
