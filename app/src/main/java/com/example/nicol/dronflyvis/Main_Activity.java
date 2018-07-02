@@ -350,6 +350,9 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
 
     }
 
+    /**
+     * @author Johannes
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data)
     {
