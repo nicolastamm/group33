@@ -31,6 +31,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
 import java.io.BufferedReader;
@@ -60,7 +61,6 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
     private ImageButton mapImageButton;
     private GoogleMap mMap;
     public int MarkerCounter= -2;
-    private double height = 100.0;
     public int farbe = 0;
 
     private float zoom;
@@ -71,6 +71,15 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
     private  Boolean split;
     private int droneFlag;
 
+
+    int PolyCount;
+    ArrayList<Marker> pfad = new ArrayList<>();
+    Node actStartNode;
+    Polyline polyline;
+
+    ArrayList<ArrayList<Marker>> pfads = new ArrayList<ArrayList<Marker>>();
+    ArrayList<Node> actStartNodes;
+    ArrayList<Polyline> polylines = new ArrayList<Polyline>();
 
     ArrayList<Node> nodeList;
     ArrayList<Node> route;
@@ -157,6 +166,8 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
     }
 
 
+
+
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
@@ -170,20 +181,27 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
 
 
         if (split) {
-            Rastering raster = new Rastering(nodeList, (float) settings[2], settings[1]);
-            //Dies bereitet grade Probleme !!
-            // Problemme in dem Settings Array !
+            int count=0;
 
-            //Rastering raster = new Rastering(nodeList, (float) 78.8, 100);
+            Rastering raster = new Rastering(nodeList, (float) settings[2], settings[1]);
             TravelingSalesman tsm = new TravelingSalesman();
 
 
 
             ArrayList<ArrayList<ArrayList<Node>>> actRaster = raster.getRasters();
+
+            actStartNodes = new ArrayList<Node>();
+
+
+
+
             for (ArrayList<ArrayList<Node>> i : actRaster) {
                 ArrayList<Marker> pfad = new ArrayList<>();
-                Node startNode = i.get(0).get(0);
-                route = tsm.travelingSalesman(i, new Node(startNode.getLatitude(), startNode.getLongitude(), 2));
+
+
+                actStartNodes.add(new Node(i.get(0).get(0).getLatitude(), i.get(0).get(0).getLongitude(), 2));
+                route = tsm.travelingSalesman(i, actStartNodes.get(count) , nodeList);
+                count++;
                 allRoutes.add(route);
 
                 for (int j = 0; j < route.size(); j++) {
@@ -201,6 +219,8 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
                             .anchor((float) 0.5, (float) 0.5);
                     pfad.add(mMap.addMarker(options));
                 }
+                pfads.add(pfad);
+
                 drawPfad(pfad);
                 farbe++;
                 MarkerCounter = -2;
@@ -208,14 +228,20 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
 
         }
         else{
-            //Rastering raster = new Rastering(nodeList, (float) 78.8, 100);
-            Log.i("test" ,"" + settings[1]);
-            Log.i("test1" ,"" + settings[2]);
+
             Rastering raster = new Rastering(nodeList, settings[2], settings[1]);
             TravelingSalesman tsm = new TravelingSalesman();
-            ArrayList<Marker> pfad = new ArrayList<>();
+
             ArrayList<ArrayList<Node>>  actRaster = raster.getRaster();
-            route = tsm.travelingSalesman(actRaster,new Node(actRaster.get(0).get(0).getLatitude(),actRaster.get(0).get(0).getLongitude(),2));
+            actStartNode = new Node(actRaster.get(0).get(0).getLatitude(),actRaster.get(0).get(0).getLongitude(),2);
+            if(actRaster.isEmpty())
+            {
+                route = nodeList;
+            }
+            else
+            {
+                route = tsm.travelingSalesman(actRaster,actStartNode, nodeList);
+            }
             allRoutes.add(route);
 
             for(int i = 0; i<route.size(); i++)
@@ -351,7 +377,7 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
             }
 
 
-            mMap.addPolyline(options);
+            polylines.add(mMap.addPolyline(options));
         }
         else{
             PolylineOptions optionss = new PolylineOptions()
@@ -366,12 +392,171 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
             }
 
 
-            mMap.addPolyline(optionss);
+            polyline = mMap.addPolyline(optionss);
         }
 
 
+
+
+
+        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                if(split){
+                    farbe = 0;
+                    int fromPol = pointFromPoly(marker);
+                    int count=0;
+
+                    if (pfads != null) {
+                        for(int j = 0; j<pfads.size();j++) {
+                            for (int i = 0; i < pfad.size(); i++) {
+                                Marker m = pfad.get(i);
+                                m.remove();
+                                m = null;
+                            }
+                        }
+                        pfads.removeAll(pfads);
+                    }
+
+
+                    actStartNodes.get(fromPol).setLatitude(marker.getPosition().latitude);
+                    actStartNodes.get(fromPol).setLongitude(marker.getPosition().longitude);
+
+
+
+
+                    if(polylines!=null){
+                        for(int i = 0;i<polylines.size();i++){
+                            polylines.get(i).remove();
+                        }
+                    }
+
+
+                    Rastering raster = new Rastering(nodeList, (float) settings[2], settings[1]);
+                    TravelingSalesman tsm = new TravelingSalesman();
+
+                    ArrayList<ArrayList<ArrayList<Node>>> actRaster = raster.getRasters();
+
+
+                    for (ArrayList<ArrayList<Node>> i : actRaster) {
+                        ArrayList<Marker> pfad = new ArrayList<>();
+
+
+
+                        route = tsm.travelingSalesman(i, actStartNodes.get(count) , nodeList);
+                        allRoutes.add(route);
+                        count++;
+
+                        for (int j = 0; j < route.size(); j++) {
+                            double lt = route.get(j).getLatitude();
+                            double lon = route.get(j).getLongitude();
+
+                            MarkerCounter++;
+                            String text = String.valueOf(MarkerCounter);
+                            Bitmap bitmap = makeBitmap(Tours_View_And_Export_Activity.this, text, farbe);
+
+                            MarkerOptions options = new MarkerOptions()
+                                    .draggable(false)
+                                    .position(new LatLng((float) lt, (float) lon))
+                                    .icon(BitmapDescriptorFactory.fromBitmap(bitmap))
+                                    .anchor((float) 0.5, (float) 0.5);
+                            pfad.add(mMap.addMarker(options));
+                        }
+                        pfads.add(pfad);
+
+                        drawPfad(pfad);
+                        farbe++;
+                        MarkerCounter = -2;
+                    }
+
+
+
+
+                }
+
+                else {
+                    MarkerCounter = 0;
+                    if (pfad != null) {
+                        for (int i = 0; i < pfad.size(); i++) {
+                            Marker m = pfad.get(i);
+                            m.remove();
+                            m = null;
+                        }
+                        pfad.removeAll(pfad);
+                    }
+
+                    if (actStartNode != null) {
+                        actStartNode.setLatitude(marker.getPosition().latitude);
+                        actStartNode.setLongitude(marker.getPosition().longitude);
+                    }
+
+                    if (polyline != null) {
+
+                        polyline.remove();
+                    }
+
+                    Rastering raster = new Rastering(nodeList, settings[2], settings[1]);
+                    TravelingSalesman tsm = new TravelingSalesman();
+
+                    ArrayList<ArrayList<Node>> actRaster = raster.getRaster();
+
+                    if (actRaster.isEmpty()) {
+                        route = nodeList;
+                    } else {
+                        route = tsm.travelingSalesman(actRaster, new Node(actStartNode.getLatitude(), actStartNode.getLongitude(), 2), nodeList);
+                    }
+                    allRoutes.get(0).removeAll(allRoutes);
+
+                    allRoutes.add(route);
+
+                    for (int i = 0; i < route.size() - 2; i++) {
+                        double lt = route.get(i).getLatitude();
+                        double lon = route.get(i).getLongitude();
+
+                        MarkerCounter++;
+                        String text = String.valueOf(MarkerCounter);
+                        Bitmap bitmap = makeBitmap(Tours_View_And_Export_Activity.this, text, 2);
+
+                        MarkerOptions options = new MarkerOptions()
+                                .draggable(false)
+                                .position(new LatLng((float) lt, (float) lon))
+                                .icon(BitmapDescriptorFactory.fromBitmap(bitmap))
+                                .anchor((float) 0.5, (float) 0.5);
+
+
+                        pfad.add(mMap.addMarker(options));
+                    }
+                    drawPfad(pfad);
+
+
+                }
+
+                return true;
+            }
+        });
+
     }
 
+    public int pointFromPoly(Marker marker){
+        Marker Startmarker = marker;
+         PolyCount = 0;
+
+
+
+
+        for(int i = 0; i<pfads.size();i++){
+            for(int j= 0; j<pfads.get(i).size();j++){
+                double lt = pfads.get(i).get(j).getPosition().latitude;
+                double lon = pfads.get(i).get(j).getPosition().longitude;
+
+                if(Startmarker.getPosition().latitude==lt & Startmarker .getPosition().longitude==lon){
+                    PolyCount=i;
+                }
+            }
+        }
+
+        return PolyCount;
+    }
 
     public void  export_csv(View view) {
         //Request storage permissions during runtime
@@ -477,7 +662,7 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
                 Toast.makeText(this,"File saved at: " + file,Toast.LENGTH_LONG).show();
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
-                Toast.makeText(this,"FileNotFound, please tyr again to export",Toast.LENGTH_LONG).show();
+                Toast.makeText(this,"FileNotFound, please try again to export",Toast.LENGTH_LONG).show();
             } catch (IOException e) {
                 e.printStackTrace();
                 Toast.makeText(this,"IOException, during write to file",Toast.LENGTH_LONG).show();
@@ -513,7 +698,7 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
         for (int i = 0; i < route.size(); ++i)
         {
             Node add = route.get(i);
-            content += add.getLatitude() + "," + add.getLongitude() + "," + height
+            content += add.getLatitude() + "," + add.getLongitude() + "," + settings[1]
                     + ",0,0,0,0,0,1,0,-1,0,-1,0,-1,0,-1,0,-1,0,-1,0,-1,0,-1,0,-1,0,-1,0,-1,0,-1,0,-1,0,-1,0\r\n";
         }
 
@@ -531,11 +716,11 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
         for (int i = 0; i < route.size() - 1; ++i)
         {
             Node add = route.get(i);
-            content += height + ",0,4,0," + i + ",0,0,0,0,0,-1,5,1,"
+            content += settings[1] + ",0,4,0," + i + ",0,0,0,0,0,-1,5,1,"
                     + (float)add.getLatitude() + "," + (float)add.getLongitude() + ",false,99,30\r\n";
         }
         Node add = route.get(route.size() - 1);
-        content += height + ",0,4,0," + (route.size() - 1) + ",0,0,0,0,0,-1,5,1,"
+        content += settings[1] + ",0,4,0," + (route.size() - 1) + ",0,0,0,0,0,-1,5,1,"
                 + (float)add.getLatitude() + "," + (float)add.getLongitude() + ",false," + Integer.MIN_VALUE + ",0";
 
         return content;

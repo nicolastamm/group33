@@ -1,0 +1,14 @@
+Protokoll 20.06.2018 
+Meeting mit Björn und Stefan
+Anwesend: Björn, Stefan, Heiko, Artuc, Hilmi, Nico, Martin, Johannes
+- Artuc spricht über die Neuerungen bzgl der App
+- App wird besprochen und getestet (von Stefan)
+- In der folgenden Woche sollen die Drohnen Tests stattfinden
+- Wir sollen unsere bisherige Idee bzgl der Aufteilung des Polygons beibehalten
+Meeting mit Gruppe
+Anwesend: Heiko, Artuc, Hilmi, Nico, Martin, Johannes
+- Warnung in der Main_act muss angepasst werden und die Drohnen Flag entsprechend gesetzt werden
+- Button für Split Mode in Main Activity einfügen
+- Layout soll im Buch überall gleich sein
+- Bilder in die Slider des Buches einfügen
+- Martin und Johannes arbeiten an k-opt
