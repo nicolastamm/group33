@@ -63,10 +63,8 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
     private float[] settings;
     private Boolean shapefill = true;
 
-    private Intent importPolyIntent;
+    //private Intent importPolyIntent;
     private static final int requestCode = 9;
-    private Uri path;
-    private InputStream inputStream;
 
     ArrayList<Marker> markers = new ArrayList<Marker>();
     ArrayList<Marker> actPointsInPoly = new ArrayList<Marker>();
@@ -309,58 +307,11 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
                 ActivityCompat.requestPermissions( Main_Activity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
 
                 File poly = android.os.Environment.getExternalStorageDirectory();
-                String polyPath = poly.getAbsolutePath() + "/DroneTours/Polygons";
+                String polyPath = poly.getAbsolutePath() + "/DroneTours/Polygons/";
 
                 Intent importPolyIntent = new Intent(Intent.ACTION_GET_CONTENT);
-                //importPolyIntent.setData(Uri.parse(polyPath));
+                importPolyIntent.setDataAndType(Uri.parse(polyPath), "*/*");
                 startActivityForResult(importPolyIntent, requestCode);
-
-                //poly = new File(polyPath);
-
-                //Instead app crashes if no polygon got saved before
-                //poly.mkdirs();
-                //String file = "";
-                /*
-                File[] files = poly.listFiles();
-                if(files.length > 0)
-                {
-                    poly = files[0];
-                    file = poly.getName();
-                    try {
-                        String line;
-                        String[] latLong;
-                        BufferedReader reader = new BufferedReader(new FileReader(poly));
-
-                        /*
-                         * read the input line by line
-
-                        while((line = reader.readLine()) != null)
-                        {
-                            latLong = line.split(",");
-                            Double lat = Double.parseDouble(latLong[0]);
-                            Double lng = Double.parseDouble(latLong[1]);
-                            //Main_Activity.this.setMarker("Local", lat, lng);
-                            Toast.makeText(Main_Activity.this, "Import Polygon: " + lat + lng ,Toast.LENGTH_LONG).show();
-                        }
-                    }
-                    catch (FileNotFoundException e)
-                    {
-                        Toast.makeText(Main_Activity.this, "FileNotFound File Reader" ,Toast.LENGTH_LONG).show();
-                        e.printStackTrace();
-                    }
-                    catch (IOException e)
-                    {
-                        Toast.makeText(Main_Activity.this, "IOExec read line" ,Toast.LENGTH_LONG).show();
-                        e.printStackTrace();
-                    }
-                }*/
-/*
-                for(int i = 0; i < files.length; i++)
-                {
-                    allFiles += files[i].getName() + " ";
-                }
-*/
-                Toast.makeText(Main_Activity.this, "Import Polygon: " ,Toast.LENGTH_LONG).show();
             }
         });
 
@@ -402,6 +353,9 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data)
     {
+        Uri path;
+        InputStream inputStream;
+
         if(resultCode == RESULT_OK && requestCode == this.requestCode)
         {
             path = data.getData();
@@ -415,6 +369,8 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
                     String[] latLong;
                     BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
 
+                    removePolygon();
+
                     /*
                      * read the input line by line
                      */
@@ -423,9 +379,14 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
                         latLong = line.split(",");
                         Double lat = Double.parseDouble(latLong[0]);
                         Double lng = Double.parseDouble(latLong[1]);
-                        //Main_Activity.this.setMarker("Local", lat, lng);
-                        Toast.makeText(Main_Activity.this, "Import Polygon: " + lat + lng ,Toast.LENGTH_LONG).show();
+
+                        Main_Activity.this.setMarker("Local", lat, lng);
                     }
+
+                    LatLng latLng = new LatLng(markers.get(0).getPosition().latitude, markers.get(0).getPosition().longitude);
+                    CameraUpdate nloc = CameraUpdateFactory.newLatLngZoom(latLng, 13);
+
+                    mMap.animateCamera(nloc);
                 }
                 catch (FileNotFoundException e)
                 {
@@ -437,9 +398,6 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
                     Toast.makeText(Main_Activity.this, "IOExec read line" ,Toast.LENGTH_LONG).show();
                     e.printStackTrace();
                 }
-                //importBitmap = BitmapFactory.decodeStream(inputStream);
-
-                Toast.makeText(Main_Activity.this, "Import Polygon: ",Toast.LENGTH_LONG).show();
             }
             catch (FileNotFoundException e)
             {

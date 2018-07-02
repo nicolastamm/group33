@@ -521,7 +521,7 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
         FileOutputStream fos = null;
         content = "";
 
-        for(int i = 0; i < nodeList.size(); i++)
+        for(int i = 0; i < nodeList.size() - 1; i++)
         {
             content += nodeList.get(i).getLatitude() + "," + nodeList.get(i).getLongitude() + "\n";
         }
