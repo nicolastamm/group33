@@ -174,7 +174,7 @@ public class Settings_Activity extends AppCompatActivity
     }
     private double getGcd(double a,double b)
     {
-        if(b ==0)
+        if(b == 0)
         {
             return a;
         }
