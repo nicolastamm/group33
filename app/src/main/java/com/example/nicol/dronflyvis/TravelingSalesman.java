@@ -66,11 +66,15 @@ public class TravelingSalesman
 
         if(cheapestLength < farthestLength && cheapestLength < ourTSPLength)
         {
-            return cheapestTour.getTour();
+            ArrayList<Node> tour = cheapestTour.getTour();
+            tour.remove(tour.size() - 1);
+            return tour;
         }
         else if(farthestLength < cheapestLength && farthestLength < ourTSPLength)
         {
-            return farthestTour.getTour();
+            ArrayList<Node> tour = farthestTour.getTour();
+            tour.remove(tour.size() - 1);
+            return tour;
         }
         else
         {
@@ -618,8 +622,8 @@ public class TravelingSalesman
             }
         }
 
-        ourTSPLength += distance(route.get(route.size() - 1), startNode);
-        route.add(startNode);
+        //ourTSPLength += distance(route.get(route.size() - 1), startNode);
+        //route.add(startNode);
         return route;			//returns the route to fly for the drone
     }
 
