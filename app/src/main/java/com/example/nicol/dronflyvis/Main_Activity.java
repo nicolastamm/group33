@@ -604,16 +604,7 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
                 for (Node j : x) {
                 double lt = j.getLatitude();
                 double lon = j.getLongitude();
-                    if (j == i.get(0).get(0)) {
-                        MarkerOptions options = new MarkerOptions()
-                                .title("Marker")
-                                .draggable(false)
-                                .position(new LatLng(lt, lon))
-                                .icon(BitmapDescriptorFactory.fromResource(R.drawable.markerstartred))
-                                .anchor((float) 0.5, (float) 0.5);
 
-                        actPointsInPoly.add(mMap.addMarker(options));
-                    } else {
                         MarkerOptions options;
                         switch (colour) {
                             case (0):
@@ -649,7 +640,7 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
                                 actPointsInPoly.add(mMap.addMarker(options));
                                 break;
                         }
-                    }
+
                 }
             }
         }
