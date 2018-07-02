@@ -19,7 +19,9 @@ public class TravelingSalesman
      * 1. cheapestInsertion <br>
      * 2. farthestInsertion <br>
      * 3. an other algorithm designed by ourselves, this one only works for a grid of points
-     * @param grid stores the route points
+     * @param grid stores the route
+     * @param startNode the first node for the tour
+     * @param inputPoly the edge-nodes of the drawn Polygon, to test if one of the tours leaves the polygon
      * @return an ArrayList which stores the order of the route points
      */
     public ArrayList<Node> travelingSalesman(ArrayList<ArrayList<Node>> grid, Node startNode , ArrayList<Node> inputPoly)
@@ -46,13 +48,17 @@ public class TravelingSalesman
             }
         }
 
+        ArrayList<ArrayList<Node>> grid1 = grid;
+        ArrayList<ArrayList<Node>> grid2 = grid;
+
+
         SubTour cheapestTour;
-        ArrayList<Node> cheapest = twoDimToOneDim((ArrayList<ArrayList<Node>>) grid.clone());
+        ArrayList<Node> cheapest = twoDimToOneDim(grid1);
         cheapestTour = cheapestInsertion(cheapest);
 
         SubTour farthestTour;
-        ArrayList<Node> farthest = twoDimToOneDim((ArrayList<ArrayList<Node>>) grid.clone());
-        //farthestTour = farthestInsertion(farthest);
+        ArrayList<Node> farthest = twoDimToOneDim(grid2);
+        farthestTour = farthestInsertion(farthest);
 
         ArrayList<Node> ourTSPRoute;
         ArrayList<ArrayList<Node>> ourtsp = (ArrayList<ArrayList<Node>>) grid.clone();
@@ -60,17 +66,21 @@ public class TravelingSalesman
 
         if(cheapestLength < farthestLength && cheapestLength < ourTSPLength)
         {
-            return cheapestTour.getTour();
+            ArrayList<Node> tour = cheapestTour.getTour();
+            tour.remove(tour.size() - 1);
+            return tour;
         }
         else if(farthestLength < cheapestLength && farthestLength < ourTSPLength)
         {
-            //	return farthestTour.getTour();
+            ArrayList<Node> tour = farthestTour.getTour();
+            tour.remove(tour.size() - 1);
+            return tour;
         }
         else
         {
             return ourTSPRoute;
         }
-        return new ArrayList<Node>();
+        //return new ArrayList<Node>();
     }
 
     /**
@@ -221,6 +231,7 @@ public class TravelingSalesman
         while(!grid.isEmpty())
         {
             gridIter = grid.iterator();
+            dist = Double.MAX_VALUE;
             while(gridIter.hasNext())
             {
                 act = gridIter.next();
@@ -229,6 +240,7 @@ public class TravelingSalesman
                 if(dists[1] < dist)
                 {
                     closestDists = dists;
+                    dist = closestDists[1];
                     closestNeighbour = act;
                 }
             }
@@ -254,10 +266,12 @@ public class TravelingSalesman
         double[] dists = new double[5];
 
         Iterator<Node> gridIter = grid.iterator();
-        Node act;
+        Node act = null;
         double currentDist;
-        double dist = Double.MIN_VALUE;
+        double dist = -1;
         Node farthestNeighbour = null;
+
+        System.out.println("Farthest");
 
         /*
          * add the first Node into the SubTour
@@ -280,7 +294,7 @@ public class TravelingSalesman
 
         double[] farthestDists = new double[5];
         gridIter = grid.iterator();
-        dist = Double.MIN_VALUE;
+        dist = -1;
         farthestNeighbour = null;
 
         /*
@@ -291,7 +305,7 @@ public class TravelingSalesman
         while(!grid.isEmpty())
         {
             gridIter = grid.iterator();
-            dist = Double.MIN_VALUE;
+            dist = -1;
             while(gridIter.hasNext())
             {
                 act = gridIter.next();
@@ -300,17 +314,20 @@ public class TravelingSalesman
                 if(dists[1] > dist)
                 {
                     farthestDists = dists;
+                    dist = farthestDists[1];
                     farthestNeighbour = act;
                 }
             }
-			/*if(grid.size() == 1)
-			{
-				act = grid.get(0);
-				farthestDists = searchInsertPos(tour, act);
-				tour.addNode(act, (int)farthestDists[0], farthestDists[4], farthestDists[2], farthestDists[3]);
-				grid.remove(act);
-				break;
-			}*/
+
+            /*
+             **********Special case**********
+             * Without it it sometimes crash
+             */
+            if(grid.size() == 1 && act != farthestNeighbour)
+            {
+                farthestDists = searchInsertPos(tour, act);
+                farthestNeighbour = act;
+            }
 
             tour.addNode(farthestNeighbour, (int)farthestDists[0], farthestDists[4], farthestDists[2], farthestDists[3]);
             grid.remove(farthestNeighbour);
@@ -605,8 +622,8 @@ public class TravelingSalesman
             }
         }
 
-        ourTSPLength += distance(route.get(route.size() - 1), startNode);
-        route.add(startNode);
+        //ourTSPLength += distance(route.get(route.size() - 1), startNode);
+        //route.add(startNode);
         return route;			//returns the route to fly for the drone
     }
 

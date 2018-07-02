@@ -1,9 +1,14 @@
 package com.example.nicol.dronflyvis;
 
+import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
@@ -35,6 +40,13 @@ import com.google.android.gms.maps.model.PolygonOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 import de.keyboardsurfer.android.widget.crouton.Configuration;
@@ -50,6 +62,9 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
     private Boolean polyAufteilung = false;
     private float[] settings;
     private Boolean shapefill = true;
+
+    //private Intent importPolyIntent;
+    private static final int requestCode = 9;
 
     ArrayList<Marker> markers = new ArrayList<Marker>();
     ArrayList<Marker> actPointsInPoly = new ArrayList<Marker>();
@@ -185,6 +200,7 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
             }
         });
 
+
         drawImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -282,14 +298,22 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
         });
 
         importImageButton.setOnClickListener(new View.OnClickListener() {
+            /**
+            * @author Johannes
+            */
             @Override
             public void onClick(View view) {
-                // Outputman: for imports of polygons
+                //Request storage permissions during runtime
+                ActivityCompat.requestPermissions( Main_Activity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
+
+                File poly = android.os.Environment.getExternalStorageDirectory();
+                String polyPath = poly.getAbsolutePath() + "/DroneTours/Polygons/";
+
+                Intent importPolyIntent = new Intent(Intent.ACTION_GET_CONTENT);
+                importPolyIntent.setDataAndType(Uri.parse(polyPath), "*/*");
+                startActivityForResult(importPolyIntent, requestCode);
             }
         });
-
-
-
 
         mapImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -326,6 +350,62 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
 
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
+        Uri path;
+        InputStream inputStream;
+
+        if(resultCode == RESULT_OK && requestCode == this.requestCode)
+        {
+            path = data.getData();
+            try
+            {
+                inputStream = getContentResolver().openInputStream(path);
+
+
+                try {
+                    String line;
+                    String[] latLong;
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+
+                    removePolygon();
+
+                    /*
+                     * read the input line by line
+                     */
+                    while((line = reader.readLine()) != null)
+                    {
+                        latLong = line.split(",");
+                        Double lat = Double.parseDouble(latLong[0]);
+                        Double lng = Double.parseDouble(latLong[1]);
+
+                        Main_Activity.this.setMarker("Local", lat, lng);
+                    }
+
+                    LatLng latLng = new LatLng(markers.get(0).getPosition().latitude, markers.get(0).getPosition().longitude);
+                    CameraUpdate nloc = CameraUpdateFactory.newLatLngZoom(latLng, 13);
+
+                    mMap.animateCamera(nloc);
+                }
+                catch (FileNotFoundException e)
+                {
+                    Toast.makeText(Main_Activity.this, "FileNotFound File Reader" ,Toast.LENGTH_LONG).show();
+                    e.printStackTrace();
+                }
+                catch (IOException e)
+                {
+                    Toast.makeText(Main_Activity.this, "IOExec read line" ,Toast.LENGTH_LONG).show();
+                    e.printStackTrace();
+                }
+            }
+            catch (FileNotFoundException e)
+            {
+                e.printStackTrace();
+            }
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
 
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {

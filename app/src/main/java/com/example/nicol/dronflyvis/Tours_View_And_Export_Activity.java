@@ -558,19 +558,19 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
         return PolyCount;
     }
 
+    /**
+     * @author Johannes
+     * @param view
+     */
     public void  export_csv(View view) {
         //Request storage permissions during runtime
         ActivityCompat.requestPermissions( Tours_View_And_Export_Activity.this ,new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
                 REQUEST_WRITE_EXTERNAL_STORAGE);
 
-        //Request storage permissions during runtime
-        ActivityCompat.requestPermissions( Tours_View_And_Export_Activity.this ,new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
-                REQUEST_WRITE_EXTERNAL_STORAGE);
-
         /*
          * Gets the current Date und Time, to timestamp the CSV
          */
-        SimpleDateFormat format = new SimpleDateFormat("dd.MM.yy' 'HH.mm");
+        SimpleDateFormat format = new SimpleDateFormat("dd-MM-yy' 'HH-mm");
         Date currentTime = new Date();
         String timeStamp = "" + format.format(currentTime);
 
@@ -675,10 +675,62 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
                     }
                 }
             }
+        }  //end for
+
+        File poly = android.os.Environment.getExternalStorageDirectory();
+        String polyPath = poly.getAbsolutePath() + "/DroneTours/Polygons";
+
+        String filename = "Polygon " + timeStamp + ".csv";
+        poly = new File(polyPath);
+
+        //If there is no folder, create a new one
+        poly.mkdirs();
+        poly = new File(polyPath + "/" + filename);
+
+        try
+        {
+            poly.createNewFile();
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+            Toast.makeText(this,"CouldNotCreateFile",Toast.LENGTH_LONG).show();
+        }
+
+        FileOutputStream fos = null;
+        content = "";
+
+        for(int i = 0; i < nodeList.size() - 1; i++)
+        {
+            content += nodeList.get(i).getLatitude() + "," + nodeList.get(i).getLongitude() + "\n";
+        }
+
+        //write data to file
+        try
+        {
+            fos = new FileOutputStream(poly);
+            fos.write(content.getBytes());
+
+            Toast.makeText(this,"File saved at: " + poly ,Toast.LENGTH_LONG).show();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            Toast.makeText(this,"FileNotFound, please try again to export",Toast.LENGTH_LONG).show();
+        } catch (IOException e) {
+            e.printStackTrace();
+            Toast.makeText(this,"IOException, during write to file",Toast.LENGTH_LONG).show();
+        } finally{
+            if(fos != null){
+                try {
+                    fos.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 
     /**
+     * @author Johannes
      * Creates the Content for the CSV, which is needed for LitchiOnline
      * @return the content used for the CSV File
      */
@@ -706,6 +758,7 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
     }
 
     /**
+     * @author Johannes
      * Creates the Content for the CSV, which is needed for AR Pro 3
      * @return the content used for the CSV File
      */
