@@ -379,6 +379,10 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
     }
 
 
+    /**
+     * @author Johannes
+     * @param view
+     */
     public void  export_csv(View view) {
         //Request storage permissions during runtime
         ActivityCompat.requestPermissions( Tours_View_And_Export_Activity.this ,new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
@@ -494,9 +498,10 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
             }
         }  //end for
 
+        File poly = android.os.Environment.getExternalStorageDirectory();
+        String polyPath = poly.getAbsolutePath() + "/DroneTours/Polygons";
+
         String filename = "Polygon " + timeStamp + ".csv";
-        File poly = this.getFilesDir();
-        String polyPath = poly.getAbsolutePath() + "/Polygons";
         poly = new File(polyPath);
 
         //If there is no folder, create a new one
@@ -524,8 +529,7 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
         //write data to file
         try
         {
-            fos = openFileOutput(filename, Context.MODE_APPEND);
-            Toast.makeText(this,"Content: " + content ,Toast.LENGTH_LONG).show();
+            fos = new FileOutputStream(poly);
             fos.write(content.getBytes());
 
             Toast.makeText(this,"File saved at: " + poly ,Toast.LENGTH_LONG).show();
@@ -547,6 +551,7 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
     }
 
     /**
+     * @author Johannes
      * Creates the Content for the CSV, which is needed for LitchiOnline
      * @return the content used for the CSV File
      */
@@ -574,6 +579,7 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
     }
 
     /**
+     * @author Johannes
      * Creates the Content for the CSV, which is needed for AR Pro 3
      * @return the content used for the CSV File
      */
