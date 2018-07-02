@@ -424,7 +424,6 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
 
 
 
-
                     if(polylines!=null){
                         for(int i = 0;i<polylines.size();i++){
                             polylines.get(i).remove();
@@ -484,6 +483,7 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
                         }
                         pfad.removeAll(pfad);
                     }
+
 
                     if (actStartNode != null) {
                         actStartNode.setLatitude(marker.getPosition().latitude);
