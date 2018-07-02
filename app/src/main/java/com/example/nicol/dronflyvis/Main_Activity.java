@@ -557,17 +557,19 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
                     }
 
                     if(polyAufteilung) {
-                        drawPointInPoly();
+                        if(markers.size()>=3) {
+                            drawPointInPoly();
 
-                        if(actPolyLynes!=null){
-                            for(int i = 0; i<actPolyLynes.size();i++){
-                                actPolyLynes.get(i).remove();
+                            if (actPolyLynes != null) {
+                                for (int i = 0; i < actPolyLynes.size(); i++) {
+                                    actPolyLynes.get(i).remove();
+                                }
+                                actPolyLynes = null;
+                                actPolyLynes = new ArrayList<Polyline>();
                             }
-                            actPolyLynes=null;
-                            actPolyLynes = new ArrayList<Polyline>();
-                        }
 
-                        shapefill = true;
+                            shapefill = true;
+                        }
                     }
 
                     drawPolygon();
