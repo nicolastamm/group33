@@ -62,7 +62,8 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
     public int MarkerCounter= -2;
     private double height = 100.0;
     public int farbe = 0;
-
+    private float[] aspectRatio;
+    private float ratio;
     private float zoom;
     private double lat;
     private double lng;
@@ -108,6 +109,11 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
             mapType = getIntent().getExtras().getInt("com.example.nicol.dronflyvis.mapType");
             split =  getIntent().getExtras().getBoolean("com.example.nicol.dronflyvis.splitPoly");
             droneFlag = getIntent().getExtras().getInt("com.example.nicol.dronflyvis.RADIO_SELECTION");
+
+            aspectRatio = getIntent().getExtras().getFloatArray("com.example.nicol.dronflyvis.ASPECT_RATIO");
+            ratio = (aspectRatio[0]/aspectRatio[1]);
+            //Log.i("test", "" + aspectRatio[0]);
+            //Log.i("test", "" + aspectRatio[1]);
         }
 
         infobuch = findViewById(R.id.tvae_activity_infobuch_button);
@@ -172,10 +178,6 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
 
         if (split) {
             Rastering raster = new Rastering(nodeList, (float) settings[2], settings[1]);
-            //Dies bereitet grade Probleme !!
-            // Problemme in dem Settings Array !
-
-            //Rastering raster = new Rastering(nodeList, (float) 78.8, 100);
             TravelingSalesman tsm = new TravelingSalesman();
 
 

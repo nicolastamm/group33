@@ -51,6 +51,7 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
     private Boolean polyAufteilung = false;
     private float[] settings;
     private Boolean shapefill = true;
+    private float[] aspectRatio;
 
     ArrayList<Marker> markers = new ArrayList<Marker>();
     ArrayList<Marker> actPointsInPoly = new ArrayList<Marker>();
@@ -90,6 +91,7 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
         if(getIntent().getExtras() != null)
         {
             settings = getIntent().getExtras().getFloatArray("com.example.nicol.dronflyvis.INPUT_VALUES");
+            aspectRatio = getIntent().getExtras().getFloatArray("com.example.nicol.dronflyvis.ASPECT_RATIO");
         }
 
         ImageButton infobuch = findViewById(R.id.infobuch_main_activity);
@@ -285,9 +287,6 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
                         }
                     }
                     polyAufteilung = true;
-
-
-
 
                 }
 
@@ -776,7 +775,7 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
         intent.putExtra("com.example.nicol.dronflyvis.mapType", mMap.getMapType());
         intent.putExtra("com.example.nicol.dronflyvis.SETTINGS", settings);
         intent.putExtra("com.example.nicol.dronflyvis.splitPoly", polyAufteilung);
-
+        intent.putExtra("com.example.nicol.dronflyvis.ASPECT_RATIO", aspectRatio);
         startActivity(intent);
     }
 
