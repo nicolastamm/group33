@@ -60,7 +60,7 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
     private ImageButton infobuch;
     private ImageButton mapImageButton;
     private GoogleMap mMap;
-    public int MarkerCounter= -2;
+    public int MarkerCounter= 0;
     public int farbe = 0;
 
     private float zoom;
@@ -73,6 +73,7 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
 
 
     int PolyCount;
+
     ArrayList<Marker> pfad = new ArrayList<>();
     Node actStartNode;
     Polyline polyline;
@@ -83,7 +84,7 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
 
     ArrayList<Node> nodeList;
     ArrayList<Node> route;
-    ArrayList<ArrayList<Node>> allRoutes = new ArrayList<ArrayList<Node>>();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -202,9 +203,9 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
                 actStartNodes.add(new Node(i.get(0).get(0).getLatitude(), i.get(0).get(0).getLongitude(), 2));
                 route = tsm.travelingSalesman(i, actStartNodes.get(count) , nodeList);
                 count++;
-                allRoutes.add(route);
+                //allRoutes.add(route);
 
-                for (int j = 0; j < route.size(); j++) {
+                for (int j = 0; j < route.size()-1; j++) {
                     double lt = route.get(j).getLatitude();
                     double lon = route.get(j).getLongitude();
 
@@ -223,7 +224,7 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
 
                 drawPfad(pfad);
                 farbe++;
-                MarkerCounter = -2;
+                MarkerCounter = 0;
             }
 
         }
@@ -242,9 +243,9 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
             {
                 route = tsm.travelingSalesman(actRaster,actStartNode, nodeList);
             }
-            allRoutes.add(route);
+            //allRoutes.add(route);
 
-            for(int i = 0; i<route.size(); i++)
+            for(int i = 0; i<route.size()-1; i++)
             {
                 double lt = route.get(i).getLatitude();
                 double lon = route.get(i).getLongitude();
@@ -424,7 +425,6 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
 
 
 
-
                     if(polylines!=null){
                         for(int i = 0;i<polylines.size();i++){
                             polylines.get(i).remove();
@@ -444,14 +444,14 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
 
 
                         route = tsm.travelingSalesman(i, actStartNodes.get(count) , nodeList);
-                        allRoutes.add(route);
+                       // allRoutes.add(route);
                         count++;
 
-                        for (int j = 0; j < route.size(); j++) {
+                        for (int j = 0; j < route.size()-1; j++) {
                             double lt = route.get(j).getLatitude();
                             double lon = route.get(j).getLongitude();
 
-                            MarkerCounter++;
+
                             String text = String.valueOf(MarkerCounter);
                             Bitmap bitmap = makeBitmap(Tours_View_And_Export_Activity.this, text, farbe);
 
@@ -461,12 +461,14 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
                                     .icon(BitmapDescriptorFactory.fromBitmap(bitmap))
                                     .anchor((float) 0.5, (float) 0.5);
                             pfad.add(mMap.addMarker(options));
+
+                            MarkerCounter++;
                         }
                         pfads.add(pfad);
 
                         drawPfad(pfad);
                         farbe++;
-                        MarkerCounter = -2;
+                        MarkerCounter = 0;
                     }
 
 
@@ -484,6 +486,7 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
                         }
                         pfad.removeAll(pfad);
                     }
+
 
                     if (actStartNode != null) {
                         actStartNode.setLatitude(marker.getPosition().latitude);
@@ -505,11 +508,9 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
                     } else {
                         route = tsm.travelingSalesman(actRaster, new Node(actStartNode.getLatitude(), actStartNode.getLongitude(), 2), nodeList);
                     }
-                    allRoutes.get(0).removeAll(allRoutes);
 
-                    allRoutes.add(route);
 
-                    for (int i = 0; i < route.size() - 2; i++) {
+                    for (int i = 0; i < route.size() - 1; i++) {
                         double lt = route.get(i).getLatitude();
                         double lon = route.get(i).getLongitude();
 
@@ -563,6 +564,49 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
      * @param view
      */
     public void  export_csv(View view) {
+        //Artuk war hier hehe :)
+
+        //AllRoutes brauchst eigentlich nur du, wegen der neuer Funktionalität hast die bei dir local
+        // Sonnst muss ich die ständig löschen und neu deffinieren
+
+        ArrayList<ArrayList<Node>> allRoutes = new ArrayList<ArrayList<Node>>();
+
+        if(split) {
+            int count = 0;
+
+            Rastering raster = new Rastering(nodeList, (float) settings[2], settings[1]);
+            TravelingSalesman tsm = new TravelingSalesman();
+
+            ArrayList<ArrayList<ArrayList<Node>>> actRaster = raster.getRasters();
+
+
+            for (ArrayList<ArrayList<Node>> i : actRaster) {
+                ArrayList<Marker> pfad = new ArrayList<>();
+
+                ArrayList<Node> routee = new ArrayList<Node>();
+                routee = tsm.travelingSalesman(i, actStartNodes.get(count), nodeList);
+                allRoutes.add(routee);
+                count++;
+            }
+        }
+        else{
+            Rastering raster = new Rastering(nodeList, settings[2], settings[1]);
+            TravelingSalesman tsm = new TravelingSalesman();
+
+            ArrayList<ArrayList<Node>> actRaster = raster.getRaster();
+            ArrayList<Node> routee = new ArrayList<Node>();
+
+            if (actRaster.isEmpty()) {
+                routee = nodeList;
+            } else {
+                routee = tsm.travelingSalesman(actRaster, new Node(actStartNode.getLatitude(), actStartNode.getLongitude(), 2), nodeList);
+            }
+
+             allRoutes.add(routee);
+        }
+
+
+
         //Request storage permissions during runtime
         ActivityCompat.requestPermissions( Tours_View_And_Export_Activity.this ,new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
                 REQUEST_WRITE_EXTERNAL_STORAGE);

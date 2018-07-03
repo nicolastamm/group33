@@ -20,22 +20,22 @@
                 android:id="@+id/buch_act_header"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="70dp"
+                android:layout_marginTop="50dp"
                 android:text="TextView"
                 android:textSize="25sp"/>
 
             <ImageView
                 android:id="@+id/buch_act_image"
-                android:layout_width="206dp"
-                android:layout_height="206dp"
-                android:layout_marginTop="50dp"
+                android:layout_width="match_parent"
+                android:layout_height="350dp"
+                android:layout_marginTop="20dp"
                 app:srcCompat="@drawable/ic_launcher" />
 
             <TextView
                 android:id="@+id/buch_act_discription"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="155dp"
+                android:layout_marginBottom="120dp"
                 android:text="TextView"
                 android:textSize="15sp"
                 android:layout_marginTop="20dp"/>

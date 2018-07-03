@@ -19,31 +19,43 @@ public class Buch_Slider extends PagerAdapter{
     }
 
     public int[] images_toslide = {
-            R.drawable.ic_launcher,
-            R.drawable.ic_launcher,
-            R.drawable.ic_launcher,
-            R.drawable.ic_launcher
+            R.drawable.leftbariconspic,
+            R.drawable.othericons,
+            R.drawable.simplepolygon,
+            R.drawable.splitpolygon,
+            R.drawable.export
     };
 
     public String[] act_headers = {
-            "Location selection",
-            "Starting point",
-            "Draw polygon",
-            "Export"
+            "Edit your polygon ",
+            "Other icons worth mentioning",
+            "A simple polygon",
+            "The split modus",
+            "Ready to export"
     };
 
 
     public String[] act_discr = {
-            "In this section you can search for an arbitrary location which you may want to map out later on. "
-                    + "\n \nBelow you've got a change-button for changing the map type between a satellite, hybrid, normal and terrain aspect."
-                    + "You can confirm the chosen location by clicking next.",
-            "Here, in this section you can set your starting point from where you want to position yourself in the course of mapping out your chosen location."
-                    + "\n \nIf you set your position, you can see a 300 meter radius around the marker which is meant for your orientation.",
-            "On the left side of the Screen you can see four buttons. The button with the pin lets you pin down the map" +
-                    " so you won't have the trouble of sudden movements while you're drawing.\nThe pencil button lets you set the corners of your polygon. The garbage can" +
-                    " delets all nodes and with the eraser you have to possibility of deleting one arbitrary node.",
-            "After some misterious calculations you can now see the route for your drone. If what you see isn't what you wanted you can go back and start again from the last section." +
-                    "\n\nIf you're satisfied you can now export the csv file for litchi online."
+            "While editing your polygon, we made several modi and buttons to greatly streamline your experience with our system.\n\nThese include:\n\n" +
+                    "(1) Pin mode: sometimes you want to focus on a certain area of the map, without having to be mindful of not swiping away. With this enabled, the map shan't move, thus allowing better control of the editing tools.\n\n" +
+                    "(2) Draw mode: By default, you start on this mode. As the name implies, it is in this mode that new points of your desired area can be added. \n\n" +
+                    "(3) Erase mode: Counter to the draw mode, this mode enables the selective removal of any nodes of your choosing.\n\n" +
+                    "(4) Dump Polygon: For those big mistakes. Press this, and you will allow yourself to start again from scratch.\n\n" +
+                    "(5) Import Polygon: Old work shan't be simply thrown away! Now you can import your favourite polygons!",
+            "There some other icons that have to be explained. On the top border you see a very familiar sight. It is indeed the search bar of Google Maps! Use it just as you know it!\n\n" +
+                    "Down on the left of it you might see an orange square. This tells you whether you are in a Polygon splitting modus or not. Tapping it toggles the switch mode.\n\n" +
+                    "Below are some self explanatory buttons. Of note is perhaps the middle one. This one simply lets you switch between different map types.\n\n" +
+                    "Up to the right of this is the help button.\nYou know this one, you just pressed it!",
+            "There are several things to note when drawing polygons with our software. You will notice that two nodes are always coloured orange.\n\n" +
+                    "This color denotes between which 2 nodes the next one will be added. Best practice is to visualise the polygon you wish to draw, and go clockwise, or counter-clockwise through that border.\n\n" +
+                    "And of course, you can press a node, drag it to a new position, and drop it there! Now keep in mind we are talking about the non-split mode here, notice the orange square in the upper right corner.",
+            "Look at the top right corner. You are now in the split modus! Things work a little bit differently now.\n\n" +
+                    "First of, you now see a preview of where the points will be, in addition to their colour, which denotes the sub-polygon to which it will belong.\n\n" +
+                    "Secondly, if you drag a point (only the border points can be dragged), you will see some red grid. This grid lets you know where the splitlines" +
+                    "for the polgons are!\nUse this information to your advantage.",
+            "Now you have some candidates for your routes! Notice we have pre selected for you the start of your route. " +
+                    "But if course you know best where to start your own route. This is why with a simple tap, you can rearrange the route with a start node of your liking!\n\n" +
+                    "Finally, when you feel ready and satisfied with your routes, simply tap on the Export button, and you are ready to fly out, map out!"
     };
 
 
