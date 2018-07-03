@@ -1,5 +1,6 @@
 package com.example.nicol.dronflyvis;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -36,7 +37,6 @@ public class TravelingSalesman
         for(int i = 0; i < grid.size(); ++i)
         {
             Iterator<Node> gridIter = grid.get(i).iterator();
-
             while(gridIter.hasNext())
             {
                 Node act = gridIter.next();
@@ -49,6 +49,7 @@ public class TravelingSalesman
 
         ArrayList<ArrayList<Node>> grid1 = grid;
         ArrayList<ArrayList<Node>> grid2 = grid;
+        ArrayList<ArrayList<Node>> grid3 = grid;
 
 
         SubTour cheapestTour;
@@ -60,7 +61,7 @@ public class TravelingSalesman
         farthestTour = farthestInsertion(farthest);
 
         ArrayList<Node> ourTSPRoute;
-        ArrayList<ArrayList<Node>> ourtsp = (ArrayList<ArrayList<Node>>) grid.clone();
+        ArrayList<ArrayList<Node>> ourtsp = grid3;
         ourTSPRoute = ourTSP(ourtsp);
 
         if(cheapestLength < farthestLength && cheapestLength < ourTSPLength)
@@ -243,19 +244,7 @@ public class TravelingSalesman
                     closestNeighbour = act;
                 }
             }
-            /*
-             **********Special case**********
-             * Without it it sometimes crash
-             */
-            /*if(grid.size() != 1)
-            {
-                tour.addNode(closestNeighbour, (int)closestDists[0], closestDists[4], closestDists[2], closestDists[3]);
-                grid.remove(closestNeighbour);
-            }
-            else
-            {
-                break;
-            }*/
+
             tour.addNode(closestNeighbour, (int)closestDists[0], closestDists[4], closestDists[2], closestDists[3]);
             grid.remove(closestNeighbour);
         }
@@ -369,17 +358,17 @@ public class TravelingSalesman
         int l = 0;
         int k = 0;
 
+        route.add(startNode);						//adds the position from the pilot as the first node to the route
+
         /*
          * If the grid is empty, an empty list will be returned
          */
-        if(grid.isEmpty())
+        if(grid.isEmpty() || (grid.size() == 1 && grid.get(0).isEmpty()))
         {
             return route;
         }
 
         uneven = (grid.size() % 2 != 0);
-
-        route.add(startNode);						//adds the position from the pilot as the first node to the route
 
         for(int i = 0; i < grid.size(); ++i)
         {
