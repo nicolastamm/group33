@@ -84,6 +84,7 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
 
     ArrayList<Node> nodeList;
     ArrayList<Node> route;
+    ArrayList<ArrayList<Node>> allRoutes = new ArrayList<ArrayList<Node>>();
 
 
     @Override
@@ -203,7 +204,7 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
                 actStartNodes.add(new Node(i.get(0).get(0).getLatitude(), i.get(0).get(0).getLongitude(), 2));
                 route = tsm.travelingSalesman(i, actStartNodes.get(count) , nodeList);
                 count++;
-                //allRoutes.add(route);
+                allRoutes.add(route);
 
                 for (int j = 0; j < route.size(); j++) {
                     double lt = route.get(j).getLatitude();
@@ -243,7 +244,7 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
             {
                 route = tsm.travelingSalesman(actRaster,actStartNode, nodeList);
             }
-            //allRoutes.add(route);
+            allRoutes.add(route);
 
             for(int i = 0; i<route.size(); i++)
             {
@@ -403,6 +404,7 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
+                allRoutes.clear();
                 if(split){
                     farbe = 0;
                     int fromPol = pointFromPoly(marker);
@@ -444,7 +446,7 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
 
 
                         route = tsm.travelingSalesman(i, actStartNodes.get(count) , nodeList);
-                       // allRoutes.add(route);
+                        allRoutes.add(route);
                         count++;
 
                         for (int j = 0; j < route.size(); j++) {
@@ -508,7 +510,7 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
                     } else {
                         route = tsm.travelingSalesman(actRaster, new Node(actStartNode.getLatitude(), actStartNode.getLongitude(), 2), nodeList);
                     }
-
+                    allRoutes.add(route);
 
                     for (int i = 0; i < route.size(); i++) {
                         double lt = route.get(i).getLatitude();
@@ -568,7 +570,7 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
 
         //AllRoutes brauchst eigentlich nur du, wegen der neuer Funktionalität hast die bei dir local
         // Sonnst muss ich die ständig löschen und neu deffinieren
-
+/*
         ArrayList<ArrayList<Node>> allRoutes = new ArrayList<ArrayList<Node>>();
 
         if(split) {
@@ -603,7 +605,7 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
             }
 
              allRoutes.add(routee);
-        }
+        }*/
 
 
 

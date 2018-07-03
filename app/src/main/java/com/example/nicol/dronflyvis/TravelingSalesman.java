@@ -1,6 +1,8 @@
 package com.example.nicol.dronflyvis;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 
 /**
@@ -12,7 +14,9 @@ public class TravelingSalesman
     Node startNode;
     float ourTSPLength = 0;
     float cheapestLength;
-    float farthestLength = Float.MAX_VALUE;
+    float farthestLength;
+    float cheapestOptLength;
+    float farthestOptLength;
 
     /**
      * Calculates an approximately optimal route using three different algorithms: <br>
@@ -36,7 +40,6 @@ public class TravelingSalesman
         for(int i = 0; i < grid.size(); ++i)
         {
             Iterator<Node> gridIter = grid.get(i).iterator();
-
             while(gridIter.hasNext())
             {
                 Node act = gridIter.next();
@@ -47,37 +50,60 @@ public class TravelingSalesman
             }
         }
 
-        ArrayList<ArrayList<Node>> grid1 = grid;
-        ArrayList<ArrayList<Node>> grid2 = grid;
+        ArrayList<ArrayList<Node>> gridCheapest = grid;
+        ArrayList<ArrayList<Node>> gridFarthest = grid;
+        ArrayList<ArrayList<Node>> gridOur = grid;
 
 
         SubTour cheapestTour;
-        ArrayList<Node> cheapest = twoDimToOneDim(grid1);
+        ArrayList<Node> cheapest = twoDimToOneDim(gridCheapest);
         cheapestTour = cheapestInsertion(cheapest);
 
         SubTour farthestTour;
-        ArrayList<Node> farthest = twoDimToOneDim(grid2);
+        ArrayList<Node> farthest = twoDimToOneDim(gridFarthest);
         farthestTour = farthestInsertion(farthest);
 
-        // ArrayList<Node> ourTSPRoute;
-        // ArrayList<ArrayList<Node>> ourtsp = (ArrayList<ArrayList<Node>>) grid.clone();
-        // ourTSPRoute = ourTSP(ourtsp);
+        ArrayList<Node> ourTSPRoute;
+        ArrayList<ArrayList<Node>> ourtsp = gridOur;
+        ourTSPRoute = ourTSP(ourtsp);
 
-        if(cheapestLength < farthestLength && cheapestLength < ourTSPLength)
+        Tour cheapestRouteOpt = opt(cheapestTour.clone());
+        cheapestOptLength = (float) cheapestRouteOpt.getLength();
+
+        Tour farthestRouteOpt = opt(farthestTour.clone());
+        farthestOptLength = (float) farthestRouteOpt.getLength();
+
+        System.out.println("Lengths :" + cheapestLength + " " + farthestLength + " " +  ourTSPLength + " " +   cheapestOptLength
+                + " " + farthestOptLength);
+
+        if(cheapestLength < farthestLength && cheapestLength < ourTSPLength && cheapestLength < cheapestOptLength && cheapestLength < farthestOptLength)
         {
             ArrayList<Node> tour = cheapestTour.getTour();
             tour.remove(tour.size() - 1);
             return tour;
-        } else //if(farthestLength < cheapestLength && farthestLength < ourTSPLength)
+        }
+        else if(farthestLength < cheapestLength && farthestLength < ourTSPLength && farthestLength < cheapestOptLength && farthestLength < farthestOptLength)
         {
             ArrayList<Node> tour = farthestTour.getTour();
             tour.remove(tour.size() - 1);
             return tour;
         }
-        // else
-        // {
-        //     return ourTSPRoute;
-        // }
+        else if(cheapestOptLength < cheapestLength && cheapestOptLength < farthestLength && cheapestOptLength < ourTSPLength && cheapestOptLength < farthestOptLength)
+        {
+            ArrayList<Node> tour = cheapestRouteOpt.getTour();
+            tour.remove(tour.size() - 1);
+            return tour;
+        }
+        else if(farthestOptLength < cheapestLength && farthestOptLength < farthestLength && farthestOptLength < ourTSPLength && farthestOptLength < cheapestOptLength)
+        {
+            ArrayList<Node> tour = farthestRouteOpt.getTour();
+            tour.remove(tour.size() - 1);
+            return tour;
+        }
+        else
+        {
+            return ourTSPRoute;
+        }
         //return new ArrayList<Node>();
     }
 
@@ -110,7 +136,7 @@ public class TravelingSalesman
      * @param b the second node
      * @return the distance between the two nodes a and b
      */
-    private double distance(Node a, Node b)
+    public static double distance(Node a, Node b)
     {
         double earthRadius = 6371000; //in meters
         double diffLat = Math.toRadians(b.getLatitude() - a.getLatitude());
@@ -179,6 +205,65 @@ public class TravelingSalesman
         return ret;
     }
 
+    /**
+     * Optimizes a route by swapping nodes, if this reduces the distance
+     * @param t the Tour to optimize
+     * @return the optimized route
+     */
+    private Tour opt(SubTour t)
+    {
+        ArrayList<Node> route = copyList(t.getTour());
+        double length = (float) t.getLength();
+
+        /*
+         *
+         */
+        int i = 0;
+        while(i < route.size())
+        {
+            Node a = route.get(i);
+
+            for(int j = i; j < route.size(); ++j)
+            {
+                Node c = route.get(j);
+
+                Tour fst = new Tour(route);
+
+                Collections.swap(route, i, j);
+
+                Tour sec = new Tour(route);
+
+                //swap b c because this will reduce the length of the route by (distACBD - distABCD)
+                if(fst.getLength() < sec.getLength())
+                {
+                   route = fst.getTour();
+                   length = fst.getLength();
+                }
+                else
+                {
+                    route = sec.getTour();
+                    length = sec.getLength();
+                }
+
+            }
+            i++;
+        }
+
+        return (new Tour(route, length));
+    }
+
+    private ArrayList<Node> copyList(ArrayList<Node> list)
+    {
+        ArrayList<Node> lst = new ArrayList<Node>();
+
+        for(int i = 0; i < list.size(); ++i)
+        {
+            lst.add(list.get(i));
+        }
+
+        return lst;
+    }
+
     //=========================================CHEAPEST=========================================
     /**
      * calculating a route using the heuristic of cheapest-insertion
@@ -189,74 +274,60 @@ public class TravelingSalesman
     {
         SubTour tour = new SubTour(startNode);
 
-        double[] dists = new double[5];
-
-        Iterator<Node> gridIter = grid.iterator();
-        Node act;
-        double currentDist;
-        double dist = Double.MAX_VALUE;
-        Node closestNeighbour = null;
-
-        /*
-         * add the first Node into the SubTour
-         * Search the node, which would increase the total length of the SubTour
-         * by the smallest value
-         */
-        while(gridIter.hasNext())
+        if(!grid.isEmpty())
         {
-            act = gridIter.next();
-            currentDist = distance(startNode, act);
-            if(currentDist < dist)
-            {
-                dist = currentDist;
-                closestNeighbour = act;
-            }
-        }
+            double[] dists = new double[5];
 
-        tour.addNode(closestNeighbour, 1, 0, dist, dist);
-        grid.remove(closestNeighbour);
+            Iterator<Node> gridIter = grid.iterator();
+            Node act;
+            double currentDist;
+            double dist = Double.MAX_VALUE;
+            Node closestNeighbour = null;
 
-        double[] closestDists = new double[5];
-        gridIter = grid.iterator();
-        dist = Double.MAX_VALUE;
-        closestNeighbour = null;
-
-        /*
-         * add the first Node into the SubTour
-         * Search the node, which would increase the total length of the SubTour
-         * by the smallest value
-         */
-        while(!grid.isEmpty())
-        {
-            gridIter = grid.iterator();
-            dist = Double.MAX_VALUE;
-            while(gridIter.hasNext())
-            {
+            /*
+             * add the first Node into the SubTour
+             * Search the node, which would increase the total length of the SubTour
+             * by the smallest value
+             */
+            while (gridIter.hasNext()) {
                 act = gridIter.next();
-                dists = searchInsertPos(tour, act);
-
-                if(dists[1] < dist)
-                {
-                    closestDists = dists;
-                    dist = closestDists[1];
+                currentDist = distance(startNode, act);
+                if (currentDist < dist) {
+                    dist = currentDist;
                     closestNeighbour = act;
                 }
             }
+
+            tour.addNode(closestNeighbour, 1, 0, dist, dist);
+            grid.remove(closestNeighbour);
+
+            double[] closestDists = new double[5];
+            gridIter = grid.iterator();
+            dist = Double.MAX_VALUE;
+            closestNeighbour = null;
+
             /*
-             **********Special case**********
-             * Without it it sometimes crash
+             * add the first Node into the SubTour
+             * Search the node, which would increase the total length of the SubTour
+             * by the smallest value
              */
-            /*if(grid.size() != 1)
-            {
-                tour.addNode(closestNeighbour, (int)closestDists[0], closestDists[4], closestDists[2], closestDists[3]);
+            while (!grid.isEmpty()) {
+                gridIter = grid.iterator();
+                dist = Double.MAX_VALUE;
+                while (gridIter.hasNext()) {
+                    act = gridIter.next();
+                    dists = searchInsertPos(tour, act);
+
+                    if (dists[1] < dist) {
+                        closestDists = dists;
+                        dist = closestDists[1];
+                        closestNeighbour = act;
+                    }
+                }
+
+                tour.addNode(closestNeighbour, (int) closestDists[0], closestDists[4], closestDists[2], closestDists[3]);
                 grid.remove(closestNeighbour);
             }
-            else
-            {
-                break;
-            }*/
-            tour.addNode(closestNeighbour, (int)closestDists[0], closestDists[4], closestDists[2], closestDists[3]);
-            grid.remove(closestNeighbour);
         }
 
         cheapestLength = (float) tour.getLength();
@@ -273,74 +344,76 @@ public class TravelingSalesman
     {
         SubTour tour = new SubTour(startNode);
 
-        double[] dists = new double[5];
-
-        Iterator<Node> gridIter = grid.iterator();
-        Node act = null;
-        double currentDist;
-        double dist = -1;
-        Node farthestNeighbour = null;
-
-        System.out.println("Farthest");
-
-        /*
-         * add the first Node into the SubTour
-         * Search the node, which would increase the total length of the SubTour
-         * by the smallest value
-         */
-        while(gridIter.hasNext())
+        if(!grid.isEmpty())
         {
-            act = gridIter.next();
-            currentDist = distance(startNode, act);
-            if(currentDist > dist)
-            {
-                dist = currentDist;
-                farthestNeighbour = act;
-            }
-        }
+            double[] dists = new double[5];
 
-        tour.addNode(farthestNeighbour, 1, 0, dist, dist);
-        grid.remove(farthestNeighbour);
+            Iterator<Node> gridIter = grid.iterator();
+            Node act = null;
+            double currentDist;
+            double dist = -1;
+            Node farthestNeighbour = null;
 
-        double[] farthestDists = new double[5];
-        gridIter = grid.iterator();
-        dist = -1;
-        farthestNeighbour = null;
-
-        /*
-         * add the first Node into the SubTour
-         * Search the node, which would increase the total length of the SubTour
-         * by the smallest value
-         */
-        while(!grid.isEmpty())
-        {
-            gridIter = grid.iterator();
-            dist = -1;
+            /*
+             * add the first Node into the SubTour
+             * Search the node, which would increase the total length of the SubTour
+             * by the smallest value
+             */
             while(gridIter.hasNext())
             {
                 act = gridIter.next();
-                dists = searchInsertPos(tour, act);
-
-                if(dists[1] > dist)
+                currentDist = distance(startNode, act);
+                if(currentDist > dist)
                 {
-                    farthestDists = dists;
-                    dist = farthestDists[1];
+                    dist = currentDist;
                     farthestNeighbour = act;
                 }
             }
 
+            tour.addNode(farthestNeighbour, 1, 0, dist, dist);
+            grid.remove(farthestNeighbour);
+
+            double[] farthestDists = new double[5];
+            gridIter = grid.iterator();
+            dist = -1;
+            farthestNeighbour = null;
+
             /*
-             **********Special case**********
-             * Without it it sometimes crash
+             * add the first Node into the SubTour
+             * Search the node, which would increase the total length of the SubTour
+             * by the smallest value
              */
-            if(grid.size() == 1 && act != farthestNeighbour)
+            while(!grid.isEmpty())
             {
-                farthestDists = searchInsertPos(tour, act);
-                farthestNeighbour = act;
+                gridIter = grid.iterator();
+                dist = -1;
+                while(gridIter.hasNext())
+                {
+                    act = gridIter.next();
+                    dists = searchInsertPos(tour, act);
+
+                    if(dists[1] > dist)
+                    {
+                        farthestDists = dists;
+                        dist = farthestDists[1];
+                        farthestNeighbour = act;
+                    }
+                }
+
+                /*
+                 **********Special case**********
+                 * Without it it sometimes crash
+                 */
+                if(grid.size() == 1 && act != farthestNeighbour)
+                {
+                    farthestDists = searchInsertPos(tour, act);
+                    farthestNeighbour = act;
+                }
+
+                tour.addNode(farthestNeighbour, (int) farthestDists[0], farthestDists[4], farthestDists[2], farthestDists[3]);
+                grid.remove(farthestNeighbour);
             }
 
-            tour.addNode(farthestNeighbour, (int) farthestDists[0], farthestDists[4], farthestDists[2], farthestDists[3]);
-            grid.remove(farthestNeighbour);
         }
 
         farthestLength = (float) tour.getLength();
@@ -368,17 +441,18 @@ public class TravelingSalesman
         int l = 0;
         int k = 0;
 
+        route.add(startNode);						//adds the position from the pilot as the first node to the route
+
         /*
-         * If the grid is empty, an empty list will be returned
+         * If the grid is empty, or it contains only one List, which is Empty,
+         * then a list only containing to startNode will be returned
          */
-        if(grid.isEmpty())
+        if(grid.isEmpty() || (grid.size() == 1 && grid.get(0).isEmpty()))
         {
             return route;
         }
 
         uneven = (grid.size() % 2 != 0);
-
-        route.add(startNode);						//adds the position from the pilot as the first node to the route
 
         for(int i = 0; i < grid.size(); ++i)
         {
