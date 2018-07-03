@@ -205,7 +205,7 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
                 count++;
                 //allRoutes.add(route);
 
-                for (int j = 0; j < route.size()-1; j++) {
+                for (int j = 0; j < route.size(); j++) {
                     double lt = route.get(j).getLatitude();
                     double lon = route.get(j).getLongitude();
 
@@ -245,7 +245,7 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
             }
             //allRoutes.add(route);
 
-            for(int i = 0; i<route.size()-1; i++)
+            for(int i = 0; i<route.size(); i++)
             {
                 double lt = route.get(i).getLatitude();
                 double lon = route.get(i).getLongitude();
@@ -447,7 +447,7 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
                        // allRoutes.add(route);
                         count++;
 
-                        for (int j = 0; j < route.size()-1; j++) {
+                        for (int j = 0; j < route.size(); j++) {
                             double lt = route.get(j).getLatitude();
                             double lon = route.get(j).getLongitude();
 
@@ -510,7 +510,7 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
                     }
 
 
-                    for (int i = 0; i < route.size() - 1; i++) {
+                    for (int i = 0; i < route.size(); i++) {
                         double lt = route.get(i).getLatitude();
                         double lon = route.get(i).getLongitude();
 
