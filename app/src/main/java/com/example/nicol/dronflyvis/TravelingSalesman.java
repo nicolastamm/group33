@@ -13,7 +13,9 @@ public class TravelingSalesman
     Node startNode;
     float ourTSPLength = 0;
     float cheapestLength;
-    float farthestLength = Float.MAX_VALUE;
+    float farthestLength;
+    float cheapestOptLength;
+    float farthestOptLength;
 
     /**
      * Calculates an approximately optimal route using three different algorithms: <br>
@@ -47,32 +49,52 @@ public class TravelingSalesman
             }
         }
 
-        ArrayList<ArrayList<Node>> grid1 = grid;
-        ArrayList<ArrayList<Node>> grid2 = grid;
-        ArrayList<ArrayList<Node>> grid3 = grid;
+        ArrayList<ArrayList<Node>> gridCheapest = grid;
+        ArrayList<ArrayList<Node>> gridFarthest = grid;
+        ArrayList<ArrayList<Node>> gridOur = grid;
 
 
         SubTour cheapestTour;
-        ArrayList<Node> cheapest = twoDimToOneDim(grid1);
+        ArrayList<Node> cheapest = twoDimToOneDim(gridCheapest);
         cheapestTour = cheapestInsertion(cheapest);
 
         SubTour farthestTour;
-        ArrayList<Node> farthest = twoDimToOneDim(grid2);
+        ArrayList<Node> farthest = twoDimToOneDim(gridFarthest);
         farthestTour = farthestInsertion(farthest);
 
         ArrayList<Node> ourTSPRoute;
-        ArrayList<ArrayList<Node>> ourtsp = grid3;
+        ArrayList<ArrayList<Node>> ourtsp = gridOur;
         ourTSPRoute = ourTSP(ourtsp);
 
-        if(cheapestLength < farthestLength && cheapestLength < ourTSPLength)
+        Tour cheapestRouteOpt = opt(cheapestTour.clone());
+        cheapestOptLength = (float) cheapestRouteOpt.getLength();
+        Tour farthestRouteOpt = opt(farthestTour.clone());
+        farthestOptLength = (float) farthestRouteOpt.getLength();
+
+        System.out.println("Lengths :" + cheapestLength + " " + farthestLength + " " +  ourTSPLength + " " +   cheapestOptLength
+                + " " + farthestOptLength);
+
+        if(cheapestLength < farthestLength && cheapestLength < ourTSPLength && cheapestLength < cheapestOptLength && cheapestLength < farthestOptLength)
         {
             ArrayList<Node> tour = cheapestTour.getTour();
             tour.remove(tour.size() - 1);
             return tour;
         }
-        else if(farthestLength < cheapestLength && farthestLength < ourTSPLength)
+        else if(farthestLength < cheapestLength && farthestLength < ourTSPLength && farthestLength < cheapestOptLength && farthestLength < farthestOptLength)
         {
             ArrayList<Node> tour = farthestTour.getTour();
+            tour.remove(tour.size() - 1);
+            return tour;
+        }
+        else if(cheapestOptLength < cheapestLength && cheapestOptLength < farthestLength && cheapestOptLength < ourTSPLength && cheapestOptLength < farthestOptLength)
+        {
+            ArrayList<Node> tour = cheapestRouteOpt.getTour();
+            tour.remove(tour.size() - 1);
+            return tour;
+        }
+        else if(farthestOptLength < cheapestLength && farthestOptLength < farthestLength && farthestOptLength < ourTSPLength && farthestOptLength < cheapestOptLength)
+        {
+            ArrayList<Node> tour = farthestRouteOpt.getTour();
             tour.remove(tour.size() - 1);
             return tour;
         }
@@ -318,6 +340,7 @@ public class TravelingSalesman
                 grid.remove(closestNeighbour);
             }
         }
+
         cheapestLength = (float) tour.getLength();
         return tour;
     }
