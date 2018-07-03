@@ -23,6 +23,20 @@ public class Tour
     }
 
     /**
+     * Creat a new Tour with a given route and calculate its length
+     * @param tour the given tour
+     */
+    Tour(ArrayList<Node> tour)
+    {
+        this.tour = tour;
+        length = 0;
+        for(int i = 0; i < tour.size() - 1; i++)
+        {
+            length += TravelingSalesman.distance(tour.get(i), tour.get(i + 1));
+        }
+    }
+
+    /**
      * Empty Constructor needed, because SubTour extends from this class and has
      * an different constructor, using other arguments
      */
