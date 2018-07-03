@@ -59,26 +59,25 @@ public class TravelingSalesman
         ArrayList<Node> farthest = twoDimToOneDim(grid2);
         farthestTour = farthestInsertion(farthest);
 
-        ArrayList<Node> ourTSPRoute;
-        ArrayList<ArrayList<Node>> ourtsp = (ArrayList<ArrayList<Node>>) grid.clone();
-        ourTSPRoute = ourTSP(ourtsp);
+        // ArrayList<Node> ourTSPRoute;
+        // ArrayList<ArrayList<Node>> ourtsp = (ArrayList<ArrayList<Node>>) grid.clone();
+        // ourTSPRoute = ourTSP(ourtsp);
 
         if(cheapestLength < farthestLength && cheapestLength < ourTSPLength)
         {
             ArrayList<Node> tour = cheapestTour.getTour();
             tour.remove(tour.size() - 1);
             return tour;
-        }
-        else if(farthestLength < cheapestLength && farthestLength < ourTSPLength)
+        } else //if(farthestLength < cheapestLength && farthestLength < ourTSPLength)
         {
             ArrayList<Node> tour = farthestTour.getTour();
             tour.remove(tour.size() - 1);
             return tour;
         }
-        else
-        {
-            return ourTSPRoute;
-        }
+        // else
+        // {
+        //     return ourTSPRoute;
+        // }
         //return new ArrayList<Node>();
     }
 
