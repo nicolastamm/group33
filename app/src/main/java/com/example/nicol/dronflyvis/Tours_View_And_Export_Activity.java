@@ -10,16 +10,14 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
-import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
@@ -85,6 +83,8 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
     ArrayList<Node> nodeList;
     ArrayList<Node> route;
     ArrayList<ArrayList<Node>> allRoutes = new ArrayList<ArrayList<Node>>();
+
+    TravelingSalesman tsm = new TravelingSalesman();
 
 
     @Override
@@ -183,88 +183,10 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
 
 
         if (split) {
-            int count=0;
-
-            Rastering raster = new Rastering(nodeList, (float) settings[2], settings[1]);
-            TravelingSalesman tsm = new TravelingSalesman();
-
-
-
-            ArrayList<ArrayList<ArrayList<Node>>> actRaster = raster.getRasters();
-
-            actStartNodes = new ArrayList<Node>();
-
-
-
-
-            for (ArrayList<ArrayList<Node>> i : actRaster) {
-                ArrayList<Marker> pfad = new ArrayList<>();
-
-
-                actStartNodes.add(new Node(i.get(0).get(0).getLatitude(), i.get(0).get(0).getLongitude(), 2));
-                route = tsm.travelingSalesman(i, actStartNodes.get(count) , nodeList);
-                count++;
-                allRoutes.add(route);
-
-                for (int j = 0; j < route.size(); j++) {
-                    double lt = route.get(j).getLatitude();
-                    double lon = route.get(j).getLongitude();
-
-                    MarkerCounter++;
-                    String text = String.valueOf(MarkerCounter);
-                    Bitmap bitmap = makeBitmap(this, text, farbe);
-
-                    MarkerOptions options = new MarkerOptions()
-                            .draggable(false)
-                            .position(new LatLng((float) lt, (float) lon))
-                            .icon(BitmapDescriptorFactory.fromBitmap(bitmap))
-                            .anchor((float) 0.5, (float) 0.5);
-                    pfad.add(mMap.addMarker(options));
-                }
-                pfads.add(pfad);
-
-                drawPfad(pfad);
-                farbe++;
-                MarkerCounter = 0;
-            }
-
+            new AsyncRasters().execute(nodeList);
         }
         else{
-
-            Rastering raster = new Rastering(nodeList, settings[2], settings[1]);
-            TravelingSalesman tsm = new TravelingSalesman();
-
-            ArrayList<ArrayList<Node>>  actRaster = raster.getRaster();
-            actStartNode = new Node(actRaster.get(0).get(0).getLatitude(),actRaster.get(0).get(0).getLongitude(),2);
-            if(actRaster.isEmpty())
-            {
-                route = nodeList;
-            }
-            else
-            {
-                route = tsm.travelingSalesman(actRaster,actStartNode, nodeList);
-            }
-            allRoutes.add(route);
-
-            for(int i = 0; i<route.size(); i++)
-            {
-                double lt = route.get(i).getLatitude();
-                double lon = route.get(i).getLongitude();
-
-                MarkerCounter++;
-                String text = String.valueOf(MarkerCounter);
-                Bitmap bitmap = makeBitmap(this, text,2);
-
-                MarkerOptions options = new MarkerOptions()
-                        .draggable(false)
-                        .position(new LatLng((float)lt,(float)lon))
-                        .icon(BitmapDescriptorFactory.fromBitmap(bitmap))
-                        .anchor((float) 0.5, (float) 0.5);
-
-
-                pfad.add(mMap.addMarker(options));
-            }
-            drawPfad(pfad);
+            new AsyncRaster().execute(nodeList);
         }
     }
 
@@ -434,7 +356,7 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
                     }
 
 
-                    Rastering raster = new Rastering(nodeList, (float) settings[2], settings[1]);
+                    Rastering raster = new Rastering(nodeList, settings[2], settings[1]);
                     TravelingSalesman tsm = new TravelingSalesman();
 
                     ArrayList<ArrayList<ArrayList<Node>>> actRaster = raster.getRasters();
@@ -827,6 +749,129 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
 
     public void tvae_back(View view){
         onBackPressed();
+    }
+
+    private class AsyncRasters extends AsyncTask<ArrayList<Node>, Void, ArrayList<ArrayList<Node>>> {
+        @Override
+        protected ArrayList<ArrayList<Node>> doInBackground(ArrayList<Node>... arrayLists) {
+            ArrayList<ArrayList<Node>> routes = new ArrayList<>();
+            Rastering raster = new Rastering(arrayLists[0], settings[2], settings[1]);
+            ArrayList<ArrayList<ArrayList<Node>>> actRaster = raster.getRasters();
+
+            int count = 0;
+            actStartNodes = new ArrayList<Node>();
+            for (ArrayList<ArrayList<Node>> i : actRaster) {
+                if (!i.isEmpty()) {
+                    ArrayList<Marker> pfad = new ArrayList<>();
+                    actStartNodes.add(new Node(i.get(0).get(0).getLatitude(), i.get(0).get(0).getLongitude(), 2));
+                    routes.add(tsm.travelingSalesman(i, actStartNodes.get(count), nodeList));
+                    count++;
+                }
+            }
+            return routes;
+        }
+
+        @Override
+        protected void onPostExecute(ArrayList<ArrayList<Node>> result) {
+            for (ArrayList<Node> x : result) {
+                if (!x.isEmpty()) {
+                    for (Node j : x) {
+                        double lt = j.getLatitude();
+                        double lon = j.getLongitude();
+                        MarkerCounter++;
+                        String text = String.valueOf(MarkerCounter);
+                        Bitmap bitmap = makeBitmap(Tours_View_And_Export_Activity.this, text, farbe);
+                        MarkerOptions options = new MarkerOptions()
+                                .draggable(false)
+                                .position(new LatLng((float) lt, (float) lon))
+                                .icon(BitmapDescriptorFactory.fromBitmap(bitmap))
+                                .anchor((float) 0.5, (float) 0.5);
+                        pfad.add(mMap.addMarker(options));
+                    }
+                    pfads.add(pfad);
+
+                    PolylineOptions options = new PolylineOptions()
+                            .width(10);
+                    for (int i = 0; i < pfad.size(); i++) {
+                        if (pfad.get(i) != null || pfad.size() > 0)
+                            options.add(pfad.get(i).getPosition());
+
+                    }
+                    int lineColor = farbe % 4;
+                    switch (lineColor) {
+                        case (0):
+                            options.color(getColor(R.color.green));
+                            break;
+                        case (1):
+                            options.color(getColor(R.color.cyan));
+                            break;
+                        case (2):
+                            options.color(getColor(R.color.magenta));
+                            break;
+                        case (3):
+                            options.color(getColor(R.color.yellow));
+                            break;
+                    }
+                    polylines.add(mMap.addPolyline(options));
+
+                    farbe++;
+                    MarkerCounter = 0;
+                    pfad = new ArrayList<>();
+                }
+            }
+        }
+    }
+
+    private class AsyncRaster extends AsyncTask<ArrayList<Node>, Void, ArrayList<Node>> {
+        @Override
+        protected ArrayList<Node> doInBackground(ArrayList<Node>... arrayLists) {
+            Rastering raster = new Rastering(arrayLists[0], settings[2], settings[1]);
+
+            ArrayList<ArrayList<Node>> actRaster = raster.getRaster();
+            actStartNode = new Node(actRaster.get(2).get(0).getLatitude(), actRaster.get(2).get(0).getLongitude(), 2);
+            if (actRaster.isEmpty()) {
+                route = nodeList;
+            } else {
+                route = tsm.travelingSalesman(actRaster, actStartNode, nodeList);
+            }
+            return route;
+        }
+
+        @Override
+        protected void onPostExecute(ArrayList<Node> result) {
+            for (int i = 0; i < result.size(); i++) {
+                double lt = result.get(i).getLatitude();
+                double lon = result.get(i).getLongitude();
+
+                MarkerCounter++;
+                String text = String.valueOf(MarkerCounter);
+                Bitmap bitmap = makeBitmap(Tours_View_And_Export_Activity.this, text, 2);
+
+                MarkerOptions options = new MarkerOptions()
+                        .draggable(false)
+                        .position(new LatLng((float) lt, (float) lon))
+                        .icon(BitmapDescriptorFactory.fromBitmap(bitmap))
+                        .anchor((float) 0.5, (float) 0.5);
+
+
+                pfad.add(mMap.addMarker(options));
+            }
+            drawPfad(pfad);
+        }
+    }
+
+    private class AsyncTSM extends AsyncTask<Void, Void, TravelingSalesman> {
+
+        @Override
+        protected TravelingSalesman doInBackground(Void... voids) {
+
+            return new TravelingSalesman();
+        }
+
+        @Override
+        protected void onPostExecute(TravelingSalesman result) {
+            tsm = result;
+        }
     }
 }
 
