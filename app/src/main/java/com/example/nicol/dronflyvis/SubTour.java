@@ -6,32 +6,17 @@ import java.util.ArrayList;
  * @author Johannes
  * @author Martin
  */
-public class SubTour
+public class SubTour extends Tour
 {
-    private ArrayList<Node> tour = new ArrayList<Node>();
-    private double length;
-
+    /**
+     * Creates a new SubTour beginning and ending woth the Start Node
+     * @param start the first and last node of the tour
+     */
     SubTour(Node start)
     {
         tour.add(start);
         tour.add(start);
         length = 0;
-    }
-
-    /**
-     * @return the tour
-     */
-    public ArrayList<Node> getTour()
-    {
-        return tour;
-    }
-
-    /**
-     * @return the length
-     */
-    public double getLength()
-    {
-        return length;
     }
 
     /**
