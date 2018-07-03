@@ -306,9 +306,11 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
                 //Request storage permissions during runtime
                 ActivityCompat.requestPermissions( Main_Activity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
 
+                //Set path to open file system at right folder
                 File poly = android.os.Environment.getExternalStorageDirectory();
                 String polyPath = poly.getAbsolutePath() + "/DroneTours/Polygons/";
 
+                //open popUpWindow in Filesystem
                 Intent importPolyIntent = new Intent(Intent.ACTION_GET_CONTENT);
                 importPolyIntent.setDataAndType(Uri.parse(polyPath), "*/*");
                 startActivityForResult(importPolyIntent, requestCode);
