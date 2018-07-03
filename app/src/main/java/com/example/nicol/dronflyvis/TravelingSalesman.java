@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 /**
- * @author Martin
  * @author Johannes
+ * @author Martin
  */
 public class TravelingSalesman
 {
@@ -35,15 +35,14 @@ public class TravelingSalesman
 
         for(int i = 0; i < grid.size(); ++i)
         {
-            for(int j = 0; j < grid.get(i).size(); ++j)
+            Iterator<Node> gridIter = grid.get(i).iterator();
+
+            while(gridIter.hasNext())
             {
-                if(grid.get(i).get(j) ==  startNode)
+                Node act = gridIter.next();
+                if((float)act.getLatitude() ==  (float)startNode.getLatitude() && (float)act.getLongitude() ==  (float)startNode.getLongitude())
                 {
-                    grid.get(i).remove(j);
-
-                    //System.out.println("Removed StartNode from Grid");
-
-                    break;
+                    gridIter.remove();
                 }
             }
         }
@@ -244,7 +243,19 @@ public class TravelingSalesman
                     closestNeighbour = act;
                 }
             }
-
+            /*
+             **********Special case**********
+             * Without it it sometimes crash
+             */
+            /*if(grid.size() != 1)
+            {
+                tour.addNode(closestNeighbour, (int)closestDists[0], closestDists[4], closestDists[2], closestDists[3]);
+                grid.remove(closestNeighbour);
+            }
+            else
+            {
+                break;
+            }*/
             tour.addNode(closestNeighbour, (int)closestDists[0], closestDists[4], closestDists[2], closestDists[3]);
             grid.remove(closestNeighbour);
         }
@@ -329,7 +340,7 @@ public class TravelingSalesman
                 farthestNeighbour = act;
             }
 
-            tour.addNode(farthestNeighbour, (int)farthestDists[0], farthestDists[4], farthestDists[2], farthestDists[3]);
+            tour.addNode(farthestNeighbour, (int) farthestDists[0], farthestDists[4], farthestDists[2], farthestDists[3]);
             grid.remove(farthestNeighbour);
         }
 
