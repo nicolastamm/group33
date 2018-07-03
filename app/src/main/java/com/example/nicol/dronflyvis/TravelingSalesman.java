@@ -2,6 +2,7 @@ package com.example.nicol.dronflyvis;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 
 /**
@@ -68,6 +69,7 @@ public class TravelingSalesman
 
         Tour cheapestRouteOpt = opt(cheapestTour.clone());
         cheapestOptLength = (float) cheapestRouteOpt.getLength();
+
         Tour farthestRouteOpt = opt(farthestTour.clone());
         farthestOptLength = (float) farthestRouteOpt.getLength();
 
@@ -134,7 +136,7 @@ public class TravelingSalesman
      * @param b the second node
      * @return the distance between the two nodes a and b
      */
-    private double distance(Node a, Node b)
+    public static double distance(Node a, Node b)
     {
         double earthRadius = 6371000; //in meters
         double diffLat = Math.toRadians(b.getLatitude() - a.getLatitude());
@@ -213,49 +215,36 @@ public class TravelingSalesman
         ArrayList<Node> route = copyList(t.getTour());
         double length = (float) t.getLength();
 
-        double distABCD;
-        double distACBD;
-        double distAB;
-        double distCD;
-        double distAC;
-        double distBD;
-
         /*
          *
          */
         int i = 0;
-        while(i < route.size() - 1)
+        while(i < route.size())
         {
             Node a = route.get(i);
-            Node b = route.get(i + 1);
-            distAB = distance(a,b);
 
-            for(int j = i + 2; j < route.size() - 1; ++j)
+            for(int j = i; j < route.size(); ++j)
             {
                 Node c = route.get(j);
-                Node d = route.get(j + 1);
-                distCD = distance(c,d);
 
-                distAC = distance(a,c);
-                distBD = distance(b,d);
+                Tour fst = new Tour(route);
 
-                distABCD = distAB + distCD;
+                Collections.swap(route, i, j);
 
-                distACBD = distAC + distBD;
+                Tour sec = new Tour(route);
 
-                if(distACBD < distABCD)
+                //swap b c because this will reduce the length of the route by (distACBD - distABCD)
+                if(fst.getLength() < sec.getLength())
                 {
-                    //swap b c because this will reduce the length of the route by (distACBD - distABCD)
-                    route.remove(c);
-                    route.add(i + 1, c);
-                    route.remove(b);
-                    route.add(j, b);
-                    System.out.println("Indizes: " + (i + 1) + " " + j);
-                    System.out.println("Lengths: " + distACBD + " " + distABCD + " " + (distABCD - distACBD) + " " + length);
-                    length += (distACBD - distABCD);
-                    b = c;
-                    distAB = distAC;
+                   route = fst.getTour();
+                   length = fst.getLength();
                 }
+                else
+                {
+                    route = sec.getTour();
+                    length = sec.getLength();
+                }
+
             }
             i++;
         }
