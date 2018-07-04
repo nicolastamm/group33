@@ -52,6 +52,8 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
     private float[] settings;
     private Boolean shapefill = true;
     private float[] aspectRatio;
+    private float ratio;
+    private float[] overlap;
 
     ArrayList<Marker> markers = new ArrayList<Marker>();
     ArrayList<Marker> actPointsInPoly = new ArrayList<Marker>();
@@ -92,8 +94,10 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
         {
             settings = getIntent().getExtras().getFloatArray("com.example.nicol.dronflyvis.INPUT_VALUES");
             aspectRatio = getIntent().getExtras().getFloatArray("com.example.nicol.dronflyvis.ASPECT_RATIO");
+            ratio = (aspectRatio[0]/aspectRatio[1]);
+            overlap = getIntent().getExtras().getFloatArray("com.example.nicol.dronflyvis.OVERLAP");
         }
-
+        Log.i("test", "" + overlap[0]);
         ImageButton infobuch = findViewById(R.id.infobuch_main_activity);
         infobuch.setImageResource(R.drawable.infobuch);
 
@@ -613,7 +617,7 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
         }
 
         //Rastering raster = new Rastering(actNodeListe, (float) 78.8, 100);
-        Rastering raster = new Rastering(actNodeListe, settings[2], settings[1]);
+        Rastering raster = new Rastering(actNodeListe, settings[2], settings[1], ratio, overlap[0], overlap[1]);
         ArrayList<ArrayList<ArrayList<Node>>> actRuster = raster.getRasters();
 
         int colour = -1;
@@ -776,6 +780,7 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
         intent.putExtra("com.example.nicol.dronflyvis.SETTINGS", settings);
         intent.putExtra("com.example.nicol.dronflyvis.splitPoly", polyAufteilung);
         intent.putExtra("com.example.nicol.dronflyvis.ASPECT_RATIO", aspectRatio);
+        intent.putExtra("com.example.nicol.dronflyvis.OVERLAP",overlap);
         startActivity(intent);
     }
 
@@ -811,7 +816,7 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
             actNodeListe.add(new Node(marker.getPosition().latitude, marker.getPosition().longitude, 0));
         }
 
-        Rastering raster = new Rastering(actNodeListe, settings[2], settings[1]);
+        Rastering raster = new Rastering(actNodeListe, settings[2], settings[1], ratio, overlap[0], overlap[1]);
 
         ArrayList<ArrayList<Node>> actRaster = raster.getRaster();
 

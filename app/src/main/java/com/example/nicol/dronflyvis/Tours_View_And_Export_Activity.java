@@ -71,6 +71,7 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
     private float[] settings;
     private  Boolean split;
     private int droneFlag;
+    private float[] overlap;
 
 
     ArrayList<Node> nodeList;
@@ -109,12 +110,11 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
             mapType = getIntent().getExtras().getInt("com.example.nicol.dronflyvis.mapType");
             split =  getIntent().getExtras().getBoolean("com.example.nicol.dronflyvis.splitPoly");
             droneFlag = getIntent().getExtras().getInt("com.example.nicol.dronflyvis.RADIO_SELECTION");
-
+            overlap = getIntent().getExtras().getFloatArray("com.example.nicol.dronflyvis.OVERLAP");
             aspectRatio = getIntent().getExtras().getFloatArray("com.example.nicol.dronflyvis.ASPECT_RATIO");
             ratio = (aspectRatio[0]/aspectRatio[1]);
-            //Log.i("test", "" + aspectRatio[0]);
-            //Log.i("test", "" + aspectRatio[1]);
         }
+        //Log.i("test", overlap[0] + "");
 
         infobuch = findViewById(R.id.tvae_activity_infobuch_button);
         infobuch.setImageResource(R.drawable.infobuch);
@@ -177,7 +177,7 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
 
 
         if (split) {
-            Rastering raster = new Rastering(nodeList, (float) settings[2], settings[1]);
+            Rastering raster = new Rastering(nodeList, (float) settings[2], settings[1], ratio, overlap[0], overlap[1]);
             TravelingSalesman tsm = new TravelingSalesman();
 
 
@@ -212,7 +212,7 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
         }
         else{
 
-            Rastering raster = new Rastering(nodeList, settings[2], settings[1]);
+            Rastering raster = new Rastering(nodeList, settings[2], settings[1], ratio, overlap[0], overlap[1]);
             TravelingSalesman tsm = new TravelingSalesman();
             ArrayList<Marker> pfad = new ArrayList<>();
             ArrayList<ArrayList<Node>>  actRaster = raster.getRaster();

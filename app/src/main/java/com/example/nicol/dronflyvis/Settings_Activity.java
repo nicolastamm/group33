@@ -98,6 +98,7 @@ public class Settings_Activity extends AppCompatActivity
                 @Override
                 public void afterTextChanged(Editable editable)
                 {
+
                     if(isEmpty(txt)){return;}
                     if(!isEmpty(inputTexts.get(0)) && !isEmpty(inputTexts.get(1)) && !isEmpty(inputTexts.get(3)) && !isEmpty(inputTexts.get(4))) {
                         txt.removeTextChangedListener(this);
@@ -134,6 +135,7 @@ public class Settings_Activity extends AppCompatActivity
                                 txt.setText("");
                                 txt.addTextChangedListener(this);
                             }
+
                             break;
                         case R.id.editText3:
                             if(validateAlt(Double.parseDouble(txt.getEditableText().toString())))
@@ -163,7 +165,6 @@ public class Settings_Activity extends AppCompatActivity
                                     txt.setText("");
                                     txt.addTextChangedListener(this);
                                 }
-
                             }
                             break;
                     }
@@ -299,30 +300,26 @@ public class Settings_Activity extends AppCompatActivity
         float invalidInput = -1.0f;
         float[] inputValues;
         float[] aspectRatio = new float[2];
+        float[] overlap = new float[2];
         if(!inputEmpty(inputTexts))
         {
             inputValues = getInputValues();
             if(!contains(inputValues, invalidInput))
             {
                 //Log.i("test", "" + getAspectRatio(inputValues[3], inputValues[4])[1]);
-                Log.i("test", "" +inputValues[5]);
+                //Log.i("test", "" +inputValues[3]); horizontal
                 aspectRatio = getAspectRatio(inputValues[5], inputValues[6]);
+                overlap[0] = (100 - inputValues[3])/100;
+                overlap[1] = (100 - inputValues[4])/100;
                 inputOk = true;
             }
         }
-        //inputValues[0] = pixelSize
-        //inputValues[1] = altitude
-        //inputValues[2] = fov
-        //inputValues[3] = pixelWidth
-        //inputValues[4] = pixelHeight
-        //inputValues[5] = horizontal overlap
-        //inputValues[6] = vertical overlap
-        //aspectRatio[0] = 3.0
         if(inputOk) {
             Intent intent = new Intent(this, Main_Activity.class);
             intent.putExtra("com.example.nicol.dronflyvis.INPUT_VALUES", getInputValues());
             intent.putExtra("com.example.nicol.dronflyvis.RADIO_SELECTION", getRadioButton());
             intent.putExtra("com.example.nicol.dronflyvis.ASPECT_RATIO", aspectRatio);
+            intent.putExtra("com.example.nicol.dronflyvis.OVERLAP", overlap);
             startActivity(intent);
         }
         else
