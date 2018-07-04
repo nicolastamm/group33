@@ -75,8 +75,6 @@ public class Buch_PopUp_Activity extends Activity {
             dotsLayout.addView(dots[i]);
         }
         if(dots.length>0){
-
-
             dots[pos].setTextColor(Color.BLACK);
         }
     }
