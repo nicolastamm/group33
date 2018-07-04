@@ -853,7 +853,7 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
             actNodeListe.add(new Node(marker.getPosition().latitude, marker.getPosition().longitude, 0));
         }
 
-        ArrayList<Node[]> border = BoundingBoxesGenerator.getBoundingBoxes(actNodeListe, (float) 78.8, 100);
+        ArrayList<Node[]> border = BoundingBoxesGenerator.getBoundingBoxes(actNodeListe, settings[2], settings[1], ratio, overlap[0], overlap[1]);
         for(int i = 0; i<border.size();i++){
 
             PolylineOptions options2 = new PolylineOptions()

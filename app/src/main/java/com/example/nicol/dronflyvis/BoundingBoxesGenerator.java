@@ -6,12 +6,12 @@ package com.example.nicol.dronflyvis;
 import java.util.ArrayList;
 
 public abstract class BoundingBoxesGenerator {
-    static ArrayList<Node[]> getBoundingBoxes(ArrayList<Node> markers, double fov, float flightHeight) {
+    static ArrayList<Node[]> getBoundingBoxes(ArrayList<Node> markers, double fov, float flightHeight, float aspectRatio, float horizontalOverlap, float verticalOverlap) {
         ArrayList<Node[]> boundingBoxes = new ArrayList<>();
         double fotoWidth = (2.0 * flightHeight) * (Math.tan(Math.toRadians(fov / 2.0)));
-        double fotoHeight = fotoWidth * (3.0 / 4.0); //Assuming 4:3 aspect ratio
-        fotoWidth *= 0.30; //70% horizontal overlap.
-        fotoHeight *= 0.15; //85% vertical overlap.
+        double fotoHeight = fotoWidth * aspectRatio; //Assuming 4:3 aspect ratio
+        fotoWidth *= horizontalOverlap; //70% horizontal overlap.
+        fotoHeight *= verticalOverlap; //85% vertical overlap.
         Double[] borderCoordinates = Rastering.searchForBorderCoordinates(markers);
         double polygonHeight = Math.abs(borderCoordinates[2] - borderCoordinates[3]);
         polygonHeight *= 111325.0;
