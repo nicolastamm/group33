@@ -104,6 +104,7 @@ public class Settings_Activity extends AppCompatActivity
                         break;
                     /**
                      * Case 2: Mavic drone is chosen
+                     *
                      * */
                     case R.id.radioButton3: fov.setText("" + 78.8);
                         resText1.setText("4000");
