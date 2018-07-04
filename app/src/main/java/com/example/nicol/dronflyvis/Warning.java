@@ -25,6 +25,9 @@ public class Warning
     private String btnMsgTwo;
     private int which;
 
+    /***
+     * If one wants only one Button in the warning this constructor is called
+     * */
     public Warning(String message, String title, boolean cancelable, String btnMsg, Context ctx)
     {
         this.msg = message;
@@ -33,7 +36,9 @@ public class Warning
         this.btnMsg = btnMsg;
         dBuilder = new AlertDialog.Builder(ctx);
     }
-
+    /***
+     * If one wants two Buttons in the warning this constructor is called
+     * */
     public Warning(String message, String title, boolean cancelable, String btnMsg, String btnMsgTwo,Context ctx)
     {
         this.msg = message;
@@ -45,7 +50,7 @@ public class Warning
     }
 
     /**
-     * In this Method we create a warning with the given Messages and buttons AlertDialog.Builder
+     * In this Method we create a warning with the given Messages and buttons using AlertDialog.Builder
      * */
     public AlertDialog createWarning()
     {
