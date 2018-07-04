@@ -14,6 +14,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Gravity;
 import android.view.MenuItem;
@@ -125,8 +126,10 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
             aspectRatio = getIntent().getExtras().getFloatArray("com.example.nicol.dronflyvis.ASPECT_RATIO");
             ratio = (aspectRatio[0]/aspectRatio[1]);
         }
-        //Log.i("test", overlap[0] + "");
-
+        //
+        Log.i("test", aspectRatio[0] + "");
+        Log.i("test", aspectRatio[1] + "");
+        Log.i("test", overlap[1] + "");
         infobuch = findViewById(R.id.tvae_activity_infobuch_button);
         infobuch.setImageResource(R.drawable.infobuch);
         infobuch.setOnClickListener(new View.OnClickListener() {
@@ -361,7 +364,7 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
                     }
 
 
-                    Rastering raster = new Rastering(nodeList, settings[2], settings[1], ratio,overlap[0], overlap[1]);
+                    Rastering raster = new Rastering(nodeList, settings[2], settings[1], ratio ,overlap[0], overlap[1]);
                     TravelingSalesman tsm = new TravelingSalesman();
 
                     ArrayList<ArrayList<ArrayList<Node>>> actRaster = raster.getRasters();

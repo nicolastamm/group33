@@ -20,9 +20,17 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
-
+/**
+ * @author Heiko
+ * @author Hilmi
+ * @author Artuk
+ *
+ * In this activity we are concernd with getting and validatating the user input. Some small calculations
+ * based on the user input are needed.
+ */
 public class Settings_Activity extends AppCompatActivity
 {
+
     private Boolean inputOk = false;
     final ArrayList<EditText> inputTexts = new ArrayList<>();
 
@@ -34,9 +42,11 @@ public class Settings_Activity extends AppCompatActivity
         RadioButton bepob = (RadioButton) findViewById(R.id.radioButton4);
         RadioButton mavic = (RadioButton) findViewById(R.id.radioButton3);
 
-        Button nextBtn = (Button) findViewById(R.id.settings_next_button);
         Button aboutUs = (Button) findViewById(R.id.about_us_button);
 
+        /**
+         * If aboutUs is clicked, a new window containing information about the developers should open
+         * */
         aboutUs.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -45,17 +55,20 @@ public class Settings_Activity extends AppCompatActivity
             }
         });
 
+        /**
+         * All the EditTexts for validation and handover
+         * */
         EditText resText1 = (EditText) findViewById(R.id.editText2);
         EditText resText2 = (EditText) findViewById(R.id.editText5);
-
         EditText altitude = (EditText) findViewById(R.id.editText3);
         EditText fov = (EditText) findViewById(R.id.editText4);
         EditText pixelSize = (EditText) findViewById(R.id.editText);
-        //pixelSize.setFocusable(false);
-
         EditText overlapH = (EditText) findViewById(R.id.editText6);
         EditText overlapV = (EditText) findViewById(R.id.editText7);
 
+        /**
+         * Adding all our EditTexts into the ArrayList
+         * */
         inputTexts.add(altitude);
         inputTexts.add(fov);
         inputTexts.add(pixelSize);
@@ -64,42 +77,74 @@ public class Settings_Activity extends AppCompatActivity
         inputTexts.add(overlapH);
         inputTexts.add(overlapV);
 
+        /**
+         * Check which Radio Button has been clicked and change the EditTexts accordingly
+         * */
         RadioGroup radioGroup = (RadioGroup) findViewById(R.id.radioGroup);
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener()
         {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId)
             {
+                /**
+                 * Here we change both resolution text fields, the fov and the overlap
+                 * according to the chosen drone
+                **/
                 RadioButton checkedRadioButton = (RadioButton)group.findViewById(checkedId);
-                boolean isChecked = checkedRadioButton.isChecked();
                 switch(checkedId)
                 {
-                    case R.id.radioButton4: fov.setText("" + 170); //checkedID for bepob
+                    /**
+                     * Case 1: Bepob drone is chosen
+                     * */
+                    case R.id.radioButton4: fov.setText("" + 170);
+                        resText1.setText("3800");
+                        resText2.setText("3188");
+                        overlapV.setText("85");
+                        overlapH.setText("70");
                         break;
-                    case R.id.radioButton3: fov.setText("" + 78.8); //checkedId for mavic
+                    /**
+                     * Case 2: Mavic drone is chosen
+                     * */
+                    case R.id.radioButton3: fov.setText("" + 78.8);
+                        resText1.setText("4000");
+                        resText2.setText("3000");
+                        overlapV.setText("85");
+                        overlapH.setText("70");
                         break;
                     default: fov.setText("");
+                        resText1.setText("");
+                        resText2.setText("");
                         break;
                 }
             }
         });
+        /**
+         * Input validation starts here, we add a textchangedlistener on every edittext to
+         * validate multiple edittexts
+         * */
         for(final EditText txt : inputTexts)
         {
             txt.addTextChangedListener(new TextWatcher() {
                 @Override
                 public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2)
                 {
-
+                    /**
+                     * Don't care
+                     * */
                 }
                 @Override
                 public void onTextChanged(CharSequence charSequence, int i, int i1, int i2)
                 {
-
+                    /**
+                     * Don't care
+                     * */
                 }
                 @Override
                 public void afterTextChanged(Editable editable)
                 {
-
+                    /**
+                     * If one of the edittexts gets deleted we return immediately to stop further recursive calls from afterTextChanged
+                     * */
                     if(isEmpty(txt)){return;}
                     if(!isEmpty(inputTexts.get(0)) && !isEmpty(inputTexts.get(1)) && !isEmpty(inputTexts.get(3)) && !isEmpty(inputTexts.get(4))) {
                         txt.removeTextChangedListener(this);
@@ -174,9 +219,21 @@ public class Settings_Activity extends AppCompatActivity
             });
         }
     }
+
+    /**
+     *
+     * INPUT VALIDATION
+     *
+     */
+
+    /**
+     *
+     * UTILITY FUNCTIONS
+     *
+     */
     public boolean validateAlt(double altitude)
     {
-        if(altitude != 0 & altitude > 100)
+        if(altitude < 100)
         {
             return true;
         }
@@ -196,6 +253,9 @@ public class Settings_Activity extends AppCompatActivity
         }
         return true;
     }
+    /**
+     * Calculating the Pixel Size if someone fills out flight height, fov, pixelWidth and pixelHeight
+     **/
     public double calculatePixelSize(double altitude, double fov, double pixelWidth, double pixelHeight)
     {
         double gcd = getGcd(pixelWidth, pixelHeight);
@@ -203,7 +263,9 @@ public class Settings_Activity extends AppCompatActivity
         double fotoHeight = fotoWidth * ((pixelHeight/gcd)/(pixelWidth/gcd));
         return Math.sqrt(((fotoWidth/ pixelWidth) * 100) * ((fotoHeight/pixelHeight) * 100));
     }
-
+    /**
+     * Calculates the gcd recursively of the two parameter, we need this for calculating the aspect ratio
+     * */
     public double getGcd(double a,double b)
     {
         if(b == 0)
@@ -223,12 +285,17 @@ public class Settings_Activity extends AppCompatActivity
         double altitude= Double.parseDouble(altitudeEdit.toString());
         double pixelSize = Double.parseDouble(pixelSizeEdit.toString());
     }
+    /**
+     * Getting all the User Input, this function will be called later on, when everything is checked and ok!
+     * */
     public float[] getInputValues()
     {
         int[] inputIds = {R.id.editText, R.id.editText3, R.id.editText4, R.id.editText6, R.id.editText7, R.id.editText2, R.id.editText5};
         int i = 0;
+        /**
+         * -1 is our error value in case something is off
+         * */
         float[] inputValues = new float[]{-1,-1,-1,-1,-1,-1,-1};
-        //getResInput();
         for(int id : inputIds)
         {
             EditText inputText = (EditText) findViewById(id);
@@ -237,6 +304,9 @@ public class Settings_Activity extends AppCompatActivity
         }
         return inputValues;
     }
+    /**
+     * Calculating Aspect Ratio using the gcd of the two resolution text fields
+     * */
     public float[] getAspectRatio(double pixelWidth, double pixelHeight)
     {
         float[] aspectRatio = new float[2];
@@ -246,6 +316,9 @@ public class Settings_Activity extends AppCompatActivity
         return aspectRatio;
 
     }
+    /**
+     * Method for checking wether a arraylist of EditText is empty, if it is a error is shown
+     * */
     public boolean inputEmpty(ArrayList<EditText> texts)
     {
         boolean isEmpty = false;
@@ -256,12 +329,16 @@ public class Settings_Activity extends AppCompatActivity
                 isEmpty = true;
                 txt.setError("missing input");
             }
+            else{
+                txt.setError(null);
+            }
 
         }
         return isEmpty;
     }
-
-    //get input from radio buttons
+    /**
+     * Method for getting Input from the two Radio Buttons, we need this to set the flag for the output later on
+     * */
     public int getRadioButton()
     {
         RadioGroup radioGroup = (RadioGroup) findViewById(R.id.radioGroup);
@@ -307,9 +384,10 @@ public class Settings_Activity extends AppCompatActivity
             inputValues = getInputValues();
             if(!contains(inputValues, invalidInput))
             {
-                //Log.i("test", "" + getAspectRatio(inputValues[3], inputValues[4])[1]);
-                //Log.i("test", "" +inputValues[3]); horizontal
                 aspectRatio = getAspectRatio(inputValues[5], inputValues[6]);
+                /**
+                 * Calculating overlap values for rastering
+                 * */
                 overlap[0] = (100 - inputValues[3])/100;
                 overlap[1] = (100 - inputValues[4])/100;
                 inputOk = true;

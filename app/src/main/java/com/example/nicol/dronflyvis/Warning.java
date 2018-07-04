@@ -7,6 +7,12 @@ import android.os.Bundle;
 import android.util.Log;
 
 
+/**
+ *
+ * @author Heiko Dreyer
+ *
+ * In this class we are concerned with creating Warnings using AlertDialogs
+ * */
 public class Warning
 {
     private AlertDialog.Builder dBuilder;
@@ -38,6 +44,9 @@ public class Warning
         this.btnMsgTwo = btnMsgTwo;
     }
 
+    /**
+     * In this Method we create a warning with the given Messages and buttons AlertDialog.Builder
+     * */
     public AlertDialog createWarning()
     {
         dBuilder.setTitle(title);
@@ -51,6 +60,9 @@ public class Warning
                 dialogInterface.cancel();
             }
         });
+        /**
+         * A Negative Button for when its needed
+         * */
         if(btnMsgTwo != null)
         {
             dBuilder.setNegativeButton(btnMsgTwo, new DialogInterface.OnClickListener() {
@@ -64,6 +76,10 @@ public class Warning
         return dBuilder.create();
     }
 
+    /***
+     *
+     * Getters & Setters to get and set the which value to check which button has been clicked
+     * */
     public int getWhich()
     {
         return this.which;
