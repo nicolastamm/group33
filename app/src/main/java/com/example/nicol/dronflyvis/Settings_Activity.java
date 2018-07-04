@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.InputFilter;
+import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -125,6 +127,18 @@ public class Settings_Activity extends AppCompatActivity
          * */
         for(final EditText txt : inputTexts)
         {
+            InputFilter filter = new InputFilter() {
+                @Override
+                public CharSequence filter(CharSequence charSequence, int i, int i1, Spanned spanned, int i2, int i3) {
+                        if(charSequence.length() == 0 && i2 < i3) {
+                            inputTexts.get(2).setText("");
+                        }
+                        return charSequence;
+                }
+            };
+            txt.setFilters(new InputFilter[]{
+                    filter
+            });
             txt.addTextChangedListener(new TextWatcher() {
                 @Override
                 public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2)
@@ -155,6 +169,8 @@ public class Settings_Activity extends AppCompatActivity
                                 Double.parseDouble(inputTexts.get(4).getText().toString())));
                         txt.addTextChangedListener(this);
                     }
+                    inputOk = false;
+                    txt.setError(null);
                     switch (txt.getId())
                     {
                         case R.id.editText2:
@@ -234,7 +250,7 @@ public class Settings_Activity extends AppCompatActivity
      */
     public boolean validateAlt(double altitude)
     {
-        if(altitude < 100)
+        if(altitude > 100)
         {
             return true;
         }

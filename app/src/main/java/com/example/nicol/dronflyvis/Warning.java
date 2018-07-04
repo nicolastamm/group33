@@ -20,8 +20,6 @@ public class Warning
     private String title;
     private boolean cancelable;
     private String btnMsg;
-    private int numberOfButtons;
-    private Bundle bundle;
     private String btnMsgTwo;
     private int which;
 
