@@ -4,27 +4,26 @@ Anwesend: Hilmi, Heiko, Martin, Johannes, Artuc, Nico
 
 Beginn : 15:00
 
-- Heiko zu spät(surprise...)
+- Heiko zu spÃ¤t(surprise...)
 
-- Jeder spricht über seine Erfahrungen aus dem Einzelgespräch
+- Jeder spricht Ã¼ber seine Erfahrungen aus dem EinzelgesprÃ¤ch
 
-- Die Gruppe ist nun gewillt die Funktionalität des Git zu benutzen
+- Die Gruppe ist nun gewillt die FunktionalitÃ¤t des Git zu benutzen
 
-- Wir sehen uns erneut das SRS an und besprechen welche Funktionen noch implementiert werden müssen und welche fertig sind
+- Wir sehen uns erneut das SRS an und besprechen welche Funktionen noch implementiert werden mÃ¼ssen und welche fertig sind
 
-- Es wird über Nice to haves gesprochen.
+- Es wird Ã¼ber Nice to haves gesprochen.
 
-- Neue (zusätzliche) Work Packages:
+- Neue (zusÃ¤tzliche) Work Packages:
 
   	Johannes: CSV Import und konkave Polygone
   	Hilmi: Constraint Layout auswechseln, Buch, Marker, Routen farben, Split farben, ToDo Notification, neue Buttons, Camera Resolution erweitern, Design
-        Heiko: Testing, Hilmi helfen, CSV Import, Abschlusspräsentation
- 	Martin: Testing, Abschlusspräsentation, evtl. Optimierung der Route, konkave Polygone
-        Nico: evtl. Präsentation, Wartung des Rastering, passendes Rastering für Splits
+        Heiko: Testing, Hilmi helfen, CSV Import, AbschlussprÃ¤sentation
+ 	Martin: Testing, AbschlussprÃ¤sentation, evtl. Optimierung der Route, konkave Polygone
+        Nico: evtl. PrÃ¤sentation, Wartung des Rastering, passendes Rastering fÃ¼r Splits
 	Artuc: Akt. mergen, polygon split, starting point implementieren
         
 
-- Es wird über das Git und die einzelnen Funktionen gesprochen und wie sie einzusetzen sind
+- Es wird Ã¼ber das Git und die einzelnen Funktionen gesprochen und wie sie einzusetzen sind
 
 - Martin und Heiko verlassen das Meeting um 16:30
-        

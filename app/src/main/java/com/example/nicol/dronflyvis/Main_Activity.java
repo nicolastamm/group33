@@ -59,7 +59,9 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
     private Boolean polyAufteilung = false;
     private float[] settings;
     private Boolean shapefill = true;
-
+    private float[] aspectRatio;
+    private float ratio;
+    private float[] overlap;
     //private Intent importPolyIntent;
     private static final int requestCode = 9;
 
@@ -101,8 +103,11 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
         if(getIntent().getExtras() != null)
         {
             settings = getIntent().getExtras().getFloatArray("com.example.nicol.dronflyvis.INPUT_VALUES");
+            aspectRatio = getIntent().getExtras().getFloatArray("com.example.nicol.dronflyvis.ASPECT_RATIO");
+            ratio = (aspectRatio[0]/aspectRatio[1]);
+            overlap = getIntent().getExtras().getFloatArray("com.example.nicol.dronflyvis.OVERLAP");
         }
-
+        Log.i("test", "" + overlap[0]);
         ImageButton infobuch = findViewById(R.id.infobuch_main_activity);
         infobuch.setImageResource(R.drawable.infobuch);
 
@@ -116,6 +121,7 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
 
         PlaceAutocompleteFragment placesFragment = (PlaceAutocompleteFragment) getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
 
+
         TextView aut_comp_text = findViewById(R.id.place_autocomplete_search_input);
         aut_comp_text.setTextColor(Color.WHITE);
         findViewById(R.id.place_autocomplete_fragment).setBackgroundColor(Color.argb(150, 0,0,0));
@@ -127,6 +133,10 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
         ImageView clearButton = findViewById(R.id.place_autocomplete_clear_button);
         clearButton.setScaleX(1.5f);
         clearButton.setScaleY(1.5f);
+
+
+
+
 
         placesFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
@@ -195,7 +205,7 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
 
                     drawImageButton.setImageResource(R.drawable.drawicon);
                     drawModus = false;
-                }
+                    }
             }
         });
 
@@ -296,6 +306,8 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
             }
         });
 
+
+
         importImageButton.setOnClickListener(new View.OnClickListener() {
             /**
              * @author Johannes
@@ -315,6 +327,9 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
                 startActivityForResult(importPolyIntent, requestCode);
             }
         });
+
+
+
 
         mapImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -667,6 +682,8 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
         //Rastering raster = new Rastering(actNodeListe, settings[2], settings[1]);
         new AsyncRastering().execute(actNodeListe);
 
+
+        return;
     }
 
 
@@ -752,6 +769,7 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
         }
 
 
+
         ArrayList<Node> nodeList = new ArrayList<Node>();
         Intent intent = new Intent(this, Tours_View_And_Export_Activity.class);
 
@@ -762,12 +780,13 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
         intent.putParcelableArrayListExtra("com.example.nicol.dronflyvis.NODELIST", nodeList);
         intent.putExtra("com.example.nicol.dronflyvis.BEARING", mMap.getCameraPosition().bearing);
         intent.putExtra("com.example.nicol.dronflyvis.mapZOOM", mMap.getCameraPosition().zoom);
-        intent.putExtra("com.example.nicol.dronflyvis.mapLAT", "" + mMap.getCameraPosition().target.latitude);
-        intent.putExtra("com.example.nicol.dronflyvis.mapLNG", "" + mMap.getCameraPosition().target.longitude);
+        intent.putExtra("com.example.nicol.dronflyvis.mapLAT","" + mMap.getCameraPosition().target.latitude);
+        intent.putExtra("com.example.nicol.dronflyvis.mapLNG","" + mMap.getCameraPosition().target.longitude);
         intent.putExtra("com.example.nicol.dronflyvis.mapType", mMap.getMapType());
         intent.putExtra("com.example.nicol.dronflyvis.SETTINGS", settings);
         intent.putExtra("com.example.nicol.dronflyvis.splitPoly", polyAufteilung);
-
+        intent.putExtra("com.example.nicol.dronflyvis.ASPECT_RATIO", aspectRatio);
+        intent.putExtra("com.example.nicol.dronflyvis.OVERLAP",overlap);
         startActivity(intent);
     }
 
@@ -792,7 +811,7 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
             actNodeListe.add(new Node(marker.getPosition().latitude, marker.getPosition().longitude, 0));
         }
 
-        Rastering raster = new Rastering(actNodeListe, settings[2], settings[1]);
+        Rastering raster = new Rastering(actNodeListe, settings[2], settings[1], ratio, overlap[0], overlap[1]);
 
         ArrayList<ArrayList<Node>> actRaster = raster.getRaster();
 
@@ -842,13 +861,15 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
                     .color(Color.RED);
             for(int j=0;j<4;j++ )
             {
-                options2.add(new LatLng(border.get(i)[j].getLongitude(), border.get(i)[j].getLatitude()));
+                    options2.add(new LatLng( border.get(i)[j].getLongitude(),border.get(i)[j].getLatitude()));
             }
             options2.add(new LatLng( border.get(i)[0].getLongitude(),border.get(i)[0].getLatitude()));
             actPolyLynes.add(mMap.addPolyline(options2));
         }
 
     }
+
+
     public void main_activity_back(View view)
     {
         onBackPressed();
@@ -857,7 +878,7 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
     private class AsyncRastering extends AsyncTask<ArrayList<Node>, Void, ArrayList<ArrayList<ArrayList<Node>>>> {
         @Override
         protected ArrayList<ArrayList<ArrayList<Node>>> doInBackground(ArrayList<Node>... arrayLists) {
-            Rastering raster = new Rastering(arrayLists[0], settings[2], settings[1]);
+            Rastering raster = new Rastering(arrayLists[0], settings[2], settings[1], ratio, overlap[0], overlap[1]);
             return raster.getRasters();
         }
 

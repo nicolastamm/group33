@@ -1,5 +1,6 @@
 package com.example.nicol.dronflyvis;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.graphics.Color;
 import android.support.v4.view.ViewPager;
@@ -59,7 +60,7 @@ public class Buch_PopUp_Activity extends Activity {
         addDots(0);
         mSlideViewPager.addOnPageChangeListener(dotsChangeListener);
     }
-
+    @SuppressWarnings("deprecation")
     public void addDots(int pos){
 
         dots = new TextView[5];
@@ -74,6 +75,8 @@ public class Buch_PopUp_Activity extends Activity {
             dotsLayout.addView(dots[i]);
         }
         if(dots.length>0){
+
+
             dots[pos].setTextColor(Color.BLACK);
         }
     }

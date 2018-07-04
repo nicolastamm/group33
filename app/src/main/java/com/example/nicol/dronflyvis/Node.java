@@ -138,7 +138,7 @@ public class Node implements Parcelable
     @Override
     public String toString()
     {
-        return "latitude=" + latitude + " longitude=" + longitude + " flag=" + positionFlag/* ", positionFlag="+ positionFlags +*/;
+        return "latitude=" + latitude + " longitude=" + longitude + " flag=" + positionFlag /* ", positionFlag="+ positionFlags +*/;
     }
 
     @Override

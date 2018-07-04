@@ -16,16 +16,18 @@ public class Rastering
     private Node[] boundingBox;
     private GeoTest geoTest;
 
-    Rastering(ArrayList<Node> inputPolygon, double fov, float flightHeight)
+    Rastering(ArrayList<Node> inputPolygon, double fov, float flightHeight, float aspectRatio, float horizontalOverlap, float verticalOverlap)
     {
         this.polygon = inputPolygon;
         this.fov = fov;
         this.flightHeight = flightHeight;
         this.geoTest = new GeoTest(inputPolygon);
         fotoWidth = (2.0 * flightHeight) * (Math.tan(Math.toRadians(fov / 2.0)));
-        fotoHeight = fotoWidth * (3.0/4.0); //Assuming 4:3 aspect ratio
-        fotoWidth *= 0.30; //70% horizontal overlap.
-        fotoHeight *= 0.15; //85% vertical overlap.
+        fotoHeight = fotoWidth * aspectRatio; //Assuming 4:3 aspect ratio
+        //fotoWidth *= 0.30; 70% horizontal overlap.
+        //fotoHeight *= 0.15; 85% vertical overlap.
+        fotoWidth *= horizontalOverlap; //70% horizontal overlap.
+        fotoHeight *= verticalOverlap; //85% vertical overlap.
     }
 
     static Double[] searchForBorderCoordinates(ArrayList<Node> polygon)
@@ -143,7 +145,7 @@ public class Rastering
         test.add(new Node(47.698420, 9.188631, 2));
         test.add(new Node(47.698420, 9.201961, 2));
 
-        Rastering raster = new Rastering(test, 78.8, 100);
+        Rastering raster = new Rastering(test, 78.8, 100, (3.0f/4.0f), (0.30f) , (0.15f));
         ArrayList<ArrayList<ArrayList<Node>>> thisRasters = raster.getRasters();
         for (ArrayList<ArrayList<Node>> thisRaster : thisRasters) {
             System.out.println(thisRaster);

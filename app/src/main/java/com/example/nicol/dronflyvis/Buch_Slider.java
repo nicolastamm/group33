@@ -34,7 +34,6 @@ public class Buch_Slider extends PagerAdapter{
             "Ready to export"
     };
 
-
     public String[] act_discr = {
             "While editing your polygon, we made several modi and buttons to greatly streamline your experience with our system.\n\nThese include:\n\n" +
                     "(1) Pin mode: sometimes you want to focus on a certain area of the map, without having to be mindful of not swiping away. With this enabled, the map shan't move, thus allowing better control of the editing tools.\n\n" +
