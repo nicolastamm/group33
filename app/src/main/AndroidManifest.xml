@@ -26,7 +26,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".Settings_Activity"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden"/>
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
@@ -43,7 +44,8 @@
         <activity
             android:name=".Main_Activity"
             android:label="@string/title_activity_act4"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait">
+        </activity>
         <activity
             android:name=".Tours_View_And_Export_Activity"
             android:label="@string/title_activity_act5"
@@ -55,6 +57,7 @@
         <activity android:name=".Buch_PopUp_Activity"
             android:theme="@style/PopUpStyle"
             android:screenOrientation="portrait"/>
+
     </application>
 
 </manifest>

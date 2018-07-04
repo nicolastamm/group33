@@ -62,7 +62,7 @@ public class Buch_PopUp_Activity extends Activity {
 
     public void addDots(int pos){
 
-        dots = new TextView[4];
+        dots = new TextView[5];
         dotsLayout.removeAllViews();
 
         for(int i= 0; i<dots.length; i++){

@@ -31,6 +31,9 @@ public class Settings_Activity extends AppCompatActivity
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.settings_activity);
+        RadioButton bepob = (RadioButton) findViewById(R.id.radioButton4);
+        RadioButton mavic = (RadioButton) findViewById(R.id.radioButton3);
+
         Button nextBtn = (Button) findViewById(R.id.settings_next_button);
         Button aboutUs = (Button) findViewById(R.id.about_us_button);
 
@@ -80,11 +83,9 @@ public class Settings_Activity extends AppCompatActivity
                 }
             }
         });
-
         for(final EditText txt : inputTexts)
         {
             txt.addTextChangedListener(new TextWatcher() {
-
                 @Override
                 public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2)
                 {
@@ -333,78 +334,3 @@ public class Settings_Activity extends AppCompatActivity
     }
 }
 
-/**if(txt == inputTexts.get(0) && !(editable.toString().equals("")))
- {
- if (editable.toString().equals(".")) {
- txt.setText("0" + editable.toString());
- }
- else if(Double.parseDouble(editable.toString()) > 100)
- {
- Warning altitudeWarning = new Warning("Altitude is larger than 100 meters, are you sure you want to continue?", "Altitude too large", true, "Yes","No", Settings_Activity.this);
- AlertDialog alertDialog = altitudeWarning.createWarning();
- alertDialog.setTitle("Altitude larger than 100 meters");
- alertDialog.show();
- Button negativeBtn = alertDialog.getButton(DialogInterface.BUTTON_NEGATIVE);
- negativeBtn.setOnClickListener(new View.OnClickListener() {
- public void onClick(View v) {
- alertDialog.dismiss();
- txt.setText(""); }
- });
- }
- }
- if(txt == inputTexts.get(1) && !(charSequence.toString().equals("")) && !(charSequence.toString().equals(".")))
- {
- if(Double.parseDouble(charSequence.toString()) > 175 || Double.parseDouble(charSequence.toString()) < 45 )
- {
- Warning altitudeWarning = new Warning("FOV of " + charSequence.toString() + " not supported", "FOV not supported", true, "Ok", Settings_Activity.this);
- AlertDialog alertDialog = altitudeWarning.createWarning();
- alertDialog.setTitle("FOV not supported");
- alertDialog.show();
- Button negativeBtn = alertDialog.getButton(DialogInterface.BUTTON_POSITIVE);
- negativeBtn.setOnClickListener(new View.OnClickListener() {
- public void onClick(View v) {
- alertDialog.dismiss();
- txt.setText("175");
-
- if(inputTexts.get(0).getText().toString().trim().length() > 0 && inputTexts.get(1).getText().toString().trim().length() > 0)
- {
- inputTexts.get(2).removeTextChangedListener(this);
- calculatePixelSize(inputTexts.get(0), inputTexts.get(1), inputTexts.get(3), inputTexts.get(4),inputTexts.get(2));
- inputTexts.get(2).addTextChangedListener(this);
- }
- }
- });
- }
- }
- if(txt == inputTexts.get(0) && !(editable.toString().equals(""))) {
- if (editable.toString().equals("."))
- {
- txt.setText("0" + editable.toString());
- }
- }
- else if(isEmpty(inputTexts.get(0)) || isEmpty(inputTexts.get(1)) || isEmpty(inputTexts.get(3)) || isEmpty(inputTexts.get(4)))
- {
- inputTexts.get(2).removeTextChangedListener(this);
- inputTexts.get(2).setText("");
- inputTexts.get(2).addTextChangedListener(this);
- }
- **/
-/**public void calculatePixelSize(EditText editText1,EditText editText2, EditText editText3, EditText editText4,EditText resultText)
- {
- Editable altitudeEdit = editText1.getText();
- Editable fovEdit = editText2.getText();
- //Editable firstRes = editText3.getText();
- //Editable secondRes = editText4.getText();
-
- double altitude= Double.parseDouble(altitudeEdit.toString());
- double fov= Double.parseDouble(fovEdit.toString());
- //double first = Double.parseDouble(firstRes.toString());
- //double second = Double.parseDouble(secondRes.toString());
- //double arFirst = first / getGcd(first, second);
- //double arSecond = first / getGcd(first, second);
- double fotoWidth = 2* altitude * Math.tan(Math.toRadians(fov/2.0));
- double fotoHeight = fotoWidth * (3.0/4.0);
-
- double pixelSize = Math.sqrt(((fotoWidth/ 4000) * 100) * ((fotoHeight/3000) * 100));
- resultText.setText(pixelSize + "");
- }**/
