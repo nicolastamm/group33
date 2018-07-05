@@ -13,7 +13,6 @@ Teilnahme: Artuk (AppMaster), Hilmi-Can (DesignMan), Heiko (Inputman), Nicolas (
         Pixeloverlap und Pixelgrösse mit Standardwerten
         Flughöhe einschränken (min 10m)
         Evtl weitere Felder einschränken und weitere Standardwerte
-        Drohnenflag wird nur Dji weiter gegeben
         Wenn die Pixelsize verändert wird soll sich dementsprechend die Flughöhe anpassen
         Deadline 08.07.2018
     ToDo Johannes:
