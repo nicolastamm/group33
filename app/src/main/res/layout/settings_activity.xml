@@ -108,16 +108,16 @@
                     android:id="@+id/editText2"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
                     android:layout_marginBottom="16dp"
                     android:layout_marginEnd="6dp"
                     android:layout_marginStart="32dp"
+                    android:layout_toLeftOf="@id/textView4"
                     android:backgroundTint="#FF8C00"
                     android:ems="10"
-                    android:hint="pixelwidth"
+                    android:hint="resolution width"
                     android:inputType="number"
-                    android:textSize="18sp"
-                    android:layout_alignParentStart="true"
-                    android:layout_toLeftOf="@id/textView4"/>
+                    android:textSize="18sp" />
 
                 <TextView
                     android:id="@+id/textView4"
@@ -136,16 +136,16 @@
                     android:id="@+id/editText5"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
                     android:layout_marginBottom="16dp"
                     android:layout_marginEnd="32dp"
                     android:layout_marginStart="6dp"
+                    android:layout_toRightOf="@id/textView4"
                     android:backgroundTint="#FF8C00"
                     android:ems="10"
-                    android:hint="pixelheight"
+                    android:hint="resolution height"
                     android:inputType="number"
-                    android:textSize="18sp"
-                    android:layout_alignParentEnd="true"
-                    android:layout_toRightOf="@id/textView4"/>
+                    android:textSize="18sp" />
 
             </RelativeLayout>
 
