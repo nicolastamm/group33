@@ -10,14 +10,10 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
-import android.widget.Spinner;
-import android.widget.TextView;
-
 import java.util.ArrayList;
 
 /**
@@ -234,7 +230,7 @@ public class Settings_Activity extends AppCompatActivity
      */
     public boolean validateAlt(double altitude)
     {
-        if(altitude < 100)
+        if(altitude > 100)
         {
             return true;
         }
@@ -260,9 +256,10 @@ public class Settings_Activity extends AppCompatActivity
     public double calculatePixelSize(double altitude, double fov, double pixelWidth, double pixelHeight)
     {
         double gcd = getGcd(pixelWidth, pixelHeight);
-        double fotoWidth = 2 * altitude * Math.atan(Math.toRadians(fov/2.0));
-        double fotoHeight = fotoWidth * ((pixelHeight/gcd)/(pixelWidth/gcd));
-        return Math.sqrt(((fotoWidth/ pixelWidth) * 100) * ((fotoHeight/pixelHeight) * 100));
+        double aspectRatio = (pixelHeight/gcd) / (pixelWidth/gcd);
+        double fotoWidth = 2 * altitude * Math.tan(Math.toRadians(fov/2.0));
+        double fotoHeight = fotoWidth * aspectRatio;
+        return Math.sqrt(((fotoWidth/ pixelWidth) * 100) * ((fotoHeight/pixelHeight) * 100)); // meters times 100 gets centimeters.
     }
     /**
      * Calculates the gcd recursively of the two parameter, we need this for calculating the aspect ratio
@@ -379,7 +376,7 @@ public class Settings_Activity extends AppCompatActivity
         float invalidInput = -1.0f;
         float[] inputValues;
         float[] aspectRatio = new float[2];
-        float[] overlap = new float[2];
+        double[] overlap = new double[2];
         if(!inputEmpty(inputTexts))
         {
             inputValues = getInputValues();
@@ -389,8 +386,8 @@ public class Settings_Activity extends AppCompatActivity
                 /**
                  * Calculating overlap values for rastering
                  * */
-                overlap[0] = (100 - inputValues[3])/100;
-                overlap[1] = (100 - inputValues[4])/100;
+                overlap[0] = (100 - inputValues[3])/100.0;
+                overlap[1] = (100 - inputValues[4])/100.0;
                 inputOk = true;
             }
         }

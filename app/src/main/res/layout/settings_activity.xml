@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- @author Hilmi -->
 
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
@@ -27,35 +28,34 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical" >
+            android:orientation="vertical"
+            android:gravity="center_horizontal" >
 
-            <LinearLayout
+            <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center">
+                android:gravity="center_horizontal">
 
                 <ImageView
                     android:id="@+id/imageView4"
                     android:layout_width="61dp"
                     android:layout_height="42dp"
-                    android:layout_marginStart="86dp"
                     android:layout_marginTop="30dp"
                     android:layout_marginBottom="20dp"
                     app:srcCompat="@drawable/settingswhite" />
 
                 <TextView
                     android:id="@+id/textView"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="86dp"
                     android:layout_marginTop="30dp"
                     android:layout_marginBottom="20dp"
+                    android:layout_toRightOf="@id/imageView4"
                     android:text="Settings"
                     android:textAppearance="@style/TextAppearance.AppCompat.Button"
                     android:textSize="30sp"/>
 
-            </LinearLayout>
+            </RelativeLayout>
 
 
             <RadioGroup
@@ -71,11 +71,12 @@
 
                 <RadioButton
                     android:id="@+id/radioButton3"
-                    android:layout_width="136dp"
+                    android:layout_width="0dp"
                     android:layout_height="128dp"
                     android:layout_marginBottom="10dp"
                     android:layout_marginLeft="0dp"
                     android:layout_marginRight="28dp"
+                    android:layout_weight="1"
                     android:layout_marginTop="10dp"
                     android:background="#90000000"
                     android:buttonTint="#FF8C00"
@@ -84,8 +85,9 @@
 
                 <RadioButton
                     android:id="@+id/radioButton4"
-                    android:layout_width="138dp"
+                    android:layout_width="0dp"
                     android:layout_height="128dp"
+                    android:layout_weight="1"
                     android:layout_marginBottom="10dp"
                     android:layout_marginLeft="28dp"
                     android:layout_marginRight="0dp"
@@ -117,18 +119,18 @@
                     android:ems="10"
                     android:hint="resolution width"
                     android:inputType="number"
-                    android:textSize="18sp" />
+                    android:textSize="16.5sp" />
 
                 <TextView
                     android:id="@+id/textView4"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="8dp"
-                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="2dp"
+                    android:layout_marginStart="2dp"
                     android:layout_marginBottom="4dp"
                     android:backgroundTint="#FF8C00"
                     android:text="X"
-                    android:textSize="20sp"
+                    android:textSize="18sp"
                     android:layout_alignBottom="@id/editText2"
                     android:layout_centerHorizontal="true"/>
 
@@ -145,7 +147,7 @@
                     android:ems="10"
                     android:hint="resolution height"
                     android:inputType="number"
-                    android:textSize="18sp" />
+                    android:textSize="16.5sp" />
 
             </RelativeLayout>
 
