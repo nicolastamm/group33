@@ -162,13 +162,15 @@ public class Rastering
         int verticalAmountFotos =(int) Math.ceil(polygonHeight / fotoHeight);
         int horizontalAmountFotos =(int) Math.ceil(polygonWidth / fotoWidth);
 
-        int subPolycols = 0;
-        int subPolyrows = 0;
+        double fotoWidthCoord = metersToLong(fotoWidth, borderCoordinates[3]);
+        double fotoHeightCoord = metersToLat(fotoHeight);
+        double subPolyWidth = 0;
+        double subPolyHeight = 0;
         for(int i = 9 ; i >= 0 ; i--)
         {
             if((i+1) * fotoWidth < 300.0)
             {
-                subPolycols = i;
+                subPolyWidth = i * fotoWidthCoord;
                 break;
             }
         }
@@ -176,15 +178,11 @@ public class Rastering
         {
             if((i+1) * fotoHeight < 300.0)
             {
-                subPolyrows = i;
+                subPolyHeight = i * fotoHeightCoord;
                 break;
             }
         }
 
-        double fotoWidthCoord = metersToLong(fotoWidth , borderCoordinates[3]);
-        double fotoHeightCoord = metersToLat(fotoHeight);
-        double subPolyWidth = subPolycols * fotoWidthCoord;
-        double subPolyHeight = subPolyrows * fotoHeightCoord;
         double traversedLongitude = 0;
         double traversedLatitude = 0;
         rasters = new ArrayList<>();

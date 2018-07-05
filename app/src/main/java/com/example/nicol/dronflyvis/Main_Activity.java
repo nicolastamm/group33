@@ -134,10 +134,6 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
         clearButton.setScaleX(1.5f);
         clearButton.setScaleY(1.5f);
 
-
-
-
-
         placesFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
             public void onPlaceSelected(Place place)
@@ -296,9 +292,9 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
                     Crouton.showText(Main_Activity.this, R.string.crouton_split_mode , style);
 
                     if(markers != null){
-                        if (markers.size() >= 3) {
-                            drawPointInPoly();
-                        }
+                       if(markers.size() >= 3) {
+                           drawPointInPoly();
+                       }
                     }
                     polyAufteilung = true;
                 }
@@ -306,11 +302,10 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
             }
         });
 
-
-
         importImageButton.setOnClickListener(new View.OnClickListener() {
             /**
              * @author Johannes
+             * Opens a new Intent in the File System
              */
             @Override
             public void onClick(View view) {
@@ -323,13 +318,10 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
 
                 //open popUpWindow in Filesystem
                 Intent importPolyIntent = new Intent(Intent.ACTION_GET_CONTENT);
-                importPolyIntent.setDataAndType(Uri.parse(polyPath), "*/*");
+                importPolyIntent.setDataAndType(Uri.parse(polyPath), "text/*");
                 startActivityForResult(importPolyIntent, requestCode);
             }
         });
-
-
-
 
         mapImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -367,6 +359,8 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
     }
 
     /**
+     * This Function gets the return of the Intent, in which the user
+     * selects an Polygon, that shall be imported
      * @author Johannes
      */
     @Override
@@ -375,19 +369,29 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
         Uri path;
         InputStream inputStream;
 
-        if (resultCode == RESULT_OK && requestCode == Main_Activity.requestCode)
+        /*
+         * If any file was selected the resultCode will be RESULT_CANCELED, in
+         * this case there is no input to handle
+         * If the user has selected a file, the resultCode will be RESULT_OK, in
+         * this case the requestCode is checked, if it equals to the requestCode, with
+         * which the Intent was created
+         */
+        if(resultCode == RESULT_OK && requestCode == this.requestCode)
         {
-            path = data.getData();
+            path = data.getData(); //get all Data from returned Intent
             try
             {
                 inputStream = getContentResolver().openInputStream(path);
-
 
                 try {
                     String line;
                     String[] latLong;
                     BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
 
+                    /*
+                     * If there is already a Polygon drawn in the activity,
+                     * it will be removed
+                     */
                     removePolygon();
 
                     /*
@@ -399,9 +403,16 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
                         Double lat = Double.parseDouble(latLong[0]);
                         Double lng = Double.parseDouble(latLong[1]);
 
+                        /*
+                         * Draw the imported Polygon in the activity
+                         */
                         Main_Activity.this.setMarker("Local", lat, lng);
                     }
 
+                    /*
+                     * Camera animation:
+                     * Zoom on first point of polygon
+                     */
                     LatLng latLng = new LatLng(markers.get(0).getPosition().latitude, markers.get(0).getPosition().longitude);
                     CameraUpdate nloc = CameraUpdateFactory.newLatLngZoom(latLng, 13);
 
@@ -853,7 +864,7 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
             actNodeListe.add(new Node(marker.getPosition().latitude, marker.getPosition().longitude, 0));
         }
 
-        ArrayList<Node[]> border = BoundingBoxesGenerator.getBoundingBoxes(actNodeListe, (float)settings[2], settings[1]);
+        ArrayList<Node[]> border = BoundingBoxesGenerator.getBoundingBoxes(actNodeListe, settings[2], settings[1], ratio, overlap[0], overlap[1]);
         for(int i = 0; i<border.size();i++){
 
             PolylineOptions options2 = new PolylineOptions()
