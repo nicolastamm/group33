@@ -132,10 +132,10 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
         /**
          * Set the image resource and make the book clickable.
          */
-        ImageButton infobuch = findViewById(R.id.infobuch_main_activity);
-        infobuch.setImageResource(R.drawable.infobuch);
+        ImageButton infobook = findViewById(R.id.infobuch_main_activity);
+        infobook.setImageResource(R.drawable.infobuch);
 
-        infobuch.setOnClickListener(new View.OnClickListener() {
+        infobook.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(getApplicationContext(),Buch_PopUp_Activity.class);
@@ -1006,9 +1006,21 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
             actNodeListe.add(new Node(marker.getPosition().latitude, marker.getPosition().longitude, 0));
         }
 
+
+
         Rastering raster = new Rastering(actNodeListe, settings[2], settings[1], ratio, overlap[0], overlap[1]);
 
         ArrayList<ArrayList<Node>> actRaster = raster.getRaster();
+
+        if(actNodeListe == null)
+        {
+            System.out.println("ERROR 1");
+        }
+
+        if(actRaster == null)
+        {
+            System.out.println("ERROR 2");
+        }
 
         int count = 0;
         for (ArrayList<Node> i : actRaster) {
@@ -1016,6 +1028,7 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
                 count++;
             }
         }
+
         return count;
     }
 

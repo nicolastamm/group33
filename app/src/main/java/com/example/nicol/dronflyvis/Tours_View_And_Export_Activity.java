@@ -61,7 +61,7 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
     private static final int REQUEST_WRITE_EXTERNAL_STORAGE = 1;
     private static  String FILE_NAME = "";
 
-    private ImageButton infobuch;
+    private ImageButton infobook;
     private ImageButton mapImageButton;
     private GoogleMap mMap;
     public int MarkerCounter= 0;
@@ -102,17 +102,23 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.tours_view_and_export_activity);
 
-        // Define configuration options
+        /**
+         * Define configuration options
+         */
         Configuration croutonConfiguration = new Configuration.Builder()
                 .setDuration(3500).build();
-        // Define styles for crouton
+        /**
+         * Define styles for crouton
+         */
         Style style = new Style.Builder()
                 .setBackgroundColorValue(Color.argb(200,0,0,0))
                 .setGravity(Gravity.CENTER_HORIZONTAL)
                 .setConfiguration(croutonConfiguration)
                 .setHeight(200)
                 .setTextColorValue(Color.WHITE).build();
-        // Display style and configuration
+        /**
+         * Display style and configuration
+         */
         Crouton.showText(Tours_View_And_Export_Activity.this, R.string.crouton_tours_activity, style);
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -138,9 +144,9 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
         /**
          * Set the image resource and make the book clickable.
          */
-        infobuch = findViewById(R.id.tvae_activity_infobuch_button);
-        infobuch.setImageResource(R.drawable.infobuch);
-        infobuch.setOnClickListener(new View.OnClickListener() {
+        infobook = findViewById(R.id.tvae_activity_infobuch_button);
+        infobook.setImageResource(R.drawable.infobuch);
+        infobook.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(getApplicationContext(),Buch_PopUp_Activity.class);
@@ -434,7 +440,7 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
                      * Reset the markers, lines and enumeration of markers.
                      */
                     for (ArrayList<ArrayList<Node>> i : actRaster) {
-                        ArrayList<Marker> pfad = new ArrayList<>();
+                        ArrayList<Marker> path = new ArrayList<>();
 
 
 
@@ -455,13 +461,13 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
                                     .position(new LatLng((float) lt, (float) lon))
                                     .icon(BitmapDescriptorFactory.fromBitmap(bitmap))
                                     .anchor((float) 0.5, (float) 0.5);
-                            pfad.add(mMap.addMarker(options));
+                            path.add(mMap.addMarker(options));
 
                             MarkerCounter++;
                         }
-                        paths.add(pfad);
+                        paths.add(path);
 
-                        drawPath(pfad);
+                        drawPath(path);
                         colour++;
                         MarkerCounter = 0;
                     }

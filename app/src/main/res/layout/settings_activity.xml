@@ -71,13 +71,13 @@
 
                 <RadioButton
                     android:id="@+id/radioButton3"
-                    android:layout_width="0dp"
+                    android:layout_width="match_parent"
                     android:layout_height="128dp"
                     android:layout_marginBottom="10dp"
                     android:layout_marginLeft="0dp"
-                    android:layout_marginRight="28dp"
-                    android:layout_weight="1"
+                    android:layout_marginRight="20dp"
                     android:layout_marginTop="10dp"
+                    android:layout_weight="1"
                     android:background="#90000000"
                     android:buttonTint="#FF8C00"
                     android:text="Dji Mavic Pro"
@@ -85,17 +85,17 @@
 
                 <RadioButton
                     android:id="@+id/radioButton4"
-                    android:layout_width="0dp"
+                    android:layout_width="match_parent"
                     android:layout_height="128dp"
-                    android:layout_weight="1"
                     android:layout_marginBottom="10dp"
-                    android:layout_marginLeft="28dp"
+                    android:layout_marginLeft="20dp"
                     android:layout_marginRight="0dp"
                     android:layout_marginTop="10dp"
+                    android:layout_weight="1"
                     android:background="#90000000"
                     android:buttonTint="#FF8C00"
                     android:text="Parrot Bebop 1"
-                    android:textStyle="bold"/>
+                    android:textStyle="bold" />
 
 
             </RadioGroup>
