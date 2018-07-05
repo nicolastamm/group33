@@ -11,6 +11,7 @@ import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -91,7 +92,7 @@ public class Settings_Activity extends AppCompatActivity
                 /**
                  * Here we change both resolution text fields, the fov and the overlap
                  * according to the chosen drone
-                **/
+                 **/
                 RadioButton checkedRadioButton = (RadioButton)group.findViewById(checkedId);
                 switch(checkedId)
                 {
@@ -106,7 +107,6 @@ public class Settings_Activity extends AppCompatActivity
                         break;
                     /**
                      * Case 2: Mavic drone is chosen
-                     *
                      * */
                     case R.id.radioButton3: fov.setText("" + 78.8);
                         resText1.setText("4000");
@@ -130,10 +130,11 @@ public class Settings_Activity extends AppCompatActivity
             InputFilter filter = new InputFilter() {
                 @Override
                 public CharSequence filter(CharSequence charSequence, int i, int i1, Spanned spanned, int i2, int i3) {
-                        if(charSequence.length() == 0 && i2 < i3) {
-                            inputTexts.get(2).setText("");
-                        }
-                        return charSequence;
+                    if(charSequence.length() == 0 && i2 < i3)
+                    {
+                        inputTexts.get(2).setText("");
+                    }
+                    return charSequence;
                 }
             };
             txt.setFilters(new InputFilter[]{
@@ -160,6 +161,7 @@ public class Settings_Activity extends AppCompatActivity
                     /**
                      * If one of the edittexts gets deleted we return immediately to stop further recursive calls from afterTextChanged
                      * */
+                    inputOk = false;
                     if(isEmpty(txt)){return;}
                     if(!isEmpty(inputTexts.get(0)) && !isEmpty(inputTexts.get(1)) && !isEmpty(inputTexts.get(3)) && !isEmpty(inputTexts.get(4))) {
                         txt.removeTextChangedListener(this);
@@ -169,7 +171,6 @@ public class Settings_Activity extends AppCompatActivity
                                 Double.parseDouble(inputTexts.get(4).getText().toString())));
                         txt.addTextChangedListener(this);
                     }
-                    inputOk = false;
                     txt.setError(null);
                     switch (txt.getId())
                     {
@@ -346,10 +347,6 @@ public class Settings_Activity extends AppCompatActivity
                 isEmpty = true;
                 txt.setError("missing input");
             }
-            else{
-                txt.setError(null);
-            }
-
         }
         return isEmpty;
     }
