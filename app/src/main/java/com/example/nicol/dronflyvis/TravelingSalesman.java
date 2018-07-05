@@ -54,7 +54,13 @@ public class TravelingSalesman
         ArrayList<ArrayList<Node>> gridFarthest = grid;
         ArrayList<ArrayList<Node>> gridOur = grid;
 
-
+        /*
+         * Calculating 5 tour, to get one approximately optimal one<br>
+         * The first one is the cheapest insertion heuristic<br>
+         * The second one is the farthest insertion heuristic<br>
+         * The third one is a heuristic worked out by ourselves<br>
+         * At the end we optimize the results of the cheapest and farthest Insertion
+         */
         SubTour cheapestTour;
         ArrayList<Node> cheapest = twoDimToOneDim(gridCheapest);
         cheapestTour = cheapestInsertion(cheapest);
@@ -76,25 +82,28 @@ public class TravelingSalesman
         System.out.println("Lengths :" + cheapestLength + " " + farthestLength + " " +  ourTSPLength + " " +   cheapestOptLength
                 + " " + farthestOptLength);
 
-        if(cheapestLength < farthestLength && cheapestLength < ourTSPLength && cheapestLength < cheapestOptLength && cheapestLength < farthestOptLength)
+        /*
+         * search the shortest route of the 5 which we have calculated
+         */
+        if(cheapestLength <= farthestLength && cheapestLength <= ourTSPLength && cheapestLength <= cheapestOptLength && cheapestLength <= farthestOptLength)
         {
             ArrayList<Node> tour = cheapestTour.getTour();
             tour.remove(tour.size() - 1);
             return tour;
         }
-        else if(farthestLength < cheapestLength && farthestLength < ourTSPLength && farthestLength < cheapestOptLength && farthestLength < farthestOptLength)
+        else if(farthestLength <= cheapestLength && farthestLength <= ourTSPLength && farthestLength <= cheapestOptLength && farthestLength <= farthestOptLength)
         {
             ArrayList<Node> tour = farthestTour.getTour();
             tour.remove(tour.size() - 1);
             return tour;
         }
-        else if(cheapestOptLength < cheapestLength && cheapestOptLength < farthestLength && cheapestOptLength < ourTSPLength && cheapestOptLength < farthestOptLength)
+        else if(cheapestOptLength <= cheapestLength && cheapestOptLength <= farthestLength && cheapestOptLength <= ourTSPLength && cheapestOptLength <= farthestOptLength)
         {
             ArrayList<Node> tour = cheapestRouteOpt.getTour();
             tour.remove(tour.size() - 1);
             return tour;
         }
-        else if(farthestOptLength < cheapestLength && farthestOptLength < farthestLength && farthestOptLength < ourTSPLength && farthestOptLength < cheapestOptLength)
+        else if(farthestOptLength <= cheapestLength && farthestOptLength <= farthestLength && farthestOptLength <= ourTSPLength && farthestOptLength <= cheapestOptLength)
         {
             ArrayList<Node> tour = farthestRouteOpt.getTour();
             tour.remove(tour.size() - 1);
@@ -225,6 +234,10 @@ public class TravelingSalesman
 
             for(int j = i; j < route.size(); ++j)
             {
+                /*
+                 * create a tour without swapping nodes <br>
+                 * after that, swapping
+                 */
                 Node c = route.get(j);
 
                 Tour fst = new Tour(route);
@@ -233,7 +246,7 @@ public class TravelingSalesman
 
                 Tour sec = new Tour(route);
 
-                //swap b c because this will reduce the length of the route by (distACBD - distABCD)
+                //swap b c if this will reduce the length of the route
                 if(fst.getLength() < sec.getLength())
                 {
                    route = fst.getTour();
@@ -252,6 +265,11 @@ public class TravelingSalesman
         return (new Tour(route, length));
     }
 
+    /**
+     * Retruns a new list to avoid pointer problems with lists
+     * @param list the list to copy
+     * @return a list containing all values of the input list
+     */
     private ArrayList<Node> copyList(ArrayList<Node> list)
     {
         ArrayList<Node> lst = new ArrayList<Node>();
@@ -434,6 +452,7 @@ public class TravelingSalesman
         ArrayList<Node> lastColumn = null;
         ArrayList<Node> firstColumn = null;
         ArrayList<ArrayList<Node>> splitted = new ArrayList<ArrayList<Node>>();
+        ourTSPLength = 0;
         boolean uneven;
         boolean split = false;
         double shortestDist = Double.MAX_VALUE;
@@ -706,7 +725,7 @@ public class TravelingSalesman
             }
         }
 
-        //ourTSPLength += distance(route.get(route.size() - 1), startNode);
+        ourTSPLength += distance(route.get(route.size() - 1), startNode);
         //route.add(startNode);
         return route;			//returns the route to fly for the drone
     }
