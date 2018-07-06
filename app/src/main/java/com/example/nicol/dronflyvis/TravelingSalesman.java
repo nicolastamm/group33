@@ -258,7 +258,7 @@ public class TravelingSalesman
                     length = fst.getLength();
                     flag = true;
                 }
-                else if(sec.getLength() < fst.getLength() && sec.getLength() < length && (float)sec.getLength() != (float)length)
+                else if(sec.getLength() <= fst.getLength() && sec.getLength() < length && (float)sec.getLength() != (float)length)
                 {
                     route = sec.getTour();
                     length = sec.getLength();
@@ -278,7 +278,22 @@ public class TravelingSalesman
         {
             opt(new Tour(route, length));
         }
-        return (new Tour(route, length));
+
+        ArrayList<Node> tmp = copyList(route);
+        tmp.remove(tmp.size() - 1);
+
+        Tour fst = new Tour(tmp);
+        Collections.reverse(tmp);
+        Tour sec = new Tour(tmp);
+        if(fst.getLength() <= sec.getLength())
+        {
+            return (new Tour(route));
+        }
+        else
+        {
+            Collections.reverse(route);
+            return (new Tour(route));
+        }
     }
 
     /**
