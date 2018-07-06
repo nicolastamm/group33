@@ -16,17 +16,20 @@ public class Rastering
     private Node[] boundingBox;
     private GeoTest geoTest;
 
-    Rastering(ArrayList<Node> inputPolygon, double fov, float flightHeight)
+    Rastering(ArrayList<Node> inputPolygon, double fov, float flightHeight, float aspectRatio, float horizontalOverlap, float verticalOverlap)
     {
         this.polygon = inputPolygon;
         this.fov = fov;
         this.flightHeight = flightHeight;
         this.geoTest = new GeoTest(inputPolygon);
         fotoWidth = (2.0 * flightHeight) * (Math.tan(Math.toRadians(fov / 2.0)));
-        fotoHeight = fotoWidth * (3.0/4.0); //Assuming 4:3 aspect ratio
-        fotoWidth *= 0.30; //70% horizontal overlap.
-        fotoHeight *= 0.15; //85% vertical overlap.
+        fotoHeight = fotoWidth * aspectRatio; //Assuming 4:3 aspect ratio
+        //fotoWidth *= 0.30; 70% horizontal overlap.
+        //fotoHeight *= 0.15; 85% vertical overlap.
+        fotoWidth *= horizontalOverlap; //70% horizontal overlap.
+        fotoHeight *= verticalOverlap; //85% vertical overlap.
     }
+
 
     static Double[] searchForBorderCoordinates(ArrayList<Node> polygon)
     {
@@ -37,7 +40,7 @@ public class Rastering
         double latMin = polygon.get(0).getLatitude();
         double latMax = latMin;
 
-        //dont need first element. Values initialized with it => i=1
+        // don't need first element. Values initialized with it => i=1
         // Go through all the elements and store minima and maxima for long and lat.
         for(int i = 1 ; i < polygon.size() ; i++)
         {
@@ -143,7 +146,7 @@ public class Rastering
         test.add(new Node(47.698420, 9.188631, 2));
         test.add(new Node(47.698420, 9.201961, 2));
 
-        Rastering raster = new Rastering(test, 78.8, 100);
+        Rastering raster = new Rastering(test, 78.8, 100, (3.0f/4.0f), (0.30f) , (0.15f));
         ArrayList<ArrayList<ArrayList<Node>>> thisRasters = raster.getRasters();
         for (ArrayList<ArrayList<Node>> thisRaster : thisRasters) {
             System.out.println(thisRaster);
@@ -162,13 +165,15 @@ public class Rastering
         int verticalAmountFotos =(int) Math.ceil(polygonHeight / fotoHeight);
         int horizontalAmountFotos =(int) Math.ceil(polygonWidth / fotoWidth);
 
-        int subPolycols = 0;
-        int subPolyrows = 0;
+        double fotoWidthCoord = metersToLong(fotoWidth, borderCoordinates[3]);
+        double fotoHeightCoord = metersToLat(fotoHeight);
+        double subPolyWidth = 0;
+        double subPolyHeight = 0;
         for(int i = 9 ; i >= 0 ; i--)
         {
             if((i+1) * fotoWidth < 300.0)
             {
-                subPolycols = i;
+                subPolyWidth = i * fotoWidthCoord;
                 break;
             }
         }
@@ -176,15 +181,11 @@ public class Rastering
         {
             if((i+1) * fotoHeight < 300.0)
             {
-                subPolyrows = i;
+                subPolyHeight = i * fotoHeightCoord;
                 break;
             }
         }
 
-        double fotoWidthCoord = metersToLong(fotoWidth , borderCoordinates[3]);
-        double fotoHeightCoord = metersToLat(fotoHeight);
-        double subPolyWidth = subPolycols * fotoWidthCoord;
-        double subPolyHeight = subPolyrows * fotoHeightCoord;
         double traversedLongitude = 0;
         double traversedLatitude = 0;
         rasters = new ArrayList<>();

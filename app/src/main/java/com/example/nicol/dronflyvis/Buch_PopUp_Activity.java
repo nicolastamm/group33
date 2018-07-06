@@ -13,14 +13,22 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+/**
+ * @author Artuk
+ * @author Hilmi
+ *
+ * This class is preoccupide with creating and displaying the window for the book and set
+ * dots to every viewpage.
+ */
 public class Buch_PopUp_Activity extends Activity {
+
     private ViewPager mSlideViewPager;
     private LinearLayout dotsLayout;
-
     private TextView[] dots;
-
     private Buch_Slider buchSlider;
     private Button close;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,6 +68,12 @@ public class Buch_PopUp_Activity extends Activity {
         mSlideViewPager.addOnPageChangeListener(dotsChangeListener);
     }
 
+    /**
+     * Draws the dots below the text to show on which page the user is located and the current dot
+     * will be shown in different color.
+     * @param pos
+     */
+    @SuppressWarnings("deprecation")
     public void addDots(int pos){
 
         dots = new TextView[5];
@@ -81,9 +95,15 @@ public class Buch_PopUp_Activity extends Activity {
     ViewPager.OnPageChangeListener dotsChangeListener = new ViewPager.OnPageChangeListener() {
         @Override
         public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
+            /**
+             * Dont't care
+             */
         }
 
+        /**
+         * set dots
+         * @param position
+         */
         @Override
         public void onPageSelected(int position) {
             addDots(position);
@@ -91,7 +111,9 @@ public class Buch_PopUp_Activity extends Activity {
 
         @Override
         public void onPageScrollStateChanged(int state) {
-
+            /**
+             * Dont't care
+             */
         }
     };
 }
