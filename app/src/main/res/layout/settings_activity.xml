@@ -119,7 +119,8 @@
                     android:ems="10"
                     android:hint="resolution width"
                     android:inputType="number"
-                    android:textSize="16.5sp" />
+                    android:textSize="16.5sp"
+                    android:nextFocusDown="@id/editText5"/>
 
                 <TextView
                     android:id="@+id/textView4"
@@ -147,7 +148,8 @@
                     android:ems="10"
                     android:hint="resolution height"
                     android:inputType="number"
-                    android:textSize="16.5sp" />
+                    android:textSize="16.5sp"
+                    android:nextFocusDown="@id/editText6"/>
 
             </RelativeLayout>
 
@@ -171,7 +173,8 @@
                     android:inputType="number"
                     android:textSize="17sp"
                     android:layout_alignParentStart="true"
-                    android:layout_toLeftOf="@id/nothing"/>
+                    android:layout_toLeftOf="@id/nothing"
+                    android:nextFocusDown="@id/editText7"/>
 
                 <TextView
                     android:id="@+id/nothing"
