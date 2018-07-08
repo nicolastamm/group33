@@ -114,7 +114,8 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
          */
         Crouton.showText(Main_Activity.this, R.string.crouton_main_activity , style);
 
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+        SupportMapFragment mapFragment;
+        mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 

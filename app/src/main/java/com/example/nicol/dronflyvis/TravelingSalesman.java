@@ -214,55 +214,86 @@ public class TravelingSalesman
         return ret;
     }
 
+    private Tour opt(SubTour t)
+    {
+        return opt(new Tour(t.getTour(), t.getLength()));
+    }
+
     /**
      * Optimizes a route by swapping nodes, if this reduces the distance
      * @param t the Tour to optimize
      * @return the optimized route
      */
-    private Tour opt(SubTour t)
+    private Tour opt(Tour t)
     {
+        boolean flag = false;
         ArrayList<Node> route = copyList(t.getTour());
         double length = (float) t.getLength();
 
         /*
          *
          */
-        int i = 0;
-        while(i < route.size())
+        int i = 1;
+        int max = route.size() - 1;
+        while(i < max)
         {
-            Node a = route.get(i);
-
-            for(int j = i; j < route.size(); ++j)
+            int j = i + 1;
+            while(j < max)
             {
+                ArrayList<Node> tmp = copyList(route);
                 /*
                  * create a tour without swapping nodes <br>
                  * after that, swapping
                  */
-                Node c = route.get(j);
-
                 Tour fst = new Tour(route);
 
                 Collections.swap(route, i, j);
 
                 Tour sec = new Tour(route);
 
-                //swap b c if this will reduce the length of the route
-                if(fst.getLength() < sec.getLength())
+                //swap nodes with index i and j, if this will reduce the length of the route
+                if(fst.getLength() <= sec.getLength() && fst.getLength() < length  && (float)sec.getLength() != (float)length)
                 {
-                   route = fst.getTour();
-                   length = fst.getLength();
+                    route = fst.getTour();
+                    length = fst.getLength();
+                    flag = true;
                 }
-                else
+                else if(sec.getLength() <= fst.getLength() && sec.getLength() < length && (float)sec.getLength() != (float)length)
                 {
                     route = sec.getTour();
                     length = sec.getLength();
+                    flag = true;
                 }
+                else
+                {
+                    route = tmp;
+                }
+                j++;
 
             }
             i++;
         }
 
-        return (new Tour(route, length));
+        if(flag)
+        {
+            opt(new Tour(route, length));
+        }
+
+        ArrayList<Node> tmp = copyList(route);
+        tmp.remove(tmp.size() - 1);
+
+        Tour fst = new Tour(tmp);
+        Collections.reverse(tmp);
+        Tour sec = new Tour(tmp);
+        if(fst.getLength() <= sec.getLength())
+        {
+            return (new Tour(route));
+        }
+        else
+        {
+            Collections.reverse(route);
+            return (new Tour(route));
+        }
     }
 
     /**

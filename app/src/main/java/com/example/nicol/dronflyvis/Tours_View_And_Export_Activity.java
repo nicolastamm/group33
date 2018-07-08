@@ -608,7 +608,7 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
                         FILE_NAME = "Route " + timeStamp + ".csv";
                     }
 
-                    directory = "DJI/";
+                    directory = "/DroneTours/DJI/";
                     break;
                 case 1:
                     content = routeForBebop(allRoutes.get(i));
@@ -621,7 +621,7 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
                     {
                         FILE_NAME = timeStamp + " Route";
                     }
-                    directory = "ARPro3/";
+                    directory = "/ARPro3/FlightPlans/";
                     break;
                 default:
                     content = "";
@@ -631,7 +631,7 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
 
             //Get the path to the directory to save the CSV
             File file = android.os.Environment.getExternalStorageDirectory();
-            String path = file.getAbsolutePath() + "/DroneTours/" + directory;
+            String path = file.getAbsolutePath() + directory;
             file = new File(path);
             //If there is no folder, create a new one
             file.mkdirs();
