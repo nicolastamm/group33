@@ -55,7 +55,7 @@ public class Warning
         dBuilder.setTitle(title);
         dBuilder.setMessage(msg);
         dBuilder.setCancelable(cancelable);
-        dBuilder.setPositiveButton(btnMsg, new DialogInterface.OnClickListener(){
+        dBuilder.setNegativeButton(btnMsg, new DialogInterface.OnClickListener(){
 
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
@@ -68,7 +68,7 @@ public class Warning
          * */
         if(btnMsgTwo != null)
         {
-            dBuilder.setNegativeButton(btnMsgTwo, new DialogInterface.OnClickListener() {
+            dBuilder.setPositiveButton(btnMsgTwo, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
                     //setWhich(i);

@@ -127,7 +127,6 @@ public class Rastering
         return outputRaster;
     }
 
-
     static double metersToLat(double meters) {
         return meters / 111325.0;
     } // 1° of latitude is around 111.325 km.

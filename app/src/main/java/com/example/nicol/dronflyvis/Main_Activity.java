@@ -59,7 +59,6 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
     private Boolean polyAufteilung = false;
     private float[] settings;
     private Boolean shapefill = true;
-    private float[] aspectRatio;
     private float ratio;
     private float[] overlap;
     //private Intent importPolyIntent;
@@ -103,11 +102,10 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
         if(getIntent().getExtras() != null)
         {
             settings = getIntent().getExtras().getFloatArray("com.example.nicol.dronflyvis.INPUT_VALUES");
-            aspectRatio = getIntent().getExtras().getFloatArray("com.example.nicol.dronflyvis.ASPECT_RATIO");
-            ratio = (aspectRatio[0]/aspectRatio[1]);
+            ratio = getIntent().getExtras().getFloat("com.example.nicol.dronflyvis.ASPECT_RATIO");
             overlap = getIntent().getExtras().getFloatArray("com.example.nicol.dronflyvis.OVERLAP");
         }
-        Log.i("test", "" + overlap[0]);
+
         ImageButton infobuch = findViewById(R.id.infobuch_main_activity);
         infobuch.setImageResource(R.drawable.infobuch);
 
@@ -796,7 +794,7 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
         intent.putExtra("com.example.nicol.dronflyvis.mapType", mMap.getMapType());
         intent.putExtra("com.example.nicol.dronflyvis.SETTINGS", settings);
         intent.putExtra("com.example.nicol.dronflyvis.splitPoly", polyAufteilung);
-        intent.putExtra("com.example.nicol.dronflyvis.ASPECT_RATIO", aspectRatio);
+        intent.putExtra("com.example.nicol.dronflyvis.ASPECT_RATIO", ratio);
         intent.putExtra("com.example.nicol.dronflyvis.OVERLAP",overlap);
         startActivity(intent);
     }
@@ -822,7 +820,7 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
             actNodeListe.add(new Node(marker.getPosition().latitude, marker.getPosition().longitude, 0));
         }
 
-        Rastering raster = new Rastering(actNodeListe, settings[2], settings[1], ratio, overlap[0], overlap[1]);
+        Rastering raster = new Rastering(actNodeListe, settings[1], settings[2], ratio, overlap[0], overlap[1]);
 
         ArrayList<ArrayList<Node>> actRaster = raster.getRaster();
 
@@ -864,7 +862,7 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
             actNodeListe.add(new Node(marker.getPosition().latitude, marker.getPosition().longitude, 0));
         }
 
-        ArrayList<Node[]> border = BoundingBoxesGenerator.getBoundingBoxes(actNodeListe, settings[2], settings[1], ratio, overlap[0], overlap[1]);
+        ArrayList<Node[]> border = BoundingBoxesGenerator.getBoundingBoxes(actNodeListe, settings[1], settings[2], ratio, overlap[0], overlap[1]);
         for(int i = 0; i<border.size();i++){
 
             PolylineOptions options2 = new PolylineOptions()
@@ -889,7 +887,7 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
     private class AsyncRastering extends AsyncTask<ArrayList<Node>, Void, ArrayList<ArrayList<ArrayList<Node>>>> {
         @Override
         protected ArrayList<ArrayList<ArrayList<Node>>> doInBackground(ArrayList<Node>... arrayLists) {
-            Rastering raster = new Rastering(arrayLists[0], settings[2], settings[1], ratio, overlap[0], overlap[1]);
+            Rastering raster = new Rastering(arrayLists[0], settings[1], settings[2], ratio, overlap[0], overlap[1]);
             return raster.getRasters();
         }
 

@@ -61,7 +61,6 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
     private GoogleMap mMap;
     public int MarkerCounter= 0;
     public int farbe = 0;
-    private float[] aspectRatio;
     private float ratio;
     private float zoom;
     private double lat;
@@ -123,13 +122,10 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
             split =  getIntent().getExtras().getBoolean("com.example.nicol.dronflyvis.splitPoly");
             droneFlag = getIntent().getExtras().getInt("com.example.nicol.dronflyvis.RADIO_SELECTION");
             overlap = getIntent().getExtras().getFloatArray("com.example.nicol.dronflyvis.OVERLAP");
-            aspectRatio = getIntent().getExtras().getFloatArray("com.example.nicol.dronflyvis.ASPECT_RATIO");
-            ratio = (aspectRatio[0]/aspectRatio[1]);
+            ratio = getIntent().getExtras().getFloat("com.example.nicol.dronflyvis.ASPECT_RATIO");
         }
-        //
-        Log.i("test", aspectRatio[0] + "");
-        Log.i("test", aspectRatio[1] + "");
-        Log.i("test", overlap[1] + "");
+
+
         infobuch = findViewById(R.id.tvae_activity_infobuch_button);
         infobuch.setImageResource(R.drawable.infobuch);
         infobuch.setOnClickListener(new View.OnClickListener() {
@@ -326,11 +322,6 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
 
             polyline = mMap.addPolyline(optionss);
         }
-
-
-
-
-
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
@@ -351,12 +342,8 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
                         pfads.removeAll(pfads);
                     }
 
-
                     actStartNodes.get(fromPol).setLatitude(marker.getPosition().latitude);
                     actStartNodes.get(fromPol).setLongitude(marker.getPosition().longitude);
-
-
-
                     if(polylines!=null){
                         for(int i = 0;i<polylines.size();i++){
                             polylines.get(i).remove();
@@ -364,7 +351,7 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
                     }
 
 
-                    Rastering raster = new Rastering(nodeList, settings[2], settings[1], ratio ,overlap[0], overlap[1]);
+                    Rastering raster = new Rastering(nodeList, settings[1], settings[2], ratio ,overlap[0], overlap[1]);
                     TravelingSalesman tsm = new TravelingSalesman();
 
                     ArrayList<ArrayList<ArrayList<Node>>> actRaster = raster.getRasters();
@@ -430,7 +417,7 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
                         polyline.remove();
                     }
 
-                    Rastering raster = new Rastering(nodeList, settings[2], settings[1], ratio,overlap[0], overlap[1]);
+                    Rastering raster = new Rastering(nodeList, settings[1], settings[2], ratio,overlap[0], overlap[1]);
                     TravelingSalesman tsm = new TravelingSalesman();
 
                     ArrayList<ArrayList<Node>> actRaster = raster.getRaster();
@@ -473,9 +460,6 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
     public int pointFromPoly(Marker marker){
         Marker Startmarker = marker;
          PolyCount = 0;
-
-
-
 
         for(int i = 0; i<pfads.size();i++){
             for(int j= 0; j<pfads.get(i).size();j++){
@@ -768,7 +752,7 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
         @Override
         protected ArrayList<ArrayList<Node>> doInBackground(ArrayList<Node>... arrayLists) {
             ArrayList<ArrayList<Node>> routes = new ArrayList<>();
-            Rastering raster = new Rastering(arrayLists[0], settings[2], settings[1], ratio, overlap[0], overlap[1]);
+            Rastering raster = new Rastering(arrayLists[0], settings[1], settings[2], ratio, overlap[0], overlap[1]);
             ArrayList<ArrayList<ArrayList<Node>>> actRaster = raster.getRasters();
 
             int count = 0;
@@ -838,9 +822,9 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
     private class AsyncRaster extends AsyncTask<ArrayList<Node>, Void, ArrayList<Node>> {
         @Override
         protected ArrayList<Node> doInBackground(ArrayList<Node>... arrayLists) {
-            Rastering raster = new Rastering(arrayLists[0], settings[2], settings[1], ratio, overlap[0], overlap[1]);
-
+            Rastering raster = new Rastering(arrayLists[0], settings[1], settings[2], ratio, overlap[0], overlap[1]);
             ArrayList<ArrayList<Node>> actRaster = raster.getRaster();
+
             actStartNode = new Node(actRaster.get(2).get(0).getLatitude(), actRaster.get(2).get(0).getLongitude(), 2);
             if (actRaster.isEmpty()) {
                 route = nodeList;
