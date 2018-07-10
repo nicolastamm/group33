@@ -57,6 +57,9 @@ public class Settings_Activity extends AppCompatActivity
         EditText fovText = (EditText) findViewById(R.id.editText4);
         EditText pixelSizeText = (EditText) findViewById(R.id.editText);
 
+        /**
+         * Adding all our EditTexts to the Array List
+         * */
         inputTextList.add(resWidthText);
         inputTextList.add(resHeightText);
         inputTextList.add(overlapWidthText);
@@ -73,6 +76,9 @@ public class Settings_Activity extends AppCompatActivity
         for(EditText text : inputTextList)
         {
             int currentId = text.getId();
+            /**
+             * We add a onKeyListener to check wether certain texts have been filled out already and then we can calculate other text fields based on that
+             * */
             text.setOnKeyListener(new View.OnKeyListener() {
                 @Override
                 public boolean onKey(View view, int i, KeyEvent keyEvent) {
@@ -99,8 +105,13 @@ public class Settings_Activity extends AppCompatActivity
                     return false;
                 }
             });
-
+            /**
+             * Here we start the real validation
+             * */
             text.addTextChangedListener(new CustomTextWatcher(text) {
+                /**
+                 * Set a tag to the text field, a onFocusListener and all the possible errors to null. Let InputValidator do the rest
+                 * */
                 @Override
                 public void validateText(EditText text) {
                     if(isEmpty(text)){return;}
@@ -133,6 +144,10 @@ public class Settings_Activity extends AppCompatActivity
                             overlapValidator.setCount(0);
                             text.setError(null);
                             break;
+                        /**
+                         *
+                         * The Fields for Resolution have certain behavior which has to be captured like this
+                         */
                         case R.id.editText2:
                             text.setError(null);
                             text.setOnFocusChangeListener(new View.OnFocusChangeListener() {
@@ -222,6 +237,9 @@ public class Settings_Activity extends AppCompatActivity
 
             });
         }
+        /**
+         * Check which radio button out of our two has been clicked
+         * */
         RadioGroup radioGroup = (RadioGroup) findViewById(R.id.radioGroup);
         String flightHeight = inputTextList.get(5).getText().toString();
         radioGroup.clearCheck();
@@ -293,6 +311,9 @@ public class Settings_Activity extends AppCompatActivity
     /**
      * UTILS
      * */
+    /**
+     * function for clearing all the editTexts
+     * */
     public void clearText(ArrayList<EditText> texts)
     {
         for(EditText text : texts)
@@ -303,6 +324,9 @@ public class Settings_Activity extends AppCompatActivity
             }
         }
     }
+    /**
+     * check whether one edittext is null or empty
+     * */
     public boolean isEmpty(EditText text)
     {
         String textToCheck = text.getText().toString();
@@ -316,11 +340,17 @@ public class Settings_Activity extends AppCompatActivity
         }
         return false;
     }
+    /**
+     * Function for setting the, above mentioned, standard texts
+     * */
     public void setText(ArrayList<EditText> texts, String txt,float...values)
     {
         int i = 0;
         for(EditText text : texts)
         {
+            /**
+             * If we see the Id of our editText for the flight height, we skip it
+             * */
             if(text.getId() != R.id.editText3)
             {
                 if(i >= values.length)
@@ -339,6 +369,9 @@ public class Settings_Activity extends AppCompatActivity
             }
         }
     }
+    /**
+     * function for validation the resolution fields using a hashtable with aspect ratios
+     * */
     public boolean checkResolution(float resWidth, float resHeight, Hashtable table)
     {
         float gcd = getGcd(resWidth, resHeight);
@@ -350,6 +383,9 @@ public class Settings_Activity extends AppCompatActivity
         }
         return false;
     }
+    /**
+     * function for getting an array of the two values of which the aspect ratio consists
+     * */
     public int[] getAspectRatios(float resWidth, float resHeight)
     {
         int[] ratios = new int[2];
@@ -360,6 +396,9 @@ public class Settings_Activity extends AppCompatActivity
         ratios[1] = aspectRatioSecond;
         return ratios;
     }
+    /**
+     * Hashtable with standart Aspect Ratios
+     * */
     public Hashtable setHashtable()
     {
         Hashtable<Integer, String> ratioTable = new Hashtable<Integer, String>();
@@ -372,6 +411,9 @@ public class Settings_Activity extends AppCompatActivity
         ratioTable.put(6, "950:797");
         return ratioTable;
     }
+    /**
+     * Get Values from the EditText Fields: pixelSize, flightHeight and FOV
+     * */
     public float[] getInputValues()
     {
         int[] inputIds = {R.id.editText, R.id.editText3, R.id.editText4};
@@ -386,6 +428,9 @@ public class Settings_Activity extends AppCompatActivity
         }
         return inputValues;
     }
+    /**
+     * Check whether one of the text fields is empty
+     * */
     public boolean inputEmpty(ArrayList<EditText> texts)
     {
         boolean isEmpty = false;
@@ -403,6 +448,9 @@ public class Settings_Activity extends AppCompatActivity
         }
         return isEmpty;
     }
+    /**
+     * get the values from the overlap fields
+     * */
     public float[] getOverlap()
     {
         int[] inputIds = {R.id.editText6, R.id.editText7};
@@ -414,10 +462,16 @@ public class Settings_Activity extends AppCompatActivity
             overlapValues[i] = Float.parseFloat("0" + inputText.getText().toString());
             i++;
         }
+        /**
+         * calculate the values for horizontal and vertical overlap
+         * */
         overlapValues[0] = (100 - overlapValues[0])/100;
         overlapValues[1] = (100 - overlapValues[1])/100;
         return overlapValues;
     }
+    /**
+     * Function for getting the values form our Resolution Fields and calculate the aspect ratio
+     * */
     public float getAspectRatio()
     {
         int[] inputIds = {R.id.editText2, R.id.editText5};
@@ -438,6 +492,9 @@ public class Settings_Activity extends AppCompatActivity
     /**
      * NECESSARY MATHEMATICS
      **/
+    /**
+     * simple recursive gcd function
+     * */
     public float getGcd(float first,float second)
     {
         if(second == 0)
@@ -449,15 +506,9 @@ public class Settings_Activity extends AppCompatActivity
             return getGcd(second, first % second);
         }
     }
-    public float calculateFov(float fotoWidth, float altitude)
-    {
-        float res = (float)(2 * Math.toDegrees((Math.atan(fotoWidth/(2 * altitude)))));
-        if(res >= 170)
-        {
-            return 170f;
-        }
-        return res;
-    }
+    /**
+     * Calculate the pixelsize which has to be shown to the user
+     * */
     public float calculatePixelSize(float altitude, float fov, float resWidth, float resHeight)
     {
         float gcd = (float)getGcd((int) resWidth,(int) resHeight);
@@ -465,10 +516,13 @@ public class Settings_Activity extends AppCompatActivity
         float fotoHeight = fotoWidth * ((resHeight/gcd)/(resWidth/gcd));//fotoWidth times aspect ratio
         return (float) (Math.sqrt(((fotoWidth/ resWidth) * 100) * ((fotoHeight/resHeight) * 100))); // meters times 100 gets us centimeters
     }
+    /**
+     * Calculate the height in the case the user gives us the pixel size
+     * */
     public float calculateHeight(float fov, float resHeight, float resWidth, float pixelSize)
     {
         float gcd = getGcd(resWidth, resHeight);
-        float fotoWidth =(float) Math.sqrt((Math.pow(pixelSize, 2)*resWidth*resHeight)/(10000 * (resHeight/gcd)/(resWidth/gcd)));
+        float fotoWidth =(float) Math.sqrt((Math.pow(pixelSize, 2)*resWidth*resHeight)/(10000 * (resHeight/gcd)/(resWidth/gcd)));//we get this formula by rearranging the above formula for pixelSize
         return (float)(fotoWidth/(2 * Math.tan(Math.toRadians(fov/2.0))));
     }
     public float[] calcAspectRatios(float resWidth, float resHeight)
