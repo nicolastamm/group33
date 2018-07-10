@@ -28,6 +28,7 @@ public class Rastering
         fotoHeight *= verticalOverlap; //85% vertical overlap.
     }
 
+
     static Double[] searchForBorderCoordinates(ArrayList<Node> polygon)
     {
         //Initialize with existing values. Dont know what the global minimum is, dont need to know
@@ -37,7 +38,7 @@ public class Rastering
         double latMin = polygon.get(0).getLatitude();
         double latMax = latMin;
 
-        //dont need first element. Values initialized with it => i=1
+        // don't need first element. Values initialized with it => i=1
         // Go through all the elements and store minima and maxima for long and lat.
         for(int i = 1 ; i < polygon.size() ; i++)
         {
