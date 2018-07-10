@@ -330,7 +330,7 @@ public class Settings_Activity extends AppCompatActivity
         {
             return true;
         }
-        else if(textToCheck.matches(""))
+        else if(textToCheck.matches("") || Float.parseFloat(textToCheck) <= 0f)
         {
             return true;
         }
@@ -560,9 +560,9 @@ public class Settings_Activity extends AppCompatActivity
         }
         else
         {
-            Warning warning = new Warning("Fill in the empty fields before you continue.", "Please fill in missing values", true, "OK", this);
+            Warning warning = new Warning("Fill all the fields correctly before you continue.", "Please fill in all values", true, "OK", this);
             android.app.AlertDialog alertDialog = warning.createWarning();
-            alertDialog.setTitle("Missing Values");
+            alertDialog.setTitle("Missing or illegal Values");
             alertDialog.show();
             generalInput.createVibration();
         }
