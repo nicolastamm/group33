@@ -20,11 +20,12 @@ public class Warning
     private String title;
     private boolean cancelable;
     private String btnMsg;
-    private int numberOfButtons;
-    private Bundle bundle;
     private String btnMsgTwo;
     private int which;
 
+    /***
+     * If one wants only one Button in the warning this constructor is called
+     * */
     public Warning(String message, String title, boolean cancelable, String btnMsg, Context ctx)
     {
         this.msg = message;
@@ -33,7 +34,9 @@ public class Warning
         this.btnMsg = btnMsg;
         dBuilder = new AlertDialog.Builder(ctx);
     }
-
+    /***
+     * If one wants two Buttons in the warning this constructor is called
+     * */
     public Warning(String message, String title, boolean cancelable, String btnMsg, String btnMsgTwo,Context ctx)
     {
         this.msg = message;
@@ -45,14 +48,14 @@ public class Warning
     }
 
     /**
-     * In this Method we create a warning with the given Messages and buttons AlertDialog.Builder
+     * In this Method we create a warning with the given Messages and buttons using AlertDialog.Builder
      * */
     public AlertDialog createWarning()
     {
         dBuilder.setTitle(title);
         dBuilder.setMessage(msg);
         dBuilder.setCancelable(cancelable);
-        dBuilder.setPositiveButton(btnMsg, new DialogInterface.OnClickListener(){
+        dBuilder.setNegativeButton(btnMsg, new DialogInterface.OnClickListener(){
 
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
@@ -65,7 +68,7 @@ public class Warning
          * */
         if(btnMsgTwo != null)
         {
-            dBuilder.setNegativeButton(btnMsgTwo, new DialogInterface.OnClickListener() {
+            dBuilder.setPositiveButton(btnMsgTwo, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
                     //setWhich(i);

@@ -71,6 +71,7 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
     private float[] aspectRatio;
     private float ratio;
     private float[] overlap;
+    //private Intent importPolyIntent;
     private static final int requestCode = 9;
     private int droneFlag;
 
@@ -114,7 +115,8 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
          */
         Crouton.showText(Main_Activity.this, R.string.crouton_main_activity , style);
 
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+        SupportMapFragment mapFragment;
+        mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
@@ -124,11 +126,11 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
         if(getIntent().getExtras() != null)
         {
             settings = getIntent().getExtras().getFloatArray("com.example.nicol.dronflyvis.INPUT_VALUES");
-            aspectRatio = getIntent().getExtras().getFloatArray("com.example.nicol.dronflyvis.ASPECT_RATIO");
-            ratio = (aspectRatio[0]/aspectRatio[1]);
+            ratio = getIntent().getExtras().getFloat("com.example.nicol.dronflyvis.ASPECT_RATIO");
             overlap = getIntent().getExtras().getFloatArray("com.example.nicol.dronflyvis.OVERLAP");
             droneFlag = getIntent().getExtras().getInt("com.example.nicol.dronflyvis.RADIO_SELECTION");
         }
+
         /**
          * Set the image resource and make the book clickable.
          */
@@ -243,7 +245,7 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
 
                     drawImageButton.setImageResource(R.drawable.drawicon);
                     drawModus = false;
-                    }
+                }
             }
         });
 
@@ -371,15 +373,17 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
                     Crouton.showText(Main_Activity.this, R.string.crouton_split_mode , style);
 
                     if(markers != null){
-                       if(markers.size() >= 3) {
-                           drawPointInPoly();
-                       }
+                        if (markers.size() >= 3) {
+                            drawPointInPoly();
+                        }
                     }
                     split = true;
                 }
 
             }
         });
+
+
 
         importImageButton.setOnClickListener(new View.OnClickListener() {
             /**
@@ -855,7 +859,7 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
     public void main_activity_next(View view) {
         /**
          * If no markers are drawn, a warning will be shown.
-        */
+         */
         if(markers.size() == 0) {
             Warning warning = new Warning("You have to draw a polygon", "Please draw", false, "OK", this);
             android.app.AlertDialog alertDialog = warning.createWarning();
@@ -972,9 +976,9 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
         intent.putExtra("com.example.nicol.dronflyvis.mapType", mMap.getMapType());
         intent.putExtra("com.example.nicol.dronflyvis.SETTINGS", settings);
         intent.putExtra("com.example.nicol.dronflyvis.splitPoly", split);
-        intent.putExtra("com.example.nicol.dronflyvis.ASPECT_RATIO", aspectRatio);
-        intent.putExtra("com.example.nicol.dronflyvis.OVERLAP",overlap);
         intent.putExtra("com.example.nicol.dronflyvis.RADIO_SELECTION", droneFlag);
+        intent.putExtra("com.example.nicol.dronflyvis.ASPECT_RATIO", ratio);
+        intent.putExtra("com.example.nicol.dronflyvis.OVERLAP",overlap);
         startActivity(intent);
     }
 
@@ -1075,7 +1079,7 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
                     .color(Color.RED);
             for(int j=0;j<4;j++ )
             {
-                    options2.add(new LatLng( border.get(i)[j].getLongitude(),border.get(i)[j].getLatitude()));
+                options2.add(new LatLng( border.get(i)[j].getLongitude(),border.get(i)[j].getLatitude()));
             }
             options2.add(new LatLng( border.get(i)[0].getLongitude(),border.get(i)[0].getLatitude()));
             actPolyLynes.add(mMap.addPolyline(options2));

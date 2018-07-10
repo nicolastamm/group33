@@ -12,7 +12,7 @@ class GeoTest
     private Polygon polygonToTest;
     GeoTest(ArrayList<Node> polygon)
     {
-        polygon.add(polygon.get(0)); // LinearRing need a closed Polygon
+        polygon.add(polygon.get(0)); //LinearRing need a closed Polygon
         this.gf= new GeometryFactory();
         ArrayList<Coordinate> points = new ArrayList<Coordinate>();
         for(Node node : polygon)

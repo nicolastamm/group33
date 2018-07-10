@@ -14,6 +14,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Gravity;
 import android.view.MenuItem;
@@ -32,10 +33,13 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -76,6 +80,7 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
     private  Boolean split;
     private int droneFlag;
     private float[] overlap;
+
 
     int PolyCount;
 
@@ -138,9 +143,12 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
             split =  getIntent().getExtras().getBoolean("com.example.nicol.dronflyvis.splitPoly");
             droneFlag = getIntent().getExtras().getInt("com.example.nicol.dronflyvis.RADIO_SELECTION");
             overlap = getIntent().getExtras().getFloatArray("com.example.nicol.dronflyvis.OVERLAP");
-            aspectRatio = getIntent().getExtras().getFloatArray("com.example.nicol.dronflyvis.ASPECT_RATIO");
-            ratio = (aspectRatio[0]/aspectRatio[1]);
+            ratio = getIntent().getExtras().getFloat("com.example.nicol.dronflyvis.ASPECT_RATIO");
+
         }
+        Log.i("test", "" + settings[1]);
+        Log.i("test", "" + settings[2]);
+        Log.i("test", "" + ratio);
         /**
          * Set the image resource and make the book clickable.
          */
@@ -206,8 +214,11 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
          * Enable/Disable functions.
          */
         mMap = googleMap;
+
         mMap.getUiSettings().setMapToolbarEnabled(false);
         mMap.getUiSettings().setZoomControlsEnabled(true);
+
+
         mMap.setMapType(mapType);
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lat, lng), zoom));
 
@@ -547,7 +558,7 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
      */
     public int pointFromPoly(Marker marker){
         Marker Startmarker = marker;
-         PolyCount = 0;
+        PolyCount = 0;
 
         for(int i = 0; i< paths.size(); i++){
             for(int j = 0; j< paths.get(i).size(); j++){
@@ -571,7 +582,7 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
 
 
 
-            //Request storage permissions during runtime
+        //Request storage permissions during runtime
         ActivityCompat.requestPermissions( Tours_View_And_Export_Activity.this ,new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
                 REQUEST_WRITE_EXTERNAL_STORAGE);
 
@@ -605,7 +616,7 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
                         FILE_NAME = "Route " + timeStamp + ".csv";
                     }
 
-                    directory = "DJI/";
+                    directory = "/DroneTours/DJI/";
                     break;
                 case 1:
                     content = routeForBebop(allRoutes.get(i));
@@ -618,7 +629,7 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
                     {
                         FILE_NAME = timeStamp + " Route";
                     }
-                    directory = "ARPro3/";
+                    directory = "/ARPro3/FlightPlans/";
                     break;
                 default:
                     content = "";
@@ -628,7 +639,7 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
 
             //Get the path to the directory to save the CSV
             File file = android.os.Environment.getExternalStorageDirectory();
-            String path = file.getAbsolutePath() + "/DroneTours/" + directory;
+            String path = file.getAbsolutePath() + directory;
             file = new File(path);
             //If there is no folder, create a new one
             file.mkdirs();
@@ -742,7 +753,7 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
         for (int i = 0; i < route.size(); ++i)
         {
             Node add = route.get(i);
-            content += add.getLatitude() + "," + add.getLongitude() + "," + settings[1]
+            content += add.getLatitude() + "," + add.getLongitude() + "," + settings[2]
                     + ",0,0,0,0,0,1,0,-1,0,-1,0,-1,0,-1,0,-1,0,-1,0,-1,0,-1,0,-1,0,-1,0,-1,0,-1,0,-1,0,-1,0\r\n";
         }
 
@@ -855,8 +866,9 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
         @Override
         protected ArrayList<Node> doInBackground(ArrayList<Node>... arrayLists) {
             Rastering raster = new Rastering(arrayLists[0], settings[2], settings[1], ratio, overlap[0], overlap[1]);
-
             ArrayList<ArrayList<Node>> actRaster = raster.getRaster();
+
+            actStartNode = new Node(actRaster.get(2).get(0).getLatitude(), actRaster.get(2).get(0).getLongitude(), 2);
             if (actRaster.isEmpty()) {
                 route = nodeList;
             } else {
@@ -904,4 +916,3 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
         }
     }
 }
-

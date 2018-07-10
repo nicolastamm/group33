@@ -23,9 +23,7 @@ public class Rastering
         this.flightHeight = flightHeight;
         this.geoTest = new GeoTest(inputPolygon);
         fotoWidth = (2.0 * flightHeight) * (Math.tan(Math.toRadians(fov / 2.0)));
-        fotoHeight = fotoWidth * aspectRatio; //Assuming 4:3 aspect ratio
-        //fotoWidth *= 0.30; 70% horizontal overlap.
-        //fotoHeight *= 0.15; 85% vertical overlap.
+        fotoHeight = fotoWidth * aspectRatio;
         fotoWidth *= horizontalOverlap; //70% horizontal overlap.
         fotoHeight *= verticalOverlap; //85% vertical overlap.
     }
@@ -129,7 +127,6 @@ public class Rastering
 
         return outputRaster;
     }
-
 
     static double metersToLat(double meters) {
         return meters / 111325.0;

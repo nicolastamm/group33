@@ -1,20 +1,15 @@
 package com.example.nicol.dronflyvis;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.text.Editable;
-import android.text.TextUtils;
-import android.text.TextWatcher;
+import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.RadioButton;
 import android.widget.RadioGroup;
-
 import java.util.ArrayList;
+import java.util.Hashtable;
 
 /**
  * @author Heiko
@@ -26,23 +21,17 @@ import java.util.ArrayList;
  */
 public class Settings_Activity extends AppCompatActivity
 {
-
-    private Boolean inputOk = false;
-    final ArrayList<EditText> inputTexts = new ArrayList<>();
-
+    private boolean allReady = false;
+    private ArrayList<EditText> inputTextList = new ArrayList<>();
+    private int droneFlag = -1;
+    private Hashtable tableOfRatios;
+    InputValidator generalInput;
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.settings_activity);
-        RadioButton bepob = findViewById(R.id.radioButton4);
-        RadioButton mavic = findViewById(R.id.radioButton3);
-
-        Button aboutUs = findViewById(R.id.about_us_button);
-
-        /**
-         * If aboutUs is clicked, a new window containing information about the developers should open
-         * */
+        Button aboutUs = (Button) findViewById(R.id.about_us_button);
         aboutUs.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -50,264 +39,393 @@ public class Settings_Activity extends AppCompatActivity
                 startActivity(intent);
             }
         });
+        generalInput = new InputValidator(Settings_Activity.this);
+        /**
+         * Get all the values from the the edit texts
+         * */
+        EditText resWidthText = (EditText) findViewById(R.id.editText2);
+        EditText resHeightText = (EditText) findViewById(R.id.editText5);
+
+        EditText overlapWidthText = (EditText) findViewById(R.id.editText6);
+        EditText overlapHeightText = (EditText) findViewById(R.id.editText7);
+
+        EditText altitudeText = (EditText) findViewById(R.id.editText3);
+        EditText fovText = (EditText) findViewById(R.id.editText4);
+        EditText pixelSizeText = (EditText) findViewById(R.id.editText);
 
         /**
-         * All the EditTexts for validation and handover
+         * Adding all our EditTexts to the Array List
          * */
-        EditText resText1 = findViewById(R.id.editText2);
-        EditText resText2 = findViewById(R.id.editText5);
-        EditText altitude = findViewById(R.id.editText3);
-        EditText fov = findViewById(R.id.editText4);
-        EditText pixelSize = findViewById(R.id.editText);
-        EditText overlapH = findViewById(R.id.editText6);
-        EditText overlapV = findViewById(R.id.editText7);
+        inputTextList.add(resWidthText);
+        inputTextList.add(resHeightText);
+        inputTextList.add(overlapWidthText);
+        inputTextList.add(overlapHeightText);
+        inputTextList.add(fovText);
+        inputTextList.add(altitudeText);
+        inputTextList.add(pixelSizeText);
+
+        tableOfRatios = setHashtable();
 
         /**
-         * Adding all our EditTexts into the ArrayList
-         * */
-        inputTexts.add(altitude);
-        inputTexts.add(fov);
-        inputTexts.add(pixelSize);
-        inputTexts.add(resText1);
-        inputTexts.add(resText2);
-        inputTexts.add(overlapH);
-        inputTexts.add(overlapV);
-
-        /**
-         * Check which Radio Button has been clicked and change the EditTexts accordingly
-         * */
-        RadioGroup radioGroup = findViewById(R.id.radioGroup);
-        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener()
+         * Start Input Validation
+         */
+        for(EditText text : inputTextList)
         {
-            @Override
-            public void onCheckedChanged(RadioGroup group, int checkedId)
-            {
-                /**
-                 * Here we change both resolution text fields, the fov and the overlap
-                 * according to the chosen drone
-                **/
-                RadioButton checkedRadioButton = group.findViewById(checkedId);
-                switch(checkedId)
-                {
-                    /**
-                     * Case 1: Bepob drone is chosen
-                     * */
-                    case R.id.radioButton4: fov.setText("" + 170);
-                        resText1.setText("3800");
-                        resText2.setText("3188");
-                        overlapV.setText("85");
-                        overlapH.setText("70");
-                        break;
-                    /**
-                     * Case 2: Mavic drone is chosen
-                     *
-                     * */
-                    case R.id.radioButton3: fov.setText("" + 78.8);
-                        resText1.setText("4000");
-                        resText2.setText("3000");
-                        overlapV.setText("85");
-                        overlapH.setText("70");
-                        break;
-                    default: fov.setText("");
-                        resText1.setText("");
-                        resText2.setText("");
-                        break;
-                }
-            }
-        });
-        /**
-         * Input validation starts here, we add a textchangedlistener on every edittext to
-         * validate multiple edittexts
-         * */
-        for(final EditText txt : inputTexts)
-        {
-            txt.addTextChangedListener(new TextWatcher() {
+            int currentId = text.getId();
+            /**
+             * We add a onKeyListener to check wether certain texts have been filled out already and then we can calculate other text fields based on that
+             * */
+            text.setOnKeyListener(new View.OnKeyListener() {
                 @Override
-                public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2)
-                {
-                    /**
-                     * Don't care
-                     * */
-                }
-                @Override
-                public void onTextChanged(CharSequence charSequence, int i, int i1, int i2)
-                {
-                    /**
-                     * Don't care
-                     * */
-                }
-                @Override
-                public void afterTextChanged(Editable editable)
-                {
-                    /**
-                     * If one of the edittexts gets deleted we return immediately to stop further recursive calls from afterTextChanged
-                     * */
-                    if(isEmpty(txt)){return;}
-                    if(!isEmpty(inputTexts.get(0)) && !isEmpty(inputTexts.get(1)) && !isEmpty(inputTexts.get(3)) && !isEmpty(inputTexts.get(4))) {
-                        txt.removeTextChangedListener(this);
-                        inputTexts.get(2).setText("" + calculatePixelSize((Double.parseDouble(inputTexts.get(0).getText().toString())),
-                                Double.parseDouble(inputTexts.get(1).getText().toString()),
-                                Double.parseDouble(inputTexts.get(3).getText().toString()),
-                                Double.parseDouble(inputTexts.get(4).getText().toString())));
-                        txt.addTextChangedListener(this);
-                    }
-                    switch (txt.getId())
+                public boolean onKey(View view, int i, KeyEvent keyEvent) {
+                    if(!isEmpty(inputTextList.get(0)) && !isEmpty(inputTextList.get(1)) && !isEmpty(inputTextList.get(4)) && !isEmpty(inputTextList.get(5)))
                     {
-                        case R.id.editText2:
-                        case R.id.editText5:
-                            if(txt.getEditableText().toString().length() > 4)
-                            {
-                                Warning altitudeWarning = new Warning("Resolution not supported", "Resolution too large", true, "Ok", Settings_Activity.this);
-                                AlertDialog alertDialog = altitudeWarning.createWarning();
-                                alertDialog.setTitle("Resolution too large!");
-                                alertDialog.show();
-                                txt.removeTextChangedListener(this);
-                                txt.setText("");
-                                txt.addTextChangedListener(this);
-                            }
+                        if(!inputTextList.get(6).hasFocus())
+                        {
+                            inputTextList.get(6).setText("" + calculatePixelSize(Float.parseFloat(inputTextList.get(5).getText().toString()),
+                                    Float.parseFloat(inputTextList.get(4).getText().toString()),
+                                    Float.parseFloat(inputTextList.get(0).getText().toString()),
+                                    Float.parseFloat(inputTextList.get(1).getText().toString())));
+                        }
+                    }
+                    if(!isEmpty(inputTextList.get(0)) && !isEmpty(inputTextList.get(1)) && !isEmpty(inputTextList.get(4)) && !isEmpty(inputTextList.get(6)))
+                    {
+                        if(!inputTextList.get(5).hasFocus())
+                        {
+                            inputTextList.get(5).setText("" + calculateHeight(Float.parseFloat(inputTextList.get(4).getText().toString()),
+                                    Float.parseFloat(inputTextList.get(1).getText().toString()),
+                                    Float.parseFloat(inputTextList.get(0).getText().toString()),
+                                    Float.parseFloat(inputTextList.get(6).getText().toString())));
+                        }
+                    }
+                    return false;
+                }
+            });
+            /**
+             * Here we start the real validation
+             * */
+            text.addTextChangedListener(new CustomTextWatcher(text) {
+                /**
+                 * Set a tag to the text field, a onFocusListener and all the possible errors to null. Let InputValidator do the rest
+                 * */
+                @Override
+                public void validateText(EditText text) {
+                    if(isEmpty(text)){return;}
+                    switch (currentId)
+                    {
+                        case R.id.editText3:
+                            text.setTag(0);
+                            InputValidator heightValidator = new InputValidator(10f, 100f, Settings_Activity.this);
+                            text.setOnFocusChangeListener(heightValidator);
+                            text.setError(null);
+                            heightValidator.setCount(0);
+                            break;
+                        case R.id.editText4:
+                            text.setTag(1);
+                            InputValidator fovValidator = new InputValidator(1f, 170f, Settings_Activity.this);
+                            text.setOnFocusChangeListener(fovValidator);
+                            fovValidator.setCount(0);
+                            text.setError(null);
+                            break;
+                        case R.id.editText:
+                            text.setError(null);
+                            InputValidator pixelValidator = new InputValidator(0f, 1000f,Settings_Activity.this);
+                            text.setOnFocusChangeListener(pixelValidator);
                             break;
                         case R.id.editText6:
                         case R.id.editText7:
-                            if(Double.parseDouble(txt.getEditableText().toString()) > 100)
-                            {
-                                Warning altitudeWarning = new Warning("Overlap can't be larger than 100%", "Overlap to large", true, "Ok", Settings_Activity.this);
-                                AlertDialog alertDialog = altitudeWarning.createWarning();
-                                alertDialog.setTitle("Overlap not supported");
-                                alertDialog.show();
-                                txt.removeTextChangedListener(this);
-                                txt.setText("");
-                                txt.addTextChangedListener(this);
-                            }
-
+                            text.setTag(2);
+                            InputValidator overlapValidator = new InputValidator(1f, 99f, Settings_Activity.this);
+                            text.setOnFocusChangeListener(overlapValidator);
+                            overlapValidator.setCount(0);
+                            text.setError(null);
                             break;
-                        case R.id.editText3:
-                            if(validateAlt(Double.parseDouble(txt.getEditableText().toString())))
-                            {
-                                Warning altitudeWarning = new Warning("Altitude is larger than 100 meters, are you sure you want to continue?", "Altitude too large", true, "Yes","No", Settings_Activity.this);
-                                AlertDialog alertDialog = altitudeWarning.createWarning();
-                                alertDialog.setTitle("Altitude larger than 100 meters");
-                                alertDialog.show();
-                                Button negativeBtn = alertDialog.getButton(DialogInterface.BUTTON_NEGATIVE);
-                                negativeBtn.setOnClickListener(new View.OnClickListener() {
-                                    public void onClick(View v) {
-                                        alertDialog.dismiss();
-                                        txt.setText(""); }
-                                });
-                            }
-                            break;
-                        case R.id.editText4:
-                            if(txt.getEditableText().toString().length() >= 3)
-                            {
-                                if(Double.parseDouble(txt.getEditableText().toString()) >= 180 ||Double.parseDouble(txt.getEditableText().toString()) <= 40)
-                                {
-                                    Warning altitudeWarning = new Warning("FOV larger or equal to 180 or less than 40 degrees are not supported", "FOV not supported", true, "Ok", Settings_Activity.this);
-                                    AlertDialog alertDialog = altitudeWarning.createWarning();
-                                    alertDialog.setTitle("FOV not supported");
-                                    alertDialog.show();
-                                    txt.removeTextChangedListener(this);
-                                    txt.setText("");
-                                    txt.addTextChangedListener(this);
+                        /**
+                         *
+                         * The Fields for Resolution have certain behavior which has to be captured like this
+                         */
+                        case R.id.editText2:
+                            text.setError(null);
+                            text.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                                @Override
+                                public void onFocusChange(View view, boolean b) {
+                                    if(text.getText().toString().length()  > 4)
+                                    {
+                                        InputValidator resValidator = new InputValidator(Settings_Activity.this);
+                                        resValidator.createWarning("Resolution Width too large! The Resolution Width should be smaller than or equal to 4 Digits", "Resolution Width too large",
+                                                "Ok", null,Settings_Activity.this, "Resolution Width too large",inputTextList.get(0));
+                                        resValidator.createVibration();
+                                        return;
+                                    }
+                                    if(text.getText().toString().length()  < 2 && !isEmpty(text))
+                                    {
+                                        InputValidator resValidator = new InputValidator(Settings_Activity.this);
+                                        resValidator.createWarning("Resolution Width is too small! The Resolution Width should be bigger than 2 Digits", "Resolution Width too small",
+                                                "Ok", null,Settings_Activity.this, "Resolution Width too small",inputTextList.get(0));
+                                        resValidator.createVibration();
+                                        inputTextList.get(6).setText("");
+                                        return;
+                                    }
+                                    if(!isEmpty(inputTextList.get(0)) && !isEmpty(inputTextList.get(1)))
+                                    {
+                                        boolean res = checkResolution(Float.parseFloat(inputTextList.get(0).getText().toString()),
+                                                Float.parseFloat(inputTextList.get(1).getText().toString()), tableOfRatios);
+                                        if(!res)
+                                        {
+                                            int[] aspectRatios = getAspectRatios(Float.parseFloat(inputTextList.get(0).getText().toString()), Float.parseFloat(inputTextList.get(1).getText().toString()));
+                                            InputValidator resValidator = new InputValidator(Settings_Activity.this);
+                                            resValidator.createWarning("Choose another resolution! Depending on your settings you have an aspect ratio of " + aspectRatios[0] + ":" +aspectRatios[1] + " which is not valid",
+                                                    "Resolution invalid", "Ok", null,Settings_Activity.this, "Resolution invalid",inputTextList.get(0));
+                                            inputTextList.get(0).setText("");
+                                            inputTextList.get(1).setText("");
+                                            resValidator.createVibration();
+                                            return;
+                                        }
+                                    }
                                 }
-                            }
-                            break;
-                    }
+                            });
+                         break;
+                        case R.id.editText5:
+                            text.setError(null);
+                            text.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                                @Override
+                                public void onFocusChange(View view, boolean b) {
+                                    if(text.getText().toString().length()  > 4)
+                                    {
+                                        InputValidator resValidator = new InputValidator(Settings_Activity.this);
+                                        resValidator.createWarning("Resolution Height too large! The Resolution Height should be smaller than or equal to 4 Digits", "Resolution Height too large",
+                                                "Ok", null,Settings_Activity.this, "Resolution Height too large",inputTextList.get(1));
+                                        inputTextList.get(0).setText("");
+                                        inputTextList.get(1).setText("");
+                                        resValidator.createVibration();
+                                        return;
+                                    }
+                                    if(text.getText().toString().length()  < 2 && !isEmpty(text))
+                                    {
+                                        InputValidator resValidator = new InputValidator(Settings_Activity.this);
+                                        resValidator.createWarning("Resolution Height too low! The Resolution Height should be bigger than 2 Digits", "Resolution Height too small",
+                                                "Ok", null,Settings_Activity.this, "Resolution Height too small",inputTextList.get(1));
+                                        resValidator.createVibration();
+                                        return;
+                                    }
+                                    if(!isEmpty(inputTextList.get(0)) && !isEmpty(inputTextList.get(1)))
+                                    {
+                                        boolean res = checkResolution(Float.parseFloat(inputTextList.get(0).getText().toString()),
+                                                Float.parseFloat(inputTextList.get(1).getText().toString()), tableOfRatios);
+                                        if(!res)
+                                        {
+                                            int[] aspectRatios = getAspectRatios(Float.parseFloat(inputTextList.get(0).getText().toString()), Float.parseFloat(inputTextList.get(1).getText().toString()));
+                                            InputValidator resValidator = new InputValidator(Settings_Activity.this);
+                                            resValidator.createWarning("Choose another resolution! Depending on your settings you have an aspect ratio of " + aspectRatios[0] + ":" +aspectRatios[1] + " which is not valid",
+                                                    "Resolution invalid", "Ok", null,Settings_Activity.this, "Resolution invalid",inputTextList.get(1));
+                                            resValidator.createVibration();
+                                            inputTextList.get(0).setText("");
+                                            inputTextList.get(1).setText("");
+                                            return;
+                                        }
+                                    }
+                                }
 
+                            });
+                         break;
+                    }
                 }
+
             });
         }
-    }
+        /**
+         * Check which radio button out of our two has been clicked
+         * */
+        RadioGroup radioGroup = (RadioGroup) findViewById(R.id.radioGroup);
+        String flightHeight = inputTextList.get(5).getText().toString();
+        radioGroup.clearCheck();
+        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
 
-    /**
-     *
-     * INPUT VALIDATION
-     *
-     */
-
-    /**
-     *
-     * UTILITY FUNCTIONS
-     *
-     */
-    public boolean validateAlt(double altitude)
-    {
-        return altitude > 100;
+            @Override
+            public void onCheckedChanged(RadioGroup radioGroup, int checkedId) {
+                /**
+                 * radio button for bepop
+                 * */
+                if(checkedId == R.id.radioButton4)
+                {
+                    droneFlag = 1;
+                    clearText(inputTextList);
+                    /**
+                     * set the EditText to standard values
+                     * */
+                    setText(inputTextList,flightHeight, 3800,3188,70,85,170);
+                    if(!isEmpty(inputTextList.get(0)) && !isEmpty(inputTextList.get(1)) && !isEmpty(inputTextList.get(4)) && !isEmpty(inputTextList.get(5)))
+                    {
+                        inputTextList.get(6).setText("" + calculatePixelSize(Float.parseFloat(inputTextList.get(5).getText().toString()),
+                                Float.parseFloat(inputTextList.get(4).getText().toString()),
+                                Float.parseFloat(inputTextList.get(0).getText().toString()),
+                                Float.parseFloat(inputTextList.get(1).getText().toString())));
+                    }
+                    if(!isEmpty(inputTextList.get(0)) && !isEmpty(inputTextList.get(1)) && !isEmpty(inputTextList.get(4)) && !isEmpty(inputTextList.get(6)))
+                    {
+                        if(!inputTextList.get(5).hasFocus())
+                        {
+                            inputTextList.get(5).setText("" + calculateHeight(Float.parseFloat(inputTextList.get(4).getText().toString()),
+                                    Float.parseFloat(inputTextList.get(1).getText().toString()),
+                                    Float.parseFloat(inputTextList.get(0).getText().toString()),
+                                    Float.parseFloat(inputTextList.get(6).getText().toString())));
+                        }
+                    }
+                }
+                /**
+                 * radio button for mavic
+                 * */
+                else if(checkedId == R.id.radioButton3)
+                {
+                    droneFlag = 0;
+                    clearText(inputTextList);
+                    /**
+                     * set the EditText to standard values
+                     * */
+                    setText(inputTextList, flightHeight,4000,3000,70,85,78.8f);
+                    if(!isEmpty(inputTextList.get(0)) && !isEmpty(inputTextList.get(1)) && !isEmpty(inputTextList.get(4)) && !isEmpty(inputTextList.get(5)))
+                    {
+                        inputTextList.get(6).setText("" + calculatePixelSize(Float.parseFloat(inputTextList.get(5).getText().toString()),
+                                Float.parseFloat(inputTextList.get(4).getText().toString()),
+                                Float.parseFloat(inputTextList.get(0).getText().toString()),
+                                Float.parseFloat(inputTextList.get(1).getText().toString())));
+                    }
+                    if(!isEmpty(inputTextList.get(0)) && !isEmpty(inputTextList.get(1)) && !isEmpty(inputTextList.get(4)) && !isEmpty(inputTextList.get(6)))
+                    {
+                        if(!inputTextList.get(5).hasFocus())
+                        {
+                            inputTextList.get(5).setText("" + calculateHeight(Float.parseFloat(inputTextList.get(4).getText().toString()),
+                                    Float.parseFloat(inputTextList.get(1).getText().toString()),
+                                    Float.parseFloat(inputTextList.get(0).getText().toString()),
+                                    Float.parseFloat(inputTextList.get(6).getText().toString())));
+                        }
+                    }
+                }
+            }
+        });
     }
-    public boolean validateRes(double res)
-    {
-        int count = 0;
-        while(res >= 0)
-        {
-            res /= 10;
-            count++;
-        }
-        return count >= 2 && count <= 4;
-    }
     /**
-     * Calculating the Pixel Size if someone fills out flight height, fov, pixelWidth and pixelHeight
-     **/
-    public double calculatePixelSize(double altitude, double fov, double pixelWidth, double pixelHeight)
-    {
-        double gcd = getGcd(pixelWidth, pixelHeight);
-        double aspectRatio = (pixelHeight/gcd) / (pixelWidth/gcd);
-        double fotoWidth = 2 * altitude * Math.tan(Math.toRadians(fov/2.0));
-        double fotoHeight = fotoWidth * aspectRatio;
-        return Math.sqrt(((fotoWidth/ pixelWidth) * 100) * ((fotoHeight/pixelHeight) * 100)); // meters times 100 gets centimeters.
-    }
-    /**
-     * Calculates the gcd recursively of the two parameter, we need this for calculating the aspect ratio
+     * UTILS
      * */
-    public double getGcd(double a,double b)
+    /**
+     * function for clearing all the editTexts
+     * */
+    public void clearText(ArrayList<EditText> texts)
     {
-        if(b == 0)
+        for(EditText text : texts)
         {
-            return a;
+            if(text.getId() != R.id.editText3)
+            {
+                text.setText("");
+            }
         }
-        else
-        {
-            return getGcd(b, a % b);
-        }
-    }
-    public void calculateFov(EditText editText1,EditText editText2, EditText resultText)
-    {
-        Editable altitudeEdit = editText1.getText();
-        Editable pixelSizeEdit = editText2.getText();
-
-        double altitude= Double.parseDouble(altitudeEdit.toString());
-        double pixelSize = Double.parseDouble(pixelSizeEdit.toString());
     }
     /**
-     * Getting all the User Input, this function will be called later on, when everything is checked and ok!
+     * check whether one edittext is null or empty
+     * */
+    public boolean isEmpty(EditText text)
+    {
+        String textToCheck = text.getText().toString();
+        if(textToCheck == null)
+        {
+            return true;
+        }
+        else if(textToCheck.matches("") || Float.parseFloat(textToCheck) <= 0f)
+        {
+            return true;
+        }
+        return false;
+    }
+    /**
+     * Function for setting the, above mentioned, standard texts
+     * */
+    public void setText(ArrayList<EditText> texts, String txt,float...values)
+    {
+        int i = 0;
+        for(EditText text : texts)
+        {
+            /**
+             * If we see the Id of our editText for the flight height, we skip it
+             * */
+            if(text.getId() != R.id.editText3)
+            {
+                if(i >= values.length)
+                {
+                    break;
+                }
+                if(Math.round(values[i]) == values[i])
+                {
+                    text.setText("" + Math.round(values[i]));
+                }
+                else
+                {
+                    text.setText("" + values[i]);
+                }
+                i++;
+            }
+        }
+    }
+    /**
+     * function for validation the resolution fields using a hashtable with aspect ratios
+     * */
+    public boolean checkResolution(float resWidth, float resHeight, Hashtable table)
+    {
+        float gcd = getGcd(resWidth, resHeight);
+        int aspectRatioFirst = Math.round(resWidth/gcd);
+        int aspectRatioSecond = Math.round(resHeight/gcd);
+        if(table.contains(aspectRatioFirst + ":" + aspectRatioSecond))
+        {
+            return true;
+        }
+        return false;
+    }
+    /**
+     * function for getting an array of the two values of which the aspect ratio consists
+     * */
+    public int[] getAspectRatios(float resWidth, float resHeight)
+    {
+        int[] ratios = new int[2];
+        float gcd = getGcd(resWidth, resHeight);
+        int aspectRatioFirst = Math.round(resWidth/gcd);
+        int aspectRatioSecond = Math.round(resHeight/gcd);
+        ratios[0] = aspectRatioFirst;
+        ratios[1] = aspectRatioSecond;
+        return ratios;
+    }
+    /**
+     * Hashtable with standart Aspect Ratios
+     * */
+    public Hashtable setHashtable()
+    {
+        Hashtable<Integer, String> ratioTable = new Hashtable<Integer, String>();
+        ratioTable.put(1, "1:1");
+        ratioTable.put(2, "4:3");
+        ratioTable.put(3, "3:2");
+        ratioTable.put(6, "3:1");
+        ratioTable.put(4, "5:3");
+        ratioTable.put(5, "16:9");
+        ratioTable.put(6, "950:797");
+        return ratioTable;
+    }
+    /**
+     * Get Values from the EditText Fields: pixelSize, flightHeight and FOV
      * */
     public float[] getInputValues()
     {
-        int[] inputIds = {R.id.editText, R.id.editText3, R.id.editText4, R.id.editText6, R.id.editText7, R.id.editText2, R.id.editText5};
+        int[] inputIds = {R.id.editText, R.id.editText3, R.id.editText4};
         int i = 0;
-        /**
-         * -1 is our error value in case something is off
-         * */
+
         float[] inputValues = new float[]{-1,-1,-1,-1,-1,-1,-1};
         for(int id : inputIds)
         {
-            EditText inputText = findViewById(id);
+            EditText inputText = (EditText) findViewById(id);
             inputValues[i] = Float.parseFloat("0" + inputText.getText().toString());
             i++;
         }
         return inputValues;
     }
     /**
-     * Calculating Aspect Ratio using the gcd of the two resolution text fields
-     * */
-    public float[] getAspectRatio(double pixelWidth, double pixelHeight)
-    {
-        float[] aspectRatio = new float[2];
-        double gcd = getGcd(pixelHeight, pixelWidth);
-        aspectRatio[0] = (float) (pixelHeight /gcd);
-        aspectRatio[1] = (float) (pixelWidth/ gcd);
-        return aspectRatio;
-
-    }
-    /**
-     * Method for checking wether a arraylist of EditText is empty, if it is a error is shown
+     * Check whether one of the text fields is empty
      * */
     public boolean inputEmpty(ArrayList<EditText> texts)
     {
@@ -327,74 +445,128 @@ public class Settings_Activity extends AppCompatActivity
         return isEmpty;
     }
     /**
-     * Method for getting Input from the two Radio Buttons, we need this to set the flag for the output later on
+     * get the values from the overlap fields
      * */
-    public int getRadioButton()
+    public float[] getOverlap()
     {
-        RadioGroup radioGroup = findViewById(R.id.radioGroup);
-        int radioButtonId = radioGroup.getCheckedRadioButtonId();
-        if(radioButtonId != -1)
+        int[] inputIds = {R.id.editText6, R.id.editText7};
+        int i = 0;
+        float[] overlapValues = new float[]{-1,-1};
+        for(int id : inputIds)
         {
-            RadioButton selectedButton = radioGroup.findViewById(radioButtonId);
-            String selected = (String) selectedButton.getText();
-            if(selected == "Dji Mavic Pro")
-            {
-                return 0;
-            }
-            return 1;
+            EditText inputText = (EditText) findViewById(id);
+            overlapValues[i] = Float.parseFloat("0" + inputText.getText().toString());
+            i++;
         }
-        return -1;
+        /**
+         * calculate the values for horizontal and vertical overlap
+         * */
+        overlapValues[0] = (100 - overlapValues[0])/100;
+        overlapValues[1] = (100 - overlapValues[1])/100;
+        return overlapValues;
     }
-
-    public boolean isEmpty(EditText text)
+    /**
+     * Function for getting the values form our Resolution Fields and calculate the aspect ratio
+     * */
+    public float getAspectRatio()
     {
-        return TextUtils.isEmpty(text.getText().toString());
-    }
-
-    public boolean contains(float[] array, float value) {
-        for (int i = 0; i < array.length; i++) {
-            if (array[i] == value) {
-                return true;
-            }
+        int[] inputIds = {R.id.editText2, R.id.editText5};
+        float[] aspectRatios = new float[]{-1,-1};
+        float[] result = new float[]{-1,-1};
+        int i = 0;
+        for(int id : inputIds)
+        {
+            EditText inputText = (EditText) findViewById(id);
+            aspectRatios[i] = Float.parseFloat("0" + inputText.getText().toString());
+            i++;
         }
-        return false;
+        result[0] = calcAspectRatios(aspectRatios[0], aspectRatios[1])[0];
+        result[1] = calcAspectRatios(aspectRatios[0], aspectRatios[1])[1];
+        return (result[1]/result[0]);
     }
 
-    public void settings_next(View view) {
-        float invalidInput = -1.0f;
-        float[] inputValues;
+    /**
+     * NECESSARY MATHEMATICS
+     **/
+    /**
+     * simple recursive gcd function
+     * */
+    public float getGcd(float first,float second)
+    {
+        if(second == 0)
+        {
+            return first;
+        }
+        else
+        {
+            return getGcd(second, first % second);
+        }
+    }
+    /**
+     * Calculate the pixelsize which has to be shown to the user
+     * */
+    public float calculatePixelSize(float altitude, float fov, float resWidth, float resHeight)
+    {
+        float gcd = (float)getGcd((int) resWidth,(int) resHeight);
+        float fotoWidth = (float) ((2.0 * altitude) * Math.tan(Math.toRadians((fov/2.0))));
+        float fotoHeight = fotoWidth * ((resHeight/gcd)/(resWidth/gcd));//fotoWidth times aspect ratio
+        return (float) (Math.sqrt(((fotoWidth/ resWidth) * 100) * ((fotoHeight/resHeight) * 100))); // meters times 100 gets us centimeters
+    }
+    /**
+     * Calculate the height in the case the user gives us the pixel size
+     * */
+    public float calculateHeight(float fov, float resHeight, float resWidth, float pixelSize)
+    {
+        float gcd = getGcd(resWidth, resHeight);
+        float fotoWidth =(float) Math.sqrt((Math.pow(pixelSize, 2)*resWidth*resHeight)/(10000 * (resHeight/gcd)/(resWidth/gcd)));//we get this formula by rearranging the above formula for pixelSize
+        return (float)(fotoWidth/(2 * Math.tan(Math.toRadians(fov/2.0))));
+    }
+    public float[] calcAspectRatios(float resWidth, float resHeight)
+    {
         float[] aspectRatio = new float[2];
+        float gcd = getGcd(resWidth, resHeight);
+        aspectRatio[0] = (resWidth/gcd);
+        aspectRatio[1] = (resHeight/gcd);
+        return aspectRatio;
+    }
+    /**
+     * function handling click event on "next"
+     **/
+    public void settings_next(View view)
+    {
+        float[] inputValues = new float[3];
+        float aspectRatio = 0;
         float[] overlap = new float[2];
-        if(!inputEmpty(inputTexts))
+        if(!inputEmpty(inputTextList))
         {
             inputValues = getInputValues();
-            if(!contains(inputValues, invalidInput))
-            {
-                aspectRatio = getAspectRatio(inputValues[5], inputValues[6]);
-                /**
-                 * Calculating overlap values for rastering
-                 * */
-                overlap[0] = (100 - inputValues[3]) / 100;
-                overlap[1] = (100 - inputValues[4]) / 100;
-                inputOk = true;
-            }
+            aspectRatio = getAspectRatio();
+            overlap = getOverlap();
+            allReady = true;
         }
-        if(inputOk) {
-            Intent intent = new Intent(this, Main_Activity.class);
-            intent.putExtra("com.example.nicol.dronflyvis.INPUT_VALUES", getInputValues());
-            intent.putExtra("com.example.nicol.dronflyvis.RADIO_SELECTION", getRadioButton());
+        else
+        {
+            allReady = false;
+        }
+        if(allReady)
+        {
+            Intent intent = new Intent(getApplicationContext(), Main_Activity.class);
+            intent.putExtra("com.example.nicol.dronflyvis.INPUT_VALUES", inputValues);
             intent.putExtra("com.example.nicol.dronflyvis.ASPECT_RATIO", aspectRatio);
             intent.putExtra("com.example.nicol.dronflyvis.OVERLAP", overlap);
+            intent.putExtra("com.example.nicol.dronflyvis.RADIO_SELECTION", droneFlag);
+
             startActivity(intent);
         }
         else
         {
-            Warning warning = new Warning("Fill in the empty fields before you continue.", "Please fill in missing values", true, "OK", this);
+            Warning warning = new Warning("Fill all the fields correctly before you continue.", "Please fill in all values", true, "OK", this);
             android.app.AlertDialog alertDialog = warning.createWarning();
-            alertDialog.setTitle("Missing Values");
+            alertDialog.setTitle("Missing or illegal Values");
             alertDialog.show();
+            generalInput.createVibration();
         }
-
     }
+
 }
 
