@@ -115,7 +115,7 @@ public class Settings_Activity extends AppCompatActivity
                     {
                         case R.id.editText3:
                             text.setTag(0);
-                            InputValidator heightValidator = new InputValidator(1f, 100f, Settings_Activity.this);
+                            InputValidator heightValidator = new InputValidator(10f, 100f, Settings_Activity.this);
                             text.setOnFocusChangeListener(heightValidator);
                             text.setError(null);
                             heightValidator.setCount(0);
