@@ -33,13 +33,10 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -210,9 +207,6 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
      */
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        /**
-         * Enable/Disable functions.
-         */
         mMap = googleMap;
 
         mMap.getUiSettings().setMapToolbarEnabled(false);
@@ -222,14 +216,84 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
         mMap.setMapType(mapType);
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lat, lng), zoom));
 
-        /**
-         * Calculate the tour route asynchronously.
-         */
+
         if (split) {
-            new AsyncRasters().execute(nodeList);
+            int count = 0;
+
+            Rastering raster = new Rastering(nodeList, settings[2], settings[1], ratio, overlap[0], overlap[1]);
+            TravelingSalesman tsm = new TravelingSalesman();
+
+
+            ArrayList<ArrayList<ArrayList<Node>>> actRaster = raster.getRasters();
+
+            actStartNodes = new ArrayList<Node>();
+
+
+            for (ArrayList<ArrayList<Node>> i : actRaster) {
+                ArrayList<Marker> pfad = new ArrayList<>();
+
+
+                actStartNodes.add(new Node(i.get(0).get(0).getLatitude(), i.get(0).get(0).getLongitude(), 2));
+                route = tsm.travelingSalesman(i, actStartNodes.get(count), nodeList);
+                count++;
+                allRoutes.add(route);
+
+                for (int j = 0; j < route.size(); j++) {
+                    double lt = route.get(j).getLatitude();
+                    double lon = route.get(j).getLongitude();
+
+                    MarkerCounter++;
+                    String text = String.valueOf(MarkerCounter);
+                    Bitmap bitmap = makeBitmap(this, text, colour);
+
+                    MarkerOptions options = new MarkerOptions()
+                            .draggable(false)
+                            .position(new LatLng((float) lt, (float) lon))
+                            .icon(BitmapDescriptorFactory.fromBitmap(bitmap))
+                            .anchor((float) 0.5, (float) 0.5);
+                    pfad.add(mMap.addMarker(options));
+                }
+                paths.add(pfad);
+
+                drawPath(pfad);
+                colour++;
+                MarkerCounter = 0;
+            }
+
         }
         else{
-            new AsyncRaster().execute(nodeList);
+
+            Rastering raster = new Rastering(nodeList, settings[2], settings[1], ratio, overlap[0], overlap[1]);
+            TravelingSalesman tsm = new TravelingSalesman();
+            ArrayList<Marker> pfad = new ArrayList<>();
+
+            ArrayList<ArrayList<Node>> actRaster = raster.getRaster();
+            actStartNode = new Node(actRaster.get(0).get(0).getLatitude(), actRaster.get(0).get(0).getLongitude(), 2);
+            if (actRaster.isEmpty()) {
+                route = nodeList;
+            } else {
+                route = tsm.travelingSalesman(actRaster, actStartNode, nodeList);
+            }
+            allRoutes.add(route);
+
+            for (int i = 0; i < route.size(); i++) {
+                double lt = route.get(i).getLatitude();
+                double lon = route.get(i).getLongitude();
+
+                MarkerCounter++;
+                String text = String.valueOf(MarkerCounter);
+                Bitmap bitmap = makeBitmap(this, text, 2);
+
+                MarkerOptions options = new MarkerOptions()
+                        .draggable(false)
+                        .position(new LatLng((float) lt, (float) lon))
+                        .icon(BitmapDescriptorFactory.fromBitmap(bitmap))
+                        .anchor((float) 0.5, (float) 0.5);
+
+
+                pfad.add(mMap.addMarker(options));
+            }
+            drawPath(pfad);
         }
     }
 
