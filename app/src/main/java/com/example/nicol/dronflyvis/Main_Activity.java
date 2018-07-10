@@ -130,6 +130,7 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
             overlap = getIntent().getExtras().getFloatArray("com.example.nicol.dronflyvis.OVERLAP");
             droneFlag = getIntent().getExtras().getInt("com.example.nicol.dronflyvis.RADIO_SELECTION");
         }
+
         /**
          * Set the image resource and make the book clickable.
          */
@@ -244,7 +245,7 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
 
                     drawImageButton.setImageResource(R.drawable.drawicon);
                     drawModus = false;
-                    }
+                }
             }
         });
 
@@ -858,7 +859,7 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
     public void main_activity_next(View view) {
         /**
          * If no markers are drawn, a warning will be shown.
-        */
+         */
         if(markers.size() == 0) {
             Warning warning = new Warning("You have to draw a polygon", "Please draw", false, "OK", this);
             android.app.AlertDialog alertDialog = warning.createWarning();
@@ -1078,7 +1079,7 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
                     .color(Color.RED);
             for(int j=0;j<4;j++ )
             {
-                    options2.add(new LatLng( border.get(i)[j].getLongitude(),border.get(i)[j].getLatitude()));
+                options2.add(new LatLng( border.get(i)[j].getLongitude(),border.get(i)[j].getLatitude()));
             }
             options2.add(new LatLng( border.get(i)[0].getLongitude(),border.get(i)[0].getLatitude()));
             actPolyLynes.add(mMap.addPolyline(options2));

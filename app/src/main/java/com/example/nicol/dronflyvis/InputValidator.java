@@ -13,6 +13,8 @@ import android.widget.EditText;
 import android.os.Vibrator;
 /**
  * @author Heiko Dreyer
+ *
+ * Class concerned with Validation and issuing of Warnings
  * */
 public class InputValidator implements View.OnFocusChangeListener {
 

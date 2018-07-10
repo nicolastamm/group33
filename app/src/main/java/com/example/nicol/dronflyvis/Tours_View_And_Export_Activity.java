@@ -146,6 +146,9 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
             ratio = getIntent().getExtras().getFloat("com.example.nicol.dronflyvis.ASPECT_RATIO");
 
         }
+        Log.i("test", "" + settings[1]);
+        Log.i("test", "" + settings[2]);
+        Log.i("test", "" + ratio);
         /**
          * Set the image resource and make the book clickable.
          */
@@ -555,7 +558,7 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
      */
     public int pointFromPoly(Marker marker){
         Marker Startmarker = marker;
-         PolyCount = 0;
+        PolyCount = 0;
 
         for(int i = 0; i< paths.size(); i++){
             for(int j = 0; j< paths.get(i).size(); j++){
@@ -913,4 +916,3 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
         }
     }
 }
-
