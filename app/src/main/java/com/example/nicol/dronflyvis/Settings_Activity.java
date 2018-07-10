@@ -369,6 +369,7 @@ public class Settings_Activity extends AppCompatActivity
         ratioTable.put(6, "3:1");
         ratioTable.put(4, "5:3");
         ratioTable.put(5, "16:9");
+        ratioTable.put(6, "950:797");
         return ratioTable;
     }
     public float[] getInputValues()
@@ -478,7 +479,6 @@ public class Settings_Activity extends AppCompatActivity
         aspectRatio[1] = (resHeight/gcd);
         return aspectRatio;
     }
-
     /**
      * function handling click event on "next"
      **/
@@ -505,10 +505,6 @@ public class Settings_Activity extends AppCompatActivity
             intent.putExtra("com.example.nicol.dronflyvis.ASPECT_RATIO", aspectRatio);
             intent.putExtra("com.example.nicol.dronflyvis.OVERLAP", overlap);
             intent.putExtra("com.example.nicol.dronflyvis.RADIO_SELECTION", droneFlag);
-            Log.i("test1", "" + inputValues[0]);
-            Log.i("test2", "" + inputValues[1]);
-            Log.i("test3", "" + aspectRatio);
-            Log.i("test4", "" + droneFlag);
 
             startActivity(intent);
         }

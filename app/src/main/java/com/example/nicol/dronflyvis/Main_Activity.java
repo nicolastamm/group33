@@ -1070,7 +1070,7 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
             actNodeListe.add(new Node(marker.getPosition().latitude, marker.getPosition().longitude, 0));
         }
 
-        ArrayList<Node[]> border = BoundingBoxesGenerator.getBoundingBoxes(actNodeListe, settings[1], settings[2], ratio, overlap[0], overlap[1]);
+        ArrayList<Node[]> border = BoundingBoxesGenerator.getBoundingBoxes(actNodeListe, settings[2], settings[1], ratio, overlap[0], overlap[1]);
         for(int i = 0; i<border.size();i++){
 
             PolylineOptions options2 = new PolylineOptions()
@@ -1101,7 +1101,7 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
     private class AsyncRastering extends AsyncTask<ArrayList<Node>, Void, ArrayList<ArrayList<ArrayList<Node>>>> {
         @Override
         protected ArrayList<ArrayList<ArrayList<Node>>> doInBackground(ArrayList<Node>... arrayLists) {
-            Rastering raster = new Rastering(arrayLists[0], settings[1], settings[2], ratio, overlap[0], overlap[1]);
+            Rastering raster = new Rastering(arrayLists[0], settings[2], settings[1], ratio, overlap[0], overlap[1]);
             return raster.getRasters();
         }
 
