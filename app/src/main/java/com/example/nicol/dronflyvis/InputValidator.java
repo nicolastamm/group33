@@ -110,7 +110,7 @@ public class InputValidator implements View.OnFocusChangeListener {
                         createVibration();
                         if(((Integer)inputText.getTag()) == 0)
                         {
-                            createWarning("Altitude is too low, choose another one! One meter is the lowest possible altitude.", "Alitute too low",
+                            createWarning("Altitude is too low, choose another one! Ten meters is the lowest possible altitude.", "Alitute too low",
                                     "Ok",null, ctx, "Altitude is too low", inputText);
                         }
                         else if(((Integer)inputText.getTag()) == 1)

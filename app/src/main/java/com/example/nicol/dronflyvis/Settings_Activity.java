@@ -3,10 +3,6 @@ package com.example.nicol.dronflyvis;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.text.InputFilter;
-import android.text.InputType;
-import android.text.Spanned;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
@@ -119,7 +115,7 @@ public class Settings_Activity extends AppCompatActivity
                     {
                         case R.id.editText3:
                             text.setTag(0);
-                            InputValidator heightValidator = new InputValidator(1f, 100f, Settings_Activity.this);
+                            InputValidator heightValidator = new InputValidator(10f, 100f, Settings_Activity.this);
                             text.setOnFocusChangeListener(heightValidator);
                             text.setError(null);
                             heightValidator.setCount(0);
