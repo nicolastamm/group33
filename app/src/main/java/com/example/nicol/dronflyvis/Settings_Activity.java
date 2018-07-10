@@ -3,23 +3,16 @@ package com.example.nicol.dronflyvis;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
-import android.text.InputFilter;
-import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
-import android.view.KeyEvent;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
-import android.widget.Spinner;
-import android.widget.TextView;
 
 import java.util.ArrayList;
 
@@ -42,10 +35,10 @@ public class Settings_Activity extends AppCompatActivity
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.settings_activity);
-        RadioButton bepob = (RadioButton) findViewById(R.id.radioButton4);
-        RadioButton mavic = (RadioButton) findViewById(R.id.radioButton3);
+        RadioButton bepob = findViewById(R.id.radioButton4);
+        RadioButton mavic = findViewById(R.id.radioButton3);
 
-        Button aboutUs = (Button) findViewById(R.id.about_us_button);
+        Button aboutUs = findViewById(R.id.about_us_button);
 
         /**
          * If aboutUs is clicked, a new window containing information about the developers should open
@@ -61,13 +54,13 @@ public class Settings_Activity extends AppCompatActivity
         /**
          * All the EditTexts for validation and handover
          * */
-        EditText resText1 = (EditText) findViewById(R.id.editText2);
-        EditText resText2 = (EditText) findViewById(R.id.editText5);
-        EditText altitude = (EditText) findViewById(R.id.editText3);
-        EditText fov = (EditText) findViewById(R.id.editText4);
-        EditText pixelSize = (EditText) findViewById(R.id.editText);
-        EditText overlapH = (EditText) findViewById(R.id.editText6);
-        EditText overlapV = (EditText) findViewById(R.id.editText7);
+        EditText resText1 = findViewById(R.id.editText2);
+        EditText resText2 = findViewById(R.id.editText5);
+        EditText altitude = findViewById(R.id.editText3);
+        EditText fov = findViewById(R.id.editText4);
+        EditText pixelSize = findViewById(R.id.editText);
+        EditText overlapH = findViewById(R.id.editText6);
+        EditText overlapV = findViewById(R.id.editText7);
 
         /**
          * Adding all our EditTexts into the ArrayList
@@ -83,7 +76,7 @@ public class Settings_Activity extends AppCompatActivity
         /**
          * Check which Radio Button has been clicked and change the EditTexts accordingly
          * */
-        RadioGroup radioGroup = (RadioGroup) findViewById(R.id.radioGroup);
+        RadioGroup radioGroup = findViewById(R.id.radioGroup);
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener()
         {
             @Override
@@ -92,8 +85,8 @@ public class Settings_Activity extends AppCompatActivity
                 /**
                  * Here we change both resolution text fields, the fov and the overlap
                  * according to the chosen drone
-                 **/
-                RadioButton checkedRadioButton = (RadioButton)group.findViewById(checkedId);
+                **/
+                RadioButton checkedRadioButton = group.findViewById(checkedId);
                 switch(checkedId)
                 {
                     /**
@@ -107,6 +100,7 @@ public class Settings_Activity extends AppCompatActivity
                         break;
                     /**
                      * Case 2: Mavic drone is chosen
+                     *
                      * */
                     case R.id.radioButton3: fov.setText("" + 78.8);
                         resText1.setText("4000");
@@ -127,19 +121,6 @@ public class Settings_Activity extends AppCompatActivity
          * */
         for(final EditText txt : inputTexts)
         {
-            InputFilter filter = new InputFilter() {
-                @Override
-                public CharSequence filter(CharSequence charSequence, int i, int i1, Spanned spanned, int i2, int i3) {
-                    if(charSequence.length() == 0 && i2 < i3)
-                    {
-                        inputTexts.get(2).setText("");
-                    }
-                    return charSequence;
-                }
-            };
-            txt.setFilters(new InputFilter[]{
-                    filter
-            });
             txt.addTextChangedListener(new TextWatcher() {
                 @Override
                 public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2)
@@ -161,7 +142,6 @@ public class Settings_Activity extends AppCompatActivity
                     /**
                      * If one of the edittexts gets deleted we return immediately to stop further recursive calls from afterTextChanged
                      * */
-                    inputOk = false;
                     if(isEmpty(txt)){return;}
                     if(!isEmpty(inputTexts.get(0)) && !isEmpty(inputTexts.get(1)) && !isEmpty(inputTexts.get(3)) && !isEmpty(inputTexts.get(4))) {
                         txt.removeTextChangedListener(this);
@@ -171,7 +151,6 @@ public class Settings_Activity extends AppCompatActivity
                                 Double.parseDouble(inputTexts.get(4).getText().toString())));
                         txt.addTextChangedListener(this);
                     }
-                    txt.setError(null);
                     switch (txt.getId())
                     {
                         case R.id.editText2:
@@ -251,11 +230,7 @@ public class Settings_Activity extends AppCompatActivity
      */
     public boolean validateAlt(double altitude)
     {
-        if(altitude > 100)
-        {
-            return true;
-        }
-        return false;
+        return altitude > 100;
     }
     public boolean validateRes(double res)
     {
@@ -265,11 +240,7 @@ public class Settings_Activity extends AppCompatActivity
             res /= 10;
             count++;
         }
-        if(count < 2 || count > 4)
-        {
-            return false;
-        }
-        return true;
+        return count >= 2 && count <= 4;
     }
     /**
      * Calculating the Pixel Size if someone fills out flight height, fov, pixelWidth and pixelHeight
@@ -277,9 +248,10 @@ public class Settings_Activity extends AppCompatActivity
     public double calculatePixelSize(double altitude, double fov, double pixelWidth, double pixelHeight)
     {
         double gcd = getGcd(pixelWidth, pixelHeight);
-        double fotoWidth = 2 * altitude * Math.atan(Math.toRadians(fov/2.0));
-        double fotoHeight = fotoWidth * ((pixelHeight/gcd)/(pixelWidth/gcd));
-        return Math.sqrt(((fotoWidth/ pixelWidth) * 100) * ((fotoHeight/pixelHeight) * 100));
+        double aspectRatio = (pixelHeight/gcd) / (pixelWidth/gcd);
+        double fotoWidth = 2 * altitude * Math.tan(Math.toRadians(fov/2.0));
+        double fotoHeight = fotoWidth * aspectRatio;
+        return Math.sqrt(((fotoWidth/ pixelWidth) * 100) * ((fotoHeight/pixelHeight) * 100)); // meters times 100 gets centimeters.
     }
     /**
      * Calculates the gcd recursively of the two parameter, we need this for calculating the aspect ratio
@@ -316,7 +288,7 @@ public class Settings_Activity extends AppCompatActivity
         float[] inputValues = new float[]{-1,-1,-1,-1,-1,-1,-1};
         for(int id : inputIds)
         {
-            EditText inputText = (EditText) findViewById(id);
+            EditText inputText = findViewById(id);
             inputValues[i] = Float.parseFloat("0" + inputText.getText().toString());
             i++;
         }
@@ -347,6 +319,10 @@ public class Settings_Activity extends AppCompatActivity
                 isEmpty = true;
                 txt.setError("missing input");
             }
+            else{
+                txt.setError(null);
+            }
+
         }
         return isEmpty;
     }
@@ -355,11 +331,11 @@ public class Settings_Activity extends AppCompatActivity
      * */
     public int getRadioButton()
     {
-        RadioGroup radioGroup = (RadioGroup) findViewById(R.id.radioGroup);
+        RadioGroup radioGroup = findViewById(R.id.radioGroup);
         int radioButtonId = radioGroup.getCheckedRadioButtonId();
         if(radioButtonId != -1)
         {
-            RadioButton selectedButton = (RadioButton) radioGroup.findViewById(radioButtonId);
+            RadioButton selectedButton = radioGroup.findViewById(radioButtonId);
             String selected = (String) selectedButton.getText();
             if(selected == "Dji Mavic Pro")
             {
@@ -372,11 +348,7 @@ public class Settings_Activity extends AppCompatActivity
 
     public boolean isEmpty(EditText text)
     {
-        if(TextUtils.isEmpty(text.getText().toString()))
-        {
-            return true;
-        }
-        return false;
+        return TextUtils.isEmpty(text.getText().toString());
     }
 
     public boolean contains(float[] array, float value) {
@@ -402,8 +374,8 @@ public class Settings_Activity extends AppCompatActivity
                 /**
                  * Calculating overlap values for rastering
                  * */
-                overlap[0] = (100 - inputValues[3])/100;
-                overlap[1] = (100 - inputValues[4])/100;
+                overlap[0] = (100 - inputValues[3]) / 100;
+                overlap[1] = (100 - inputValues[4]) / 100;
                 inputOk = true;
             }
         }

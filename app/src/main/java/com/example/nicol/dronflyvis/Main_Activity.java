@@ -50,20 +50,29 @@ import de.keyboardsurfer.android.widget.crouton.Configuration;
 import de.keyboardsurfer.android.widget.crouton.Crouton;
 import de.keyboardsurfer.android.widget.crouton.Style;
 
+/**
+ * @author Artuk
+ * @author Hilmi
+ * @author Nico
+ * @author Heiko
+ *
+ * This is the main part of our app.
+ * This class accomplishes the main goals of our app.
+ */
 public class Main_Activity extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
     private Boolean deleteModus = false;
     private Boolean drawModus = true;
     private Boolean pinModus = false;
-    private Boolean polyAufteilung = false;
+    private Boolean split = false;
     private float[] settings;
     private Boolean shapefill = true;
     private float[] aspectRatio;
     private float ratio;
     private float[] overlap;
-    //private Intent importPolyIntent;
     private static final int requestCode = 9;
+    private int droneFlag;
 
     ArrayList<Marker> markers = new ArrayList<Marker>();
     ArrayList<Marker> actPointsInPoly = new ArrayList<Marker>();
@@ -75,6 +84,10 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
 
     Polygon shape;
 
+    /**
+     * This method is concerned with creating with the whole content of the window.
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -82,36 +95,48 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
         setContentView(R.layout.main_activity);
 
 
-        // Define configuration options
+        /**
+         * Define configuration options.
+         */
         Configuration croutonConfiguration = new Configuration.Builder()
                 .setDuration(3500).build();
-        // Define styles for crouton
+        /**
+         * Define styles for crouton.
+         */
         Style style = new Style.Builder()
                 .setBackgroundColorValue(Color.argb(200,0,0,0))
                 .setGravity(Gravity.CENTER_HORIZONTAL)
                 .setConfiguration(croutonConfiguration)
                 .setHeight(200)
                 .setTextColorValue(Color.WHITE).build();
-        // Display style and configuration
+        /**
+         * Display style and configuration.
+         */
         Crouton.showText(Main_Activity.this, R.string.crouton_main_activity , style);
 
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+        SupportMapFragment mapFragment;
+        mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-
+        /**
+         * Get user input from previous settings activity.
+         */
         if(getIntent().getExtras() != null)
         {
             settings = getIntent().getExtras().getFloatArray("com.example.nicol.dronflyvis.INPUT_VALUES");
             aspectRatio = getIntent().getExtras().getFloatArray("com.example.nicol.dronflyvis.ASPECT_RATIO");
             ratio = (aspectRatio[0]/aspectRatio[1]);
             overlap = getIntent().getExtras().getFloatArray("com.example.nicol.dronflyvis.OVERLAP");
+            droneFlag = getIntent().getExtras().getInt("com.example.nicol.dronflyvis.RADIO_SELECTION");
         }
-        Log.i("test", "" + overlap[0]);
-        ImageButton infobuch = findViewById(R.id.infobuch_main_activity);
-        infobuch.setImageResource(R.drawable.infobuch);
+        /**
+         * Set the image resource and make the book clickable.
+         */
+        ImageButton infobook = findViewById(R.id.infobuch_main_activity);
+        infobook.setImageResource(R.drawable.infobuch);
 
-        infobuch.setOnClickListener(new View.OnClickListener() {
+        infobook.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(getApplicationContext(),Buch_PopUp_Activity.class);
@@ -119,9 +144,14 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
             }
         });
 
+        /**
+         * searchbar with autocompletion.
+         */
         PlaceAutocompleteFragment placesFragment = (PlaceAutocompleteFragment) getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
 
-
+        /**
+         * Layout of searchbar.
+         */
         TextView aut_comp_text = findViewById(R.id.place_autocomplete_search_input);
         aut_comp_text.setTextColor(Color.WHITE);
         findViewById(R.id.place_autocomplete_fragment).setBackgroundColor(Color.argb(150, 0,0,0));
@@ -134,6 +164,10 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
         clearButton.setScaleX(1.5f);
         clearButton.setScaleY(1.5f);
 
+
+        /**
+         * Update camera depending on chosen location.
+         */
         placesFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
             public void onPlaceSelected(Place place)
@@ -152,6 +186,9 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
             }
         });
 
+        /**
+         * Set the image resources of the imagebuttons
+         */
         final ImageButton pinImageButton = findViewById(R.id.pin);
         final ImageButton deleteImageButton = findViewById(R.id.delete);
         final ImageButton drawImageButton = findViewById(R.id.draw);
@@ -168,7 +205,10 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
         splitImageButton.setImageResource(R.drawable.nosplit);
         mapImageButton.setImageResource(R.drawable.map_image_button_style);
 
-
+        /**
+         * When pinbutton is clicked disable the scroll function of googlemaps
+         * and change image resource.
+         */
         pinImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -187,7 +227,10 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
             }
         });
 
-
+        /**
+         * When deletebutton is clicked the delete mode will be activated
+         * and change of image resource.
+         */
         deleteImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -205,7 +248,10 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
             }
         });
 
-
+        /**
+         * When drawbutton is clicked the draw mode will be activated
+         * and change of image resource.
+         */
         drawImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -223,22 +269,37 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
             }
         });
 
+        /**
+         * When clearbutton is clicked then delete the drawn polygon.
+         */
         clearImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                /**
+                 * User gets promted a with a popup window asking if the user wants really
+                 * delete the drawn polygon.
+                 */
                 AlertDialog.Builder dBuilder = new AlertDialog.Builder(Main_Activity.this);
 
                 dBuilder.setTitle("Delete Polygon");
                 dBuilder.setMessage("Are you sure that you want delete the polygon?")
                         .setCancelable(false)
                         .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+
+                            /**
+                             * If the user wants delete polygon some methods will be called.
+                             * @param dialogInterface
+                             * @param i
+                             */
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 deletePointsInPoly();
                                 removePolygon();
                                 dialogInterface.cancel();
                             }})
+                        /**
+                         * Cancellation is also a viable option.
+                         */
                         .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
@@ -253,54 +314,75 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
             }
         });
 
+        /**
+         * This is the split imagebutton which is responsible for the whole split/nonsplit mode.
+         */
         splitImageButton.setOnClickListener(new View.OnClickListener() {
+            /**
+             * Depending on which mode is selected the methods will be adjusted.
+             * @param view
+             */
             @Override
             public void onClick(View view) {
-                if(polyAufteilung){
+                if(split){
                     splitImageButton.setImageResource(R.drawable.nosplit);
 
-                    polyAufteilung = false;
+                    split = false;
                     deletePointsInPoly();
 
-                    // Define configuration options
+                    /**
+                     * Define configuration options
+                     */
                     Configuration croutonConfiguration = new Configuration.Builder()
                             .setDuration(1000).build();
-                    // Define styles for crouton
+                    /**
+                     * Define styles for crouton
+                     */
                     Style style = new Style.Builder()
                             .setBackgroundColorValue(Color.argb(200,0,0,0))
                             .setGravity(Gravity.CENTER_HORIZONTAL)
                             .setConfiguration(croutonConfiguration)
                             .setHeight(200)
                             .setTextColorValue(Color.WHITE).build();
-                    // Display style and configuration
+                    /**
+                     * Display style and configuration
+                     */
                     Crouton.showText(Main_Activity.this, R.string.crouton_normal_mode , style);
                 }
                 else{
                     splitImageButton.setImageResource(R.drawable.split);
 
-                    // Define configuration options
+                    /**
+                     * Define configuration options
+                     */
                     Configuration croutonConfiguration = new Configuration.Builder()
                             .setDuration(1000).build();
-                    // Define styles for crouton
+                    /**
+                     * Define styles for crouton
+                     */
                     Style style = new Style.Builder()
                             .setBackgroundColorValue(Color.argb(200,0,0,0))
                             .setGravity(Gravity.CENTER_HORIZONTAL)
                             .setConfiguration(croutonConfiguration)
                             .setHeight(200)
                             .setTextColorValue(Color.WHITE).build();
-                    // Display style and configuration
+                    /**
+                     * Display style and configuration
+                     */
                     Crouton.showText(Main_Activity.this, R.string.crouton_split_mode , style);
 
                     if(markers != null){
-                       if(markers.size() >= 3) {
-                           drawPointInPoly();
-                       }
+                        if (markers.size() >= 3) {
+                            drawPointInPoly();
+                        }
                     }
-                    polyAufteilung = true;
+                    split = true;
                 }
 
             }
         });
+
+
 
         importImageButton.setOnClickListener(new View.OnClickListener() {
             /**
@@ -323,6 +405,10 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
             }
         });
 
+
+        /**
+         * change the map type on ordinary click.
+         */
         mapImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -383,6 +469,7 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
             {
                 inputStream = getContentResolver().openInputStream(path);
 
+
                 try {
                     String line;
                     String[] latLong;
@@ -437,6 +524,10 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
         super.onActivityResult(requestCode, resultCode, data);
     }
 
+
+    /**
+     * Create a context menu to change the map type on long click.
+     */
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
@@ -464,22 +555,32 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
         }
     }
 
+    /**
+     * Establish essential functionality which has to be shown to the user while he is working on the map.
+     * @param googleMap
+     */
     @Override
     public void onMapReady(GoogleMap googleMap) {
 
+        /**
+         * Enable/Disable functions
+         */
         mMap = googleMap;
         mMap.getUiSettings().setCompassEnabled(false);
         mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
         mMap.getUiSettings().setMapToolbarEnabled (false);
         mMap.getUiSettings().setZoomControlsEnabled(true);
 
+        /**
+         * Determent by the chosen modus functionality changes accordingly.
+         */
         if (mMap != null) {
 
             mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
                 @Override
                 public void onMapClick(LatLng latLng)
                 {
-                    if(!drawModus &!deleteModus){
+                    if(!drawModus & !deleteModus){
                         Toast.makeText(
                                 Main_Activity.this,
                                 "Please select a mode",
@@ -502,7 +603,9 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
             });
 
 
-
+            /**
+             * Depending on the mode the behavior of the clicklister will be changed.
+             */
             mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
                 @Override
                 public boolean onMarkerClick(Marker marker) {
@@ -513,6 +616,11 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
 
                         aktMarker.remove();
                         markers.remove(marker);
+
+                        /**
+                         * The behavior of the functions will be adjust.
+                         */
+
                         redrawMarker();
 
                         if (shape != null) {
@@ -527,7 +635,7 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
                                 deletePointsInPoly();
                             }
 
-                            if (polyAufteilung & markers.size() >= 3) {
+                            if (split & markers.size() >= 3) {
                                 drawPointInPoly();
                             }
                         }
@@ -536,15 +644,25 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
                 }
             });
 
+
+            /**
+             * This method handels the functionality which should adjust in case of dragging or letting go.
+             */
             mMap.setOnMarkerDragListener(new GoogleMap.OnMarkerDragListener() {
 
                 @Override
                 public void onMarkerDragStart(Marker marker)
                 {
-
+                    /**
+                     * Don't care
+                     */
 
                 }
 
+                /**
+                 * Case of dragging.
+                 * @param marker
+                 */
                 @Override
                 public void onMarkerDrag(Marker marker)
                 {
@@ -555,11 +673,11 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
                         shape=null;
                     }
 
-                    if(polyAufteilung) {
+                    if(split) {
                         drawBoundingBoxes();
                     }
 
-                    if(polyAufteilung){
+                    if(split){
                         shapefill = false;
                     }
 
@@ -567,6 +685,10 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
 
                 }
 
+                /**
+                 * Case of letting go.
+                 * @param marker
+                 */
                 @Override
                 public void onMarkerDragEnd(Marker marker)
                 {
@@ -576,7 +698,7 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
                         shape=null;
                     }
 
-                    if(polyAufteilung) {
+                    if(split) {
                         if(markers.size()>=3) {
                             drawPointInPoly();
 
@@ -600,7 +722,13 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
     }
 
 
-
+    /**
+     * Method for setting drawing a marker on the map and draws new shapes when markers are added.
+     *
+     * @param locality
+     * @param lat
+     * @param lng
+     */
     private void setMarker(String locality, double lat, double lng) {
         MarkerOptions options = new MarkerOptions()
                 .draggable(true)
@@ -618,12 +746,15 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
                 shape=null;
             }
             drawPolygon();
-            if(polyAufteilung) {
+            if(split) {
                 drawPointInPoly();
             }
         }
     }
 
+    /**
+     * Set the first and last marker in a different color
+     */
     private  void redrawMarker(){
 
         if (markers.size() >= 2){
@@ -636,6 +767,9 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
         }
     }
 
+    /**
+     * This method draws the polygon on the map.
+     */
     private void drawPolygon()
     {
         PolygonOptions options = new PolygonOptions()
@@ -659,11 +793,27 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
         shape = mMap.addPolygon(options);
     }
 
+    /**
+     * Checks whether the given coordinates are farther then 300 meters.
+     * @param lat1
+     * @param lng1
+     * @param lat2
+     * @param lng2
+     * @return boolean
+     */
     public boolean checkRadius(double lat1, double lng1, double lat2, double lng2)
     {
         return getDistanceMeters(lat1, lng1, lat2, lng2) > 300;
     }
 
+    /**
+     * Get the distance between to coordinates in meters.
+     * @param lat1
+     * @param lng1
+     * @param lat2
+     * @param lng2
+     * @return long
+     */
     public static long getDistanceMeters(double lat1, double lng1, double lat2, double lng2) {
 
         double l1 = Math.toRadians(lat1);
@@ -679,6 +829,10 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
         return Math.round(dist * 6378100);
     }
 
+    /**
+     * While the split mode is set, different marker colors for the splitted polygon will be drawn
+     * using a multithreading method.
+     */
     public void drawPointInPoly() {
 
         deletePointsInPoly();
@@ -697,11 +851,14 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
         return;
     }
 
-
-
-
-    public void main_activity_next(View view)
-    {
+    /**
+     * Function of next button.
+     * @param view
+     */
+    public void main_activity_next(View view) {
+        /**
+         * If no markers are drawn, a warning will be shown.
+        */
         if(markers.size() == 0) {
             Warning warning = new Warning("You have to draw a polygon", "Please draw", false, "OK", this);
             android.app.AlertDialog alertDialog = warning.createWarning();
@@ -709,7 +866,12 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
             alertDialog.show();
             return;
         }
-        if (!polyAufteilung) {
+
+        /**
+         * If the user has drawn a polygon which is too large another warning will be shown and we give
+         * the user the possibility to split the polygon into several.
+         */
+        if (!split) {
             if (countPointInPoly() > 99) {
                 AlertDialog.Builder dBuilder = new AlertDialog.Builder(Main_Activity.this);
 
@@ -722,32 +884,45 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
                                 dialogInterface.cancel();
                             }
                         })
+                        /**
+                         * User has the option to click split, and the polygon will be split
+                         * */
                         .setPositiveButton("Split", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 drawPointInPoly();
-                                polyAufteilung = true;
+                                split = true;
 
                                 final ImageButton splitImageButtonAlert = findViewById(R.id.split);
                                 splitImageButtonAlert.setImageResource(R.drawable.split);
 
-                                // Define configuration options
+                                /**
+                                 * Define configuration options
+                                 */
                                 Configuration croutonConfiguration = new Configuration.Builder()
                                         .setDuration(3500).build();
-                                // Define styles for crouton
+                                /**
+                                 * Define configuration options
+                                 */
                                 Style style = new Style.Builder()
                                         .setBackgroundColorValue(Color.argb(200, 0, 0, 0))
                                         .setGravity(Gravity.CENTER_HORIZONTAL)
                                         .setConfiguration(croutonConfiguration)
                                         .setHeight(200)
                                         .setTextColorValue(Color.WHITE).build();
-                                // Display style and configuration
+                                /**
+                                 * Display style and configuration
+                                 */
                                 Crouton.showText(Main_Activity.this, R.string.crouton_split_mode, style);
 
 
                                 dialogInterface.cancel();
                             }
                         })
+                        /**
+                         * The user can choose the don't split option in this case all the important
+                         * data will be handed over to the next activity immediately.
+                         */
                         .setNegativeButton("Don't split", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
@@ -766,7 +941,9 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
                                 intent.putExtra("com.example.nicol.dronflyvis.mapLNG", "" + mMap.getCameraPosition().target.longitude);
                                 intent.putExtra("com.example.nicol.dronflyvis.mapType", mMap.getMapType());
                                 intent.putExtra("com.example.nicol.dronflyvis.SETTINGS", settings);
-                                intent.putExtra("com.example.nicol.dronflyvis.splitPoly", polyAufteilung);
+                                intent.putExtra("com.example.nicol.dronflyvis.splitPoly", split);
+                                intent.putExtra("com.example.nicol.dronflyvis.ASPECT_RATIO", aspectRatio);
+                                intent.putExtra("com.example.nicol.dronflyvis.OVERLAP",overlap);
 
                                 startActivity(intent);
                                 dialogInterface.cancel();
@@ -779,7 +956,9 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
             }
         }
 
-
+        /**
+         * Same as above but in the other case.
+         */
 
         ArrayList<Node> nodeList = new ArrayList<Node>();
         Intent intent = new Intent(this, Tours_View_And_Export_Activity.class);
@@ -795,12 +974,16 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
         intent.putExtra("com.example.nicol.dronflyvis.mapLNG","" + mMap.getCameraPosition().target.longitude);
         intent.putExtra("com.example.nicol.dronflyvis.mapType", mMap.getMapType());
         intent.putExtra("com.example.nicol.dronflyvis.SETTINGS", settings);
-        intent.putExtra("com.example.nicol.dronflyvis.splitPoly", polyAufteilung);
+        intent.putExtra("com.example.nicol.dronflyvis.splitPoly", split);
         intent.putExtra("com.example.nicol.dronflyvis.ASPECT_RATIO", aspectRatio);
         intent.putExtra("com.example.nicol.dronflyvis.OVERLAP",overlap);
+        intent.putExtra("com.example.nicol.dronflyvis.RADIO_SELECTION", droneFlag);
         startActivity(intent);
     }
 
+    /**
+     * Remove the polygon.
+     */
     private void removePolygon()
     {
         if (shape != null)
@@ -814,6 +997,10 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
         markers = new ArrayList<>();
     }
 
+    /**
+     * Count the number of nodes in the polygon
+     * @return count
+     */
     public int countPointInPoly() {
 
         ArrayList<Node> actNodeListe = new ArrayList<Node>();
@@ -822,20 +1009,35 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
             actNodeListe.add(new Node(marker.getPosition().latitude, marker.getPosition().longitude, 0));
         }
 
+
+
         Rastering raster = new Rastering(actNodeListe, settings[2], settings[1], ratio, overlap[0], overlap[1]);
 
         ArrayList<ArrayList<Node>> actRaster = raster.getRaster();
 
-        int anzahl = 0;
+        if(actNodeListe == null)
+        {
+            System.out.println("ERROR 1");
+        }
+
+        if(actRaster == null)
+        {
+            System.out.println("ERROR 2");
+        }
+
+        int count = 0;
         for (ArrayList<Node> i : actRaster) {
             for (Node j : i) {
-                anzahl++;
+                count++;
             }
         }
-        return anzahl;
+
+        return count;
     }
 
-
+    /**
+     * Method which deletes the point in polygon depending on modus
+     */
     public void deletePointsInPoly(){
         if (actPointsInPoly != null) {
             for (Marker m : actPointsInPoly) {
@@ -845,6 +1047,10 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
         }
     }
 
+    /**
+     * Draws boundingboxes while dragging marker in the split mode for better control
+     * of split and radius for an large polygon.
+     */
     public void drawBoundingBoxes(){
 
         if(actPolyLynes!=null){
@@ -880,12 +1086,18 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
 
     }
 
-
+    /**
+     * Shows the previous activityy.
+     * @param view
+     */
     public void main_activity_back(View view)
     {
         onBackPressed();
     }
 
+    /**
+     * A class concerned with multithreading to better performance.
+     */
     private class AsyncRastering extends AsyncTask<ArrayList<Node>, Void, ArrayList<ArrayList<ArrayList<Node>>>> {
         @Override
         protected ArrayList<ArrayList<ArrayList<Node>>> doInBackground(ArrayList<Node>... arrayLists) {
@@ -895,7 +1107,9 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
 
         @Override
         protected void onPostExecute(ArrayList<ArrayList<ArrayList<Node>>> result) {
-
+            /**
+             * Different colors for the subpolygons of a large splitted one.
+             */
             int colour = -1;
             for (ArrayList<ArrayList<Node>> i : result) {
                 colour++;
