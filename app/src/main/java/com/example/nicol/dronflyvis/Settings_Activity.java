@@ -73,32 +73,28 @@ public class Settings_Activity extends AppCompatActivity
         for(EditText text : inputTextList)
         {
             int currentId = text.getId();
-            InputFilter filter = new InputFilter() {
-                @Override
-                public CharSequence filter(CharSequence charSequence, int i, int i1, Spanned spanned, int i2, int i3) {
-                    if(charSequence.length() == 0 && i2 < i3) {
-                        inputTextList.get(6).setText("");
-                    }
-                    return charSequence;
-                }
-            };
-            text.setFilters(new InputFilter[]{
-                    filter
-            });
-
             text.setOnKeyListener(new View.OnKeyListener() {
                 @Override
                 public boolean onKey(View view, int i, KeyEvent keyEvent) {
                     if(!isEmpty(inputTextList.get(0)) && !isEmpty(inputTextList.get(1)) && !isEmpty(inputTextList.get(4)) && !isEmpty(inputTextList.get(5)))
                     {
-                        inputTextList.get(6).setText("" + calculatePixelSize(Float.parseFloat(inputTextList.get(5).getText().toString()),
-                                Float.parseFloat(inputTextList.get(4).getText().toString()),
-                                Float.parseFloat(inputTextList.get(0).getText().toString()),
-                                Float.parseFloat(inputTextList.get(1).getText().toString())));
+                        if(!inputTextList.get(6).hasFocus())
+                        {
+                            inputTextList.get(6).setText("" + calculatePixelSize(Float.parseFloat(inputTextList.get(5).getText().toString()),
+                                    Float.parseFloat(inputTextList.get(4).getText().toString()),
+                                    Float.parseFloat(inputTextList.get(0).getText().toString()),
+                                    Float.parseFloat(inputTextList.get(1).getText().toString())));
+                        }
                     }
-                    else if(!isEmpty(inputTextList.get(0)) && !isEmpty(inputTextList.get(1)) && !isEmpty(inputTextList.get(4)) && !isEmpty(inputTextList.get(5)))
+                    if(!isEmpty(inputTextList.get(0)) && !isEmpty(inputTextList.get(1)) && !isEmpty(inputTextList.get(4)) && !isEmpty(inputTextList.get(6)))
                     {
-
+                        if(!inputTextList.get(5).hasFocus())
+                        {
+                            inputTextList.get(5).setText("" + calculateHeight(Float.parseFloat(inputTextList.get(4).getText().toString()),
+                                    Float.parseFloat(inputTextList.get(1).getText().toString()),
+                                    Float.parseFloat(inputTextList.get(0).getText().toString()),
+                                    Float.parseFloat(inputTextList.get(6).getText().toString())));
+                        }
                     }
                     return false;
                 }
@@ -126,6 +122,8 @@ public class Settings_Activity extends AppCompatActivity
                             break;
                         case R.id.editText:
                             text.setError(null);
+                            InputValidator pixelValidator = new InputValidator(0f, 1000f,Settings_Activity.this);
+                            text.setOnFocusChangeListener(pixelValidator);
                             break;
                         case R.id.editText6:
                         case R.id.editText7:
@@ -249,6 +247,16 @@ public class Settings_Activity extends AppCompatActivity
                                 Float.parseFloat(inputTextList.get(0).getText().toString()),
                                 Float.parseFloat(inputTextList.get(1).getText().toString())));
                     }
+                    if(!isEmpty(inputTextList.get(0)) && !isEmpty(inputTextList.get(1)) && !isEmpty(inputTextList.get(4)) && !isEmpty(inputTextList.get(6)))
+                    {
+                        if(!inputTextList.get(5).hasFocus())
+                        {
+                            inputTextList.get(5).setText("" + calculateHeight(Float.parseFloat(inputTextList.get(4).getText().toString()),
+                                    Float.parseFloat(inputTextList.get(1).getText().toString()),
+                                    Float.parseFloat(inputTextList.get(0).getText().toString()),
+                                    Float.parseFloat(inputTextList.get(6).getText().toString())));
+                        }
+                    }
                 }
                 /**
                  * radio button for mavic
@@ -268,11 +276,20 @@ public class Settings_Activity extends AppCompatActivity
                                 Float.parseFloat(inputTextList.get(0).getText().toString()),
                                 Float.parseFloat(inputTextList.get(1).getText().toString())));
                     }
+                    if(!isEmpty(inputTextList.get(0)) && !isEmpty(inputTextList.get(1)) && !isEmpty(inputTextList.get(4)) && !isEmpty(inputTextList.get(6)))
+                    {
+                        if(!inputTextList.get(5).hasFocus())
+                        {
+                            inputTextList.get(5).setText("" + calculateHeight(Float.parseFloat(inputTextList.get(4).getText().toString()),
+                                    Float.parseFloat(inputTextList.get(1).getText().toString()),
+                                    Float.parseFloat(inputTextList.get(0).getText().toString()),
+                                    Float.parseFloat(inputTextList.get(6).getText().toString())));
+                        }
+                    }
                 }
             }
         });
     }
-
     /**
      * UTILS
      * */
@@ -488,6 +505,10 @@ public class Settings_Activity extends AppCompatActivity
             intent.putExtra("com.example.nicol.dronflyvis.ASPECT_RATIO", aspectRatio);
             intent.putExtra("com.example.nicol.dronflyvis.OVERLAP", overlap);
             intent.putExtra("com.example.nicol.dronflyvis.RADIO_SELECTION", droneFlag);
+            Log.i("test1", "" + inputValues[0]);
+            Log.i("test2", "" + inputValues[1]);
+            Log.i("test3", "" + aspectRatio);
+            Log.i("test4", "" + droneFlag);
 
             startActivity(intent);
         }
@@ -539,6 +560,18 @@ resWarning.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ST
 }
 }
 });
+ InputFilter filter = new InputFilter() {
+@Override
+public CharSequence filter(CharSequence charSequence, int i, int i1, Spanned spanned, int i2, int i3) {
+if(charSequence.length() == 0 && i2 < i3) {
+inputTextList.get(6).setText("");
+}
+return charSequence;
+}
+};
+ text.setFilters(new InputFilter[]{
+ filter
+ });
 
  if(!isEmpty(inputTextList.get(0)) && !isEmpty(inputTextList.get(1)) && !isEmpty(inputTextList.get(4)) && !isEmpty(inputTextList.get(5))) {
  inputTextList.get(6).removeTextChangedListener(this);

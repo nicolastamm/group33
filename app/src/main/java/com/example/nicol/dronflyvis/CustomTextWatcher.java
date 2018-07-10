@@ -26,6 +26,10 @@ public abstract class CustomTextWatcher implements TextWatcher {
 
     @Override
     public void afterTextChanged(Editable editable) {
-            this.validateText(this.text);
+        if(this.text.getText().toString().startsWith("."))
+        {
+            this.text.setText("0.");
+        }
+        this.validateText(this.text);
     }
 }
