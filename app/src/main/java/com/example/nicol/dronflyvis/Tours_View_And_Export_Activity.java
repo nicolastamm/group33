@@ -19,6 +19,7 @@ import android.view.ContextMenu;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
@@ -643,8 +644,8 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
      * @param view
      */
     public void  export_csv(View view){
-
-
+        Button btn = (Button) findViewById(R.id.tvae_avtivity_export_button);
+        btn.setEnabled(false);
 
         //Request storage permissions during runtime
         ActivityCompat.requestPermissions( Tours_View_And_Export_Activity.this ,new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
@@ -794,6 +795,8 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
                 }
             }
         }
+
+        btn.setEnabled(true);
     }
 
     /**
