@@ -1061,10 +1061,7 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
 
             actPolyLynes=null;
             actPolyLynes = new ArrayList<Polyline>();
-
         }
-
-
         ArrayList<Node> actNodeListe = new ArrayList<Node>();
         for(Marker marker : markers)
         {
