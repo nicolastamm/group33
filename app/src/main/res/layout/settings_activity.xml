@@ -118,7 +118,7 @@
                     android:backgroundTint="#FF8C00"
                     android:ems="10"
                     android:hint="resolution width"
-                    android:inputType="number"
+                    android:inputType="numberSigned"
                     android:textSize="16.5sp"
                     android:nextFocusDown="@id/editText5"/>
 
@@ -147,7 +147,7 @@
                     android:backgroundTint="#FF8C00"
                     android:ems="10"
                     android:hint="resolution height"
-                    android:inputType="number"
+                    android:inputType="numberSigned"
                     android:textSize="16.5sp"
                     android:nextFocusDown="@id/editText6"/>
 

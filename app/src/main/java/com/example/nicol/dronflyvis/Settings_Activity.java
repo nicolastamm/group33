@@ -1,8 +1,13 @@
 package com.example.nicol.dronflyvis;
 
 import android.content.Intent;
+import android.renderscript.ScriptGroup;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
@@ -10,6 +15,7 @@ import android.widget.EditText;
 import android.widget.RadioGroup;
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.List;
 
 /**
  * @author Heiko
@@ -26,7 +32,12 @@ public class Settings_Activity extends AppCompatActivity
     private ArrayList<EditText> inputTextList = new ArrayList<>();
     private int droneFlag = -1;
     private Hashtable tableOfRatios;
-    InputValidator generalInput;
+    private InputValidator generalInput;
+    private InputValidator heightValidator;
+    private InputValidator fovValidator;
+    private InputValidator overlapValidator;
+    private InputValidator pixelValidator;
+    private boolean isFocus = false;
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -88,11 +99,13 @@ public class Settings_Activity extends AppCompatActivity
                                     Float.parseFloat(inputTextList.get(0).getText().toString()),
                                     Float.parseFloat(inputTextList.get(1).getText().toString())));
                         }
+
                     }
                     if(!isEmpty(inputTextList.get(0)) && !isEmpty(inputTextList.get(1)) && !isEmpty(inputTextList.get(4)) && !isEmpty(inputTextList.get(6)))
                     {
                         if(!inputTextList.get(5).hasFocus())
                         {
+                            inputTextList.get(5).setText("");
                             inputTextList.get(5).setText("" + calculateHeight(Float.parseFloat(inputTextList.get(4).getText().toString()),
                                     Float.parseFloat(inputTextList.get(1).getText().toString()),
                                     Float.parseFloat(inputTextList.get(0).getText().toString()),
@@ -116,30 +129,31 @@ public class Settings_Activity extends AppCompatActivity
                     {
                         case R.id.editText3:
                             text.setTag(0);
-                            InputValidator heightValidator = new InputValidator(10f, 100f, Settings_Activity.this);
+                            heightValidator =  new InputValidator(10f, 100f, Settings_Activity.this);
                             text.setOnFocusChangeListener(heightValidator);
                             text.setError(null);
                             heightValidator.setCount(0);
                             break;
                         case R.id.editText4:
                             text.setTag(1);
-                            InputValidator fovValidator = new InputValidator(1f, 170f, Settings_Activity.this);
+                            fovValidator = new InputValidator(10f, 170f, Settings_Activity.this);
                             text.setOnFocusChangeListener(fovValidator);
                             fovValidator.setCount(0);
                             text.setError(null);
                             break;
-                        case R.id.editText:
-                            text.setError(null);
-                            InputValidator pixelValidator = new InputValidator(0f, 1000f,Settings_Activity.this);
-                            text.setOnFocusChangeListener(pixelValidator);
-                            break;
                         case R.id.editText6:
                         case R.id.editText7:
                             text.setTag(2);
-                            InputValidator overlapValidator = new InputValidator(1f, 99f, Settings_Activity.this);
+                            overlapValidator = new InputValidator(0f, 99f, Settings_Activity.this);
                             text.setOnFocusChangeListener(overlapValidator);
                             overlapValidator.setCount(0);
                             text.setError(null);
+                            break;
+                        case R.id.editText:
+                            text.setTag(3);
+                            text.setError(null);
+                            pixelValidator = new InputValidator(0.3f, 10f,Settings_Activity.this);
+                            text.setOnFocusChangeListener(pixelValidator);
                             break;
                         /**
                          *
@@ -255,23 +269,7 @@ public class Settings_Activity extends AppCompatActivity
                      * set the EditText to standard values
                      * */
                     setText(inputTextList,flightHeight, 3800,3188,70,85,170);
-                    if(!isEmpty(inputTextList.get(0)) && !isEmpty(inputTextList.get(1)) && !isEmpty(inputTextList.get(4)) && !isEmpty(inputTextList.get(5)))
-                    {
-                        inputTextList.get(6).setText("" + calculatePixelSize(Float.parseFloat(inputTextList.get(5).getText().toString()),
-                                Float.parseFloat(inputTextList.get(4).getText().toString()),
-                                Float.parseFloat(inputTextList.get(0).getText().toString()),
-                                Float.parseFloat(inputTextList.get(1).getText().toString())));
-                    }
-                    if(!isEmpty(inputTextList.get(0)) && !isEmpty(inputTextList.get(1)) && !isEmpty(inputTextList.get(4)) && !isEmpty(inputTextList.get(6)))
-                    {
-                        if(!inputTextList.get(5).hasFocus())
-                        {
-                            inputTextList.get(5).setText("" + calculateHeight(Float.parseFloat(inputTextList.get(4).getText().toString()),
-                                    Float.parseFloat(inputTextList.get(1).getText().toString()),
-                                    Float.parseFloat(inputTextList.get(0).getText().toString()),
-                                    Float.parseFloat(inputTextList.get(6).getText().toString())));
-                        }
-                    }
+
                 }
                 /**
                  * radio button for mavic
@@ -284,23 +282,7 @@ public class Settings_Activity extends AppCompatActivity
                      * set the EditText to standard values
                      * */
                     setText(inputTextList, flightHeight,4000,3000,70,85,78.8f);
-                    if(!isEmpty(inputTextList.get(0)) && !isEmpty(inputTextList.get(1)) && !isEmpty(inputTextList.get(4)) && !isEmpty(inputTextList.get(5)))
-                    {
-                        inputTextList.get(6).setText("" + calculatePixelSize(Float.parseFloat(inputTextList.get(5).getText().toString()),
-                                Float.parseFloat(inputTextList.get(4).getText().toString()),
-                                Float.parseFloat(inputTextList.get(0).getText().toString()),
-                                Float.parseFloat(inputTextList.get(1).getText().toString())));
-                    }
-                    if(!isEmpty(inputTextList.get(0)) && !isEmpty(inputTextList.get(1)) && !isEmpty(inputTextList.get(4)) && !isEmpty(inputTextList.get(6)))
-                    {
-                        if(!inputTextList.get(5).hasFocus())
-                        {
-                            inputTextList.get(5).setText("" + calculateHeight(Float.parseFloat(inputTextList.get(4).getText().toString()),
-                                    Float.parseFloat(inputTextList.get(1).getText().toString()),
-                                    Float.parseFloat(inputTextList.get(0).getText().toString()),
-                                    Float.parseFloat(inputTextList.get(6).getText().toString())));
-                        }
-                    }
+
                 }
             }
         });
@@ -315,10 +297,7 @@ public class Settings_Activity extends AppCompatActivity
     {
         for(EditText text : texts)
         {
-            if(text.getId() != R.id.editText3)
-            {
-                text.setText("");
-            }
+            text.setText("");
         }
     }
     /**
@@ -354,7 +333,7 @@ public class Settings_Activity extends AppCompatActivity
                 {
                     break;
                 }
-                if(Math.round(values[i]) == values[i])
+                if(text.getId() == R.id.editText2 || text.getId() == R.id.editText5)
                 {
                     text.setText("" + Math.round(values[i]));
                 }
@@ -530,14 +509,30 @@ public class Settings_Activity extends AppCompatActivity
         aspectRatio[1] = (resHeight/gcd);
         return aspectRatio;
     }
+
     /**
      * function handling click event on "next"
      **/
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        isFocus = hasFocus;
+    }
     public void settings_next(View view)
     {
         float[] inputValues = new float[3];
         float aspectRatio = 0;
         float[] overlap = new float[2];
+        /**for(EditText text : inputTextList)
+        {
+            text.clearFocus();
+            if(!isFocus)
+            {
+                Log.i("test", "" + isFocus);
+                allReady = false;
+                return;
+            }
+        }**/
         if(!inputEmpty(inputTextList))
         {
             inputValues = getInputValues();
@@ -545,27 +540,26 @@ public class Settings_Activity extends AppCompatActivity
             overlap = getOverlap();
             allReady = true;
         }
-        else
-        {
+        else {
             allReady = false;
+            return;
         }
         if(allReady)
         {
-            Intent intent = new Intent(getApplicationContext(), Main_Activity.class);
-            intent.putExtra("com.example.nicol.dronflyvis.INPUT_VALUES", inputValues);
-            intent.putExtra("com.example.nicol.dronflyvis.ASPECT_RATIO", aspectRatio);
-            intent.putExtra("com.example.nicol.dronflyvis.OVERLAP", overlap);
-            intent.putExtra("com.example.nicol.dronflyvis.RADIO_SELECTION", droneFlag);
+                Intent intent = new Intent(getApplicationContext(), Main_Activity.class);
+                intent.putExtra("com.example.nicol.dronflyvis.INPUT_VALUES", inputValues);
+                intent.putExtra("com.example.nicol.dronflyvis.ASPECT_RATIO", aspectRatio);
+                intent.putExtra("com.example.nicol.dronflyvis.OVERLAP", overlap);
+                intent.putExtra("com.example.nicol.dronflyvis.RADIO_SELECTION", droneFlag);
 
-            startActivity(intent);
+                startActivity(intent);
         }
-        else
-        {
-            Warning warning = new Warning("Fill in the fields correctly before you continue.", "Please fill in the missing values", true, "OK", this);
-            android.app.AlertDialog alertDialog = warning.createWarning();
-            alertDialog.setTitle("Missing or illegal Value");
-            alertDialog.show();
-            generalInput.createVibration();
+        else {
+                generalInput.createVibration();
+                Warning warning = new Warning("Fill in the fields correctly before you continue.", "Please fill in the missing values", true, "OK", this);
+                android.app.AlertDialog alertDialog = warning.createWarning();
+                alertDialog.setTitle("Missing Values");
+                alertDialog.show();
         }
     }
 

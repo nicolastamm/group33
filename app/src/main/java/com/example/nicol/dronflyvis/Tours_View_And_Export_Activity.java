@@ -753,7 +753,7 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
         for (int i = 0; i < route.size(); ++i)
         {
             Node add = route.get(i);
-            content += add.getLatitude() + "," + add.getLongitude() + "," + settings[2]
+            content += add.getLatitude() + "," + add.getLongitude() + "," + settings[1]
                     + ",0,0,0,0,0,1,0,-1,0,-1,0,-1,0,-1,0,-1,0,-1,0,-1,0,-1,0,-1,0,-1,0,-1,0,-1,0,-1,0,-1,0\r\n";
         }
 
@@ -868,13 +868,13 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
             Rastering raster = new Rastering(arrayLists[0], settings[2], settings[1], ratio, overlap[0], overlap[1]);
             ArrayList<ArrayList<Node>> actRaster = raster.getRaster();
 
-            actStartNode = new Node(actRaster.get(2).get(0).getLatitude(), actRaster.get(2).get(0).getLongitude(), 2);
             if (actRaster.isEmpty()) {
                 route = nodeList;
             } else {
                 actStartNode = new Node(actRaster.get(0).get(0).getLatitude(), actRaster.get(0).get(0).getLongitude(), 2);
                 route = tsm.travelingSalesman(actRaster, actStartNode, nodeList);
             }
+            //actStartNode = new Node(actRaster.get(2).get(0).getLatitude(), actRaster.get(2).get(0).getLongitude(), 2);
             return route;
         }
 
