@@ -516,6 +516,11 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
                     Toast.makeText(Main_Activity.this, "IOExec read line" ,Toast.LENGTH_LONG).show();
                     e.printStackTrace();
                 }
+                catch (Exception e)
+                {
+                    Toast.makeText(Main_Activity.this, "File contains not a Polygon" ,Toast.LENGTH_LONG).show();
+                    e.printStackTrace();
+                }
             }
             catch (FileNotFoundException e)
             {
