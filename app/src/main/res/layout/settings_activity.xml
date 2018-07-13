@@ -198,9 +198,6 @@
                     android:layout_toRightOf="@id/nothing"/>
 
             </RelativeLayout>
-
-
-
                 <EditText
                     android:id="@+id/editText3"
                     android:layout_width="match_parent"
