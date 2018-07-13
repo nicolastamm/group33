@@ -1,5 +1,7 @@
 package com.example.nicol.dronflyvis;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.renderscript.ScriptGroup;
 import android.support.v4.app.DialogFragment;
@@ -10,6 +12,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioGroup;
@@ -37,7 +40,9 @@ public class Settings_Activity extends AppCompatActivity
     private InputValidator fovValidator;
     private InputValidator overlapValidator;
     private InputValidator pixelValidator;
-    private boolean isFocus = false;
+    private InputValidator resWidthValidator;
+    private InputValidator resHeightValidator;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -52,6 +57,13 @@ public class Settings_Activity extends AppCompatActivity
             }
         });
         generalInput = new InputValidator(Settings_Activity.this);
+        resWidthValidator = new InputValidator(Settings_Activity.this);
+        resHeightValidator = new InputValidator(Settings_Activity.this);
+        heightValidator =  new InputValidator(10f, 100f, Settings_Activity.this);
+        fovValidator = new InputValidator(10f, 170f, Settings_Activity.this);
+        overlapValidator = new InputValidator(1, 99, Settings_Activity.this);
+        pixelValidator = new InputValidator(0.3f, 10f,Settings_Activity.this);
+
         /**
          * Get all the values from the the edit texts
          * */
@@ -90,37 +102,43 @@ public class Settings_Activity extends AppCompatActivity
             text.setOnKeyListener(new View.OnKeyListener() {
                 @Override
                 public boolean onKey(View view, int i, KeyEvent keyEvent) {
-                    if(!isEmpty(inputTextList.get(0)) && !isEmpty(inputTextList.get(1)) && !isEmpty(inputTextList.get(4)) && !isEmpty(inputTextList.get(5)))
+                    if(!isEmpty(inputTextList.get(0)) && !isEmpty(inputTextList.get(1)))
                     {
-                        if(!inputTextList.get(6).hasFocus())
-                        {
-                            inputTextList.get(6).setText("" + calculatePixelSize(Float.parseFloat(inputTextList.get(5).getText().toString()),
-                                    Float.parseFloat(inputTextList.get(4).getText().toString()),
-                                    Float.parseFloat(inputTextList.get(0).getText().toString()),
-                                    Float.parseFloat(inputTextList.get(1).getText().toString())));
-                        }
 
-                    }
-                    if(!isEmpty(inputTextList.get(0)) && !isEmpty(inputTextList.get(1)) && !isEmpty(inputTextList.get(4)) && !isEmpty(inputTextList.get(6)))
-                    {
-                        if(!inputTextList.get(5).hasFocus())
+                        if(!isEmpty(inputTextList.get(4)) && !isEmpty(inputTextList.get(5)) && !inputTextList.get(6).hasFocus())
                         {
-                            inputTextList.get(5).setText("");
+
+                                inputTextList.get(6).setText("" + calculatePixelSize(Float.parseFloat(inputTextList.get(5).getText().toString()),
+                                        Float.parseFloat(inputTextList.get(4).getText().toString()),
+                                        Float.parseFloat(inputTextList.get(0).getText().toString()),
+                                        Float.parseFloat(inputTextList.get(1).getText().toString())));
+                        }
+                        else if(!isEmpty(inputTextList.get(4)) && !isEmpty(inputTextList.get(6)) && !inputTextList.get(5).hasFocus())
+                        {
                             inputTextList.get(5).setText("" + calculateHeight(Float.parseFloat(inputTextList.get(4).getText().toString()),
                                     Float.parseFloat(inputTextList.get(1).getText().toString()),
                                     Float.parseFloat(inputTextList.get(0).getText().toString()),
                                     Float.parseFloat(inputTextList.get(6).getText().toString())));
                         }
                     }
+                    if(isEmpty(inputTextList.get(0)) || isEmpty(inputTextList.get(1)) || isEmpty(inputTextList.get(5)) || isEmpty(inputTextList.get(4)))
+                    {
+                        inputTextList.get(6).setText("");
+                    }
+                    else if(isEmpty(inputTextList.get(0)) || isEmpty(inputTextList.get(1)) || isEmpty(inputTextList.get(6)) || isEmpty(inputTextList.get(4)))
+                    {
+                        inputTextList.get(5).setText("");
+                    }
                     return false;
-                }
+                    }
+
             });
             /**
              * Here we start the real validation
              * */
             text.addTextChangedListener(new CustomTextWatcher(text) {
                 /**
-                 * Set a tag to the text field, a onFocusListener and all the possible errors to null. Let InputValidator do the rest
+                 * Set a tag to the text field, an onFocusListener and all the possible errors to null. Let InputValidator do the rest
                  * */
                 @Override
                 public void validateText(EditText text) {
@@ -129,22 +147,19 @@ public class Settings_Activity extends AppCompatActivity
                     {
                         case R.id.editText3:
                             text.setTag(0);
-                            heightValidator =  new InputValidator(10f, 100f, Settings_Activity.this);
                             text.setOnFocusChangeListener(heightValidator);
                             text.setError(null);
                             heightValidator.setCount(0);
                             break;
                         case R.id.editText4:
                             text.setTag(1);
-                            fovValidator = new InputValidator(10f, 170f, Settings_Activity.this);
                             text.setOnFocusChangeListener(fovValidator);
-                            fovValidator.setCount(0);
                             text.setError(null);
+                            fovValidator.setCount(0);
                             break;
                         case R.id.editText6:
                         case R.id.editText7:
                             text.setTag(2);
-                            overlapValidator = new InputValidator(0f, 99f, Settings_Activity.this);
                             text.setOnFocusChangeListener(overlapValidator);
                             overlapValidator.setCount(0);
                             text.setError(null);
@@ -152,7 +167,6 @@ public class Settings_Activity extends AppCompatActivity
                         case R.id.editText:
                             text.setTag(3);
                             text.setError(null);
-                            pixelValidator = new InputValidator(0.3f, 10f,Settings_Activity.this);
                             text.setOnFocusChangeListener(pixelValidator);
                             break;
                         /**
@@ -164,84 +178,89 @@ public class Settings_Activity extends AppCompatActivity
                             text.setOnFocusChangeListener(new View.OnFocusChangeListener() {
                                 @Override
                                 public void onFocusChange(View view, boolean b) {
-                                    if(text.getText().toString().length()  > 4)
+
+                                    if(text.getText().toString().length()  > 4 && !isEmpty(text) && resWidthValidator.getCount() < 1)
                                     {
-                                        InputValidator resValidator = new InputValidator(Settings_Activity.this);
-                                        resValidator.createWarning("Resolution Width too large! The Resolution Width should be smaller than or equal to 4 Digits", "Resolution Width too large",
+                                        resWidthValidator.setValid(false);
+                                        resWidthValidator.setCount(1);
+                                        resWidthValidator.createWarning("Resolution Width too large! The Resolution Width should be smaller than or equal to 4 Digits", "Resolution Width too large",
                                                 "Ok", null,Settings_Activity.this, "Resolution Width too large",inputTextList.get(0));
-                                        resValidator.createVibration();
+                                        resWidthValidator.createVibration();
                                         return;
                                     }
-                                    if(text.getText().toString().length()  < 2 && !isEmpty(text))
+                                    if(text.getText().toString().length()  < 2 && !isEmpty(text) && resWidthValidator.getCount() < 1)
                                     {
-                                        InputValidator resValidator = new InputValidator(Settings_Activity.this);
-                                        resValidator.createWarning("Resolution Width is too small! The Resolution Width should be bigger than 2 Digits", "Resolution Width too small",
+                                        resWidthValidator.setValid(false);
+                                        resWidthValidator.setCount(1);
+                                        resWidthValidator.createWarning("Resolution Width is too small! The Resolution Width should be bigger than 2 Digits", "Resolution Width too small",
                                                 "Ok", null,Settings_Activity.this, "Resolution Width too small",inputTextList.get(0));
-                                        resValidator.createVibration();
-                                        inputTextList.get(6).setText("");
+                                        resWidthValidator.createVibration();
                                         return;
                                     }
-                                    if(!isEmpty(inputTextList.get(0)) && !isEmpty(inputTextList.get(1)))
+                                    if(!isEmpty(inputTextList.get(0)) && !isEmpty(inputTextList.get(1)) && resWidthValidator.getCount() < 1)
                                     {
+                                        resWidthValidator.setCount(1);
                                         boolean res = checkResolution(Float.parseFloat(inputTextList.get(0).getText().toString()),
                                                 Float.parseFloat(inputTextList.get(1).getText().toString()), tableOfRatios);
                                         if(!res)
                                         {
+                                            resWidthValidator.setValid(false);
                                             int[] aspectRatios = getAspectRatios(Float.parseFloat(inputTextList.get(0).getText().toString()), Float.parseFloat(inputTextList.get(1).getText().toString()));
-                                            InputValidator resValidator = new InputValidator(Settings_Activity.this);
-                                            resValidator.createWarning("Choose another resolution! Depending on your settings you have an aspect ratio of " + aspectRatios[0] + ":" +aspectRatios[1] + " which is not valid",
+                                            resWidthValidator.createWarning("Choose another resolution! Depending on your settings you have an aspect ratio of " + aspectRatios[0] + ":" +aspectRatios[1] + " which is not valid",
                                                     "Resolution invalid", "Ok", null,Settings_Activity.this, "Resolution invalid",inputTextList.get(0));
-                                            inputTextList.get(0).setText("");
-                                            inputTextList.get(1).setText("");
-                                            resValidator.createVibration();
+                                            resWidthValidator.createVibration();
                                             return;
                                         }
                                     }
                                 }
                             });
+                            resWidthValidator.setCount(0);
+                            resWidthValidator.setValid(true);
                          break;
                         case R.id.editText5:
                             text.setError(null);
                             text.setOnFocusChangeListener(new View.OnFocusChangeListener() {
                                 @Override
                                 public void onFocusChange(View view, boolean b) {
-                                    if(text.getText().toString().length()  > 4)
+
+                                    if(text.getText().toString().length()  > 4 && !isEmpty(text) && resHeightValidator.getCount() < 1)
                                     {
-                                        InputValidator resValidator = new InputValidator(Settings_Activity.this);
-                                        resValidator.createWarning("Resolution Height too large! The Resolution Height should be smaller than or equal to 4 Digits", "Resolution Height too large",
+                                        resHeightValidator.setValid(false);
+                                        resHeightValidator.setCount(1);
+                                        resHeightValidator.createWarning("Resolution Height too large! The Resolution Height should be smaller than or equal to 4 Digits", "Resolution Height too large",
                                                 "Ok", null,Settings_Activity.this, "Resolution Height too large",inputTextList.get(1));
-                                        inputTextList.get(0).setText("");
-                                        inputTextList.get(1).setText("");
-                                        resValidator.createVibration();
+                                        resHeightValidator.createVibration();
                                         return;
                                     }
-                                    if(text.getText().toString().length()  < 2 && !isEmpty(text))
+                                    if(text.getText().toString().length()  < 2 && !isEmpty(text) && resHeightValidator.getCount() < 1)
                                     {
-                                        InputValidator resValidator = new InputValidator(Settings_Activity.this);
-                                        resValidator.createWarning("Resolution Height too low! The Resolution Height should be bigger than 2 Digits", "Resolution Height too small",
+                                        resHeightValidator.setValid(false);
+                                        resHeightValidator.setCount(1);
+                                        resHeightValidator.createWarning("Resolution Height too low! The Resolution Height should be bigger than 2 Digits", "Resolution Height too small",
                                                 "Ok", null,Settings_Activity.this, "Resolution Height too small",inputTextList.get(1));
-                                        resValidator.createVibration();
+                                        resHeightValidator.createVibration();
                                         return;
                                     }
-                                    if(!isEmpty(inputTextList.get(0)) && !isEmpty(inputTextList.get(1)))
+                                    if(!isEmpty(inputTextList.get(0)) && !isEmpty(inputTextList.get(1))&& resHeightValidator.getCount() < 1)
                                     {
+                                        resHeightValidator.setCount(1);
                                         boolean res = checkResolution(Float.parseFloat(inputTextList.get(0).getText().toString()),
                                                 Float.parseFloat(inputTextList.get(1).getText().toString()), tableOfRatios);
                                         if(!res)
                                         {
+                                            resHeightValidator.setValid(false);
                                             int[] aspectRatios = getAspectRatios(Float.parseFloat(inputTextList.get(0).getText().toString()), Float.parseFloat(inputTextList.get(1).getText().toString()));
-                                            InputValidator resValidator = new InputValidator(Settings_Activity.this);
-                                            resValidator.createWarning("Choose another resolution! Depending on your settings you have an aspect ratio of " + aspectRatios[0] + ":" +aspectRatios[1] + " which is not valid",
+                                            resHeightValidator.createWarning("Choose another resolution! Depending on your settings you have an aspect ratio of " + aspectRatios[0] + ":" +aspectRatios[1] + " which is not valid",
                                                     "Resolution invalid", "Ok", null,Settings_Activity.this, "Resolution invalid",inputTextList.get(1));
-                                            resValidator.createVibration();
-                                            inputTextList.get(0).setText("");
-                                            inputTextList.get(1).setText("");
+                                            resHeightValidator.createVibration();
                                             return;
                                         }
                                     }
                                 }
 
                             });
+                            resHeightValidator.setCount(0);
+                            resHeightValidator.setValid(true);
                          break;
                     }
                 }
@@ -310,7 +329,7 @@ public class Settings_Activity extends AppCompatActivity
         {
             return true;
         }
-        else if(textToCheck.matches("") || Float.parseFloat(textToCheck) == 0f)
+        else if(textToCheck.matches(""))
         {
             return true;
         }
@@ -333,7 +352,7 @@ public class Settings_Activity extends AppCompatActivity
                 {
                     break;
                 }
-                if(text.getId() == R.id.editText2 || text.getId() == R.id.editText5)
+                if(text.getId() == R.id.editText2 || text.getId() == R.id.editText5 || text.getId() == R.id.editText6 || text.getId() == R.id.editText7)
                 {
                     text.setText("" + Math.round(values[i]));
                 }
@@ -464,10 +483,6 @@ public class Settings_Activity extends AppCompatActivity
         result[1] = calcAspectRatios(aspectRatios[0], aspectRatios[1])[1];
         return (result[1]/result[0]);
     }
-
-    /**
-     * NECESSARY MATHEMATICS
-     **/
     /**
      * simple recursive gcd function
      * */
@@ -493,7 +508,7 @@ public class Settings_Activity extends AppCompatActivity
         return (float) (Math.sqrt(((fotoWidth/ resWidth) * 100) * ((fotoHeight/resHeight) * 100))); // meters times 100 gets us centimeters
     }
     /**
-     * Calculate the height in the case the user gives us the pixel size
+     * Calculate the height in the case the user gives us the pixel size and fov
      * */
     public float calculateHeight(float fov, float resHeight, float resWidth, float pixelSize)
     {
@@ -513,54 +528,49 @@ public class Settings_Activity extends AppCompatActivity
     /**
      * function handling click event on "next"
      **/
-    @Override
-    public void onWindowFocusChanged(boolean hasFocus) {
-        super.onWindowFocusChanged(hasFocus);
-        isFocus = hasFocus;
+    public void clearFocus(EditText text){
+        text.clearFocus();
     }
     public void settings_next(View view)
     {
         float[] inputValues = new float[3];
         float aspectRatio = 0;
         float[] overlap = new float[2];
-        /**for(EditText text : inputTextList)
+        if(inputEmpty(inputTextList))
         {
-            text.clearFocus();
-            if(!isFocus)
-            {
-                Log.i("test", "" + isFocus);
-                allReady = false;
-                return;
-            }
-        }**/
-        if(!inputEmpty(inputTextList))
-        {
-            inputValues = getInputValues();
-            aspectRatio = getAspectRatio();
-            overlap = getOverlap();
-            allReady = true;
-        }
-        else {
-            allReady = false;
+            generalInput.createVibration();
+            Warning warning = new Warning("Fill in the fields correctly before you continue.", "Please fill in the missing values", true, "OK", this);
+            android.app.AlertDialog alertDialog = warning.createWarning();
+            alertDialog.setTitle("Missing Values");
+            alertDialog.show();
             return;
         }
-        if(allReady)
+        else
         {
-                Intent intent = new Intent(getApplicationContext(), Main_Activity.class);
-                intent.putExtra("com.example.nicol.dronflyvis.INPUT_VALUES", inputValues);
-                intent.putExtra("com.example.nicol.dronflyvis.ASPECT_RATIO", aspectRatio);
-                intent.putExtra("com.example.nicol.dronflyvis.OVERLAP", overlap);
-                intent.putExtra("com.example.nicol.dronflyvis.RADIO_SELECTION", droneFlag);
+            for(EditText text : inputTextList)
+            {
+                text.requestFocus();
+                text.clearFocus();
+            }
+            if(heightValidator.getValid() && fovValidator.getValid() && overlapValidator.getValid() && resWidthValidator.getValid() && resHeightValidator.getValid())
+            {
+                inputValues = getInputValues();
+                aspectRatio = getAspectRatio();
+                overlap = getOverlap();
+                allReady = true;
+                if(allReady)
+                {
+                    Intent intent = new Intent(getApplicationContext(), Main_Activity.class);
+                    intent.putExtra("com.example.nicol.dronflyvis.INPUT_VALUES", inputValues);
+                    intent.putExtra("com.example.nicol.dronflyvis.ASPECT_RATIO", aspectRatio);
+                    intent.putExtra("com.example.nicol.dronflyvis.OVERLAP", overlap);
+                    intent.putExtra("com.example.nicol.dronflyvis.RADIO_SELECTION", droneFlag);
 
-                startActivity(intent);
+                    startActivity(intent);
+                }
+            }
         }
-        else {
-                generalInput.createVibration();
-                Warning warning = new Warning("Fill in the fields correctly before you continue.", "Please fill in the missing values", true, "OK", this);
-                android.app.AlertDialog alertDialog = warning.createWarning();
-                alertDialog.setTitle("Missing Values");
-                alertDialog.show();
-        }
+
     }
 
 }
