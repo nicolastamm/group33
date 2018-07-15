@@ -37,31 +37,31 @@ public class Buch_Slider extends PagerAdapter{
             "Edit your polygon ",
             "Other icons worth mentioning",
             "A simple polygon",
-            "The split modus",
+            "The split mode",
             "Ready to export"
     };
 
     public String[] act_discr = {
-            "While editing your polygon, we made several modi and buttons to greatly streamline your experience with our system.\n\nThese include:\n\n" +
-                    "(1) Pin mode: sometimes you want to focus on a certain area of the map, without having to be mindful of not swiping away. With this enabled, the map shan't move, thus allowing better control of the editing tools.\n\n" +
-                    "(2) Draw mode: By default, you start on this mode. As the name implies, it is in this mode that new points of your desired area can be added. \n\n" +
+            "While editing your polygon, we created several modi and buttons to guide your experience with our system.\n\nThis include:\n\n" +
+                    "(1) Pin mode: Sometimes you want to focus on a certain area on the map and capture your map to a certain area. With this feature enabled, the map will not change its place, thus allowing better control of the editing tools.\n\n" +
+                    "(2) Draw mode: This is the first step you take to create your polygon. The draw mode is already set at this point. As the name implies, it is in this mode that new points of your desired area can be added. \n\n" +
                     "(3) Erase mode: Counter to the draw mode, this mode enables the selective removal of any nodes of your choosing.\n\n" +
-                    "(4) Dump Polygon: For those big mistakes. Press this, and you will allow yourself to start again from scratch.\n\n" +
-                    "(5) Import Polygon: Old work shan't be simply thrown away! Now you can import your favourite polygons!",
-            "There some other icons that have to be explained. On the top border you see a very familiar sight. It is indeed the search bar of Google Maps! Use it just as you know it!\n\n" +
-                    "In the upper right corner of it you might see an orange square. This tells you whether you are in a Polygon splitting modus or not. Tapping it toggles the switch mode.\n\n" +
-                    "Below are some self explanatory buttons. Of note is perhaps the middle one. This one simply lets you switch between different map types.\n\n" +
-                    "Up to the right of this is the help button.\nYou know this one, you just pressed it!",
-            "There are several things to note when drawing polygons with our software. You will notice that two nodes are always coloured orange.\n\n" +
-                    "This color denotes between which 2 nodes the next one will be added. Best practice is to visualise the polygon you wish to draw, and go clockwise, or counter-clockwise through that border.\n\n" +
-                    "And of course, you can press a node, drag it to a new position, and drop it there! Now keep in mind we are talking about the non-split mode here, notice the orange square in the upper right corner.",
-            "Look at the top right corner. You are now in the split modus! Things work a little bit differently now.\n\n" +
-                    "First of, you now see a preview of where the points will be, in addition to their colour, which denotes the sub-polygon to which it will belong.\n\n" +
-                    "Secondly, if you drag a point (only the border points can be dragged), you will see some red grid. This grid lets you know where the splitlines " +
-                    "for the polgons are!\nUse this information to your advantage.",
-            "Now you have some candidates for your routes! Notice we have pre selected for you the start of your route. " +
-                    "But if course you know best where to start your own route. This is why with a simple tap, you can rearrange the route with a start node of your liking!\n\n" +
-                    "Finally, when you feel ready and satisfied with your routes, simply tap on the Export button, and you are ready to fly out, map out!"
+                    "(4) Dump Polygon: If you decide to delete the entire polygon, press this and you will be able to start again from scratch.\n\n" +
+                    "(5) Import Polygon: With this feature you can import your old polygons.",
+            "There are some other icons that have to be explained: In the top right corner you see the search bar of Google Maps. You  can use it as you are used to.\n\n" +
+                    "In the upper right corner you might see an orange square. This tells you whether you are in a Polygon splitting mode or not. Tapping it enables the switch mode, this means that you can switch between the splitting mode and the non-splitting mode.\n\n" +
+                    "At the bottom of the app are some self explanatory buttons. With the middle button you can change the map type.\n\n" +
+                    "Left  to this is the help button (the red book)",
+            "There are several things to pay attention to when creating polygons with our app. You will notice that two nodes are always coloured orange.\n\n" +
+                    "This colour indicates between which two nodes the next one will be added. A tip is to visualise the polygon you want to create and go clockwise (or counter-clockwise)\n\n" +
+                    "And of course, you can press a node, drag it to a new position, and drop it there. Now keep in mind, we are talking about the non-split mode. Keep in mind the orange square in the upper right corner.",
+            "Look at the top right corner. You are now in the split mode. Things work a little bit differently here.\n\n" +
+                    "Firstly, you can see a preview of where the nodes are going to be, in addition to their colour, which indicates the sub-polygon to which it will belong.\n\n" +
+                    "Secondly, if you drag a node (only the border nodes can be dragged), you will see a red grid. This grid indicates where the splitlines " +
+                    "for the polygons are!\nUse this information to your advantage.",
+            "Now you have some options for your routes! Notice we have pre selected the start node of your route." +
+                    "You can change this starting point by clicking on the node you want to start from and thus rearrange the route.\n\n" +
+                    "Finally, when you feel ready and content with your routes, simply tap on the export button, and you are ready to fly out, map out!"
     };
 
     /**

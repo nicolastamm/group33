@@ -4,6 +4,7 @@
     <string name="title_activity_act4">Map</string>
     <string name="title_activity_act5">Map</string>
 
+    <string name="crouton_settings_activity">Choose your Drone</string>
     <string name="crouton_main_activity">Choose your Location \nDraw polygon </string>
     <string name="crouton_tours_activity">Export tour</string>
     <string name="crouton_split_mode">Split mode</string>

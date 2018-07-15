@@ -516,6 +516,11 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
                     Toast.makeText(Main_Activity.this, "IOExec read line" ,Toast.LENGTH_LONG).show();
                     e.printStackTrace();
                 }
+                catch (Exception e)
+                {
+                    Toast.makeText(Main_Activity.this, "File contains not a Polygon" ,Toast.LENGTH_LONG).show();
+                    e.printStackTrace();
+                }
             }
             catch (FileNotFoundException e)
             {
@@ -943,7 +948,7 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
                                 intent.putExtra("com.example.nicol.dronflyvis.mapType", mMap.getMapType());
                                 intent.putExtra("com.example.nicol.dronflyvis.SETTINGS", settings);
                                 intent.putExtra("com.example.nicol.dronflyvis.splitPoly", split);
-                                intent.putExtra("com.example.nicol.dronflyvis.ASPECT_RATIO", aspectRatio);
+                                intent.putExtra("com.example.nicol.dronflyvis.ASPECT_RATIO", ratio);
                                 intent.putExtra("com.example.nicol.dronflyvis.OVERLAP",overlap);
 
                                 startActivity(intent);

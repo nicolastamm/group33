@@ -3,8 +3,10 @@ package com.example.nicol.dronflyvis;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -13,6 +15,10 @@ import android.widget.EditText;
 import android.widget.RadioGroup;
 import java.util.ArrayList;
 import java.util.Hashtable;
+
+import de.keyboardsurfer.android.widget.crouton.Configuration;
+import de.keyboardsurfer.android.widget.crouton.Crouton;
+import de.keyboardsurfer.android.widget.crouton.Style;
 
 /**
  * @author Heiko
@@ -40,6 +46,26 @@ public class Settings_Activity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+
+        /**
+         * Define configuration options
+         */
+        Configuration croutonConfiguration = new Configuration.Builder()
+                .setDuration(3500).build();
+        /**
+         * Define styles for crouton
+         */
+        Style style = new Style.Builder()
+                .setBackgroundColorValue(Color.argb(200,0,0,0))
+                .setGravity(Gravity.CENTER_HORIZONTAL)
+                .setConfiguration(croutonConfiguration)
+                .setHeight(200)
+                .setTextColorValue(Color.WHITE).build();
+        /**
+         * Display style and configuration
+         */
+        Crouton.showText(Settings_Activity.this, R.string.crouton_settings_activity, style);
+
         setContentView(R.layout.settings_activity);
         Button aboutUs = (Button) findViewById(R.id.about_us_button);
         aboutUs.setOnClickListener(new View.OnClickListener() {
