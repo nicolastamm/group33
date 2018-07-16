@@ -20,8 +20,6 @@ public class InputValidator implements View.OnFocusChangeListener {
 
     private float min;
     private float max;
-    private int minLength;
-    private int maxLength;
     private Context ctx;
     private int count = 0;
     private Vibrator vibrator;
@@ -43,8 +41,6 @@ public class InputValidator implements View.OnFocusChangeListener {
     }
     public InputValidator(int minLength, int maxLength, Context ctx, int flag)
     {
-        this.minLength = minLength;
-        this.maxLength = maxLength;
         this.ctx = ctx;
         vibrator = (Vibrator) ctx.getSystemService(ctx.VIBRATOR_SERVICE);
         this.isValid = true;

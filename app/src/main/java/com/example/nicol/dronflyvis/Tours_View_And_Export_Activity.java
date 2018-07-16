@@ -19,6 +19,7 @@ import android.view.ContextMenu;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
@@ -141,11 +142,8 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
             droneFlag = getIntent().getExtras().getInt("com.example.nicol.dronflyvis.RADIO_SELECTION");
             overlap = getIntent().getExtras().getFloatArray("com.example.nicol.dronflyvis.OVERLAP");
             ratio = getIntent().getExtras().getFloat("com.example.nicol.dronflyvis.ASPECT_RATIO");
-
         }
-        Log.i("test", "" + settings[1]);
-        Log.i("test", "" + settings[2]);
-        Log.i("test", "" + ratio);
+
         /**
          * Set the image resource and make the book clickable.
          */
@@ -261,17 +259,17 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
             }
 
         }
-        else{
+        else {
 
             Rastering raster = new Rastering(nodeList, settings[2], settings[1], ratio, overlap[0], overlap[1]);
             TravelingSalesman tsm = new TravelingSalesman();
             ArrayList<Marker> pfad = new ArrayList<>();
 
             ArrayList<ArrayList<Node>> actRaster = raster.getRaster();
-            actStartNode = new Node(actRaster.get(0).get(0).getLatitude(), actRaster.get(0).get(0).getLongitude(), 2);
             if (actRaster.isEmpty()) {
                 route = nodeList;
             } else {
+                actStartNode = new Node(actRaster.get(0).get(0).getLatitude(), actRaster.get(0).get(0).getLongitude(), 2);
                 route = tsm.travelingSalesman(actRaster, actStartNode, nodeList);
             }
             allRoutes.add(route);
@@ -517,8 +515,6 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
                     for (ArrayList<ArrayList<Node>> i : actRaster) {
                         ArrayList<Marker> path = new ArrayList<>();
 
-
-
                         route = tsm.travelingSalesman(i, actStartNodes.get(count) , nodeList);
                         allRoutes.add(route);
                         count++;
@@ -578,7 +574,6 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
                     TravelingSalesman tsm = new TravelingSalesman();
 
                     ArrayList<ArrayList<Node>> actRaster = raster.getRaster();
-
                     if (actRaster.isEmpty()) {
                         route = nodeList;
                     } else {
@@ -643,8 +638,8 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
      * @param view
      */
     public void  export_csv(View view){
-
-
+        Button btn = (Button) findViewById(R.id.tvae_avtivity_export_button);
+        btn.setEnabled(false);
 
         //Request storage permissions during runtime
         ActivityCompat.requestPermissions( Tours_View_And_Export_Activity.this ,new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
@@ -794,6 +789,8 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
                 }
             }
         }
+
+        btn.setEnabled(true);
     }
 
     /**

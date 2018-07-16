@@ -276,7 +276,7 @@ public class TravelingSalesman
 
         if(flag)
         {
-            route = opt(new Tour(route, length)).getTour();
+            //route = opt(new Tour(route, length)).getTour();
         }
 
         ArrayList<Node> tmp = copyList(route);

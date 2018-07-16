@@ -3,8 +3,11 @@ package com.example.nicol.dronflyvis;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -13,6 +16,10 @@ import android.widget.EditText;
 import android.widget.RadioGroup;
 import java.util.ArrayList;
 import java.util.Hashtable;
+
+import de.keyboardsurfer.android.widget.crouton.Configuration;
+import de.keyboardsurfer.android.widget.crouton.Crouton;
+import de.keyboardsurfer.android.widget.crouton.Style;
 
 /**
  * @author Heiko
@@ -40,6 +47,26 @@ public class Settings_Activity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+
+        /**
+         * Define configuration options
+         */
+        Configuration croutonConfiguration = new Configuration.Builder()
+                .setDuration(3500).build();
+        /**
+         * Define styles for crouton
+         */
+        Style style = new Style.Builder()
+                .setBackgroundColorValue(Color.argb(200,0,0,0))
+                .setGravity(Gravity.CENTER_HORIZONTAL)
+                .setConfiguration(croutonConfiguration)
+                .setHeight(200)
+                .setTextColorValue(Color.WHITE).build();
+        /**
+         * Display style and configuration
+         */
+        Crouton.showText(Settings_Activity.this, R.string.crouton_settings_activity, style);
+
         setContentView(R.layout.settings_activity);
         Button aboutUs = (Button) findViewById(R.id.about_us_button);
         aboutUs.setOnClickListener(new View.OnClickListener() {
@@ -95,18 +122,16 @@ public class Settings_Activity extends AppCompatActivity
             text.setOnKeyListener(new View.OnKeyListener() {
                 @Override
                 public boolean onKey(View view, int i, KeyEvent keyEvent) {
-                    if(!isEmpty(inputTextList.get(0)) && !isEmpty(inputTextList.get(1)))
+                    if(!isEmpty(inputTextList.get(0)) && !isEmpty(inputTextList.get(1)) && !isEmpty(inputTextList.get(4)))
                     {
-
-                        if(!isEmpty(inputTextList.get(4)) && !isEmpty(inputTextList.get(5)) && !inputTextList.get(6).hasFocus())
+                        if(!isEmpty(inputTextList.get(5)) && !inputTextList.get(6).hasFocus())
                         {
-
-                                inputTextList.get(6).setText("" + calculatePixelSize(Float.parseFloat(inputTextList.get(5).getText().toString()),
-                                        Float.parseFloat(inputTextList.get(4).getText().toString()),
-                                        Float.parseFloat(inputTextList.get(0).getText().toString()),
-                                        Float.parseFloat(inputTextList.get(1).getText().toString())));
+                            inputTextList.get(6).setText("" + calculatePixelSize(Float.parseFloat(inputTextList.get(5).getText().toString()),
+                                    Float.parseFloat(inputTextList.get(4).getText().toString()),
+                                    Float.parseFloat(inputTextList.get(0).getText().toString()),
+                                    Float.parseFloat(inputTextList.get(1).getText().toString())));
                         }
-                        else if(!isEmpty(inputTextList.get(4)) && !isEmpty(inputTextList.get(6)) && !inputTextList.get(5).hasFocus())
+                        if(!isEmpty(inputTextList.get(6)) && !inputTextList.get(5).hasFocus())
                         {
                             inputTextList.get(5).setText("" + calculateHeight(Float.parseFloat(inputTextList.get(4).getText().toString()),
                                     Float.parseFloat(inputTextList.get(1).getText().toString()),
@@ -114,18 +139,11 @@ public class Settings_Activity extends AppCompatActivity
                                     Float.parseFloat(inputTextList.get(6).getText().toString())));
                         }
                     }
-                    if(isEmpty(inputTextList.get(0)) || isEmpty(inputTextList.get(1)) || isEmpty(inputTextList.get(5)) || isEmpty(inputTextList.get(4)))
-                    {
-                        inputTextList.get(6).setText("");
-                    }
-                    else if(isEmpty(inputTextList.get(0)) || isEmpty(inputTextList.get(1)) || isEmpty(inputTextList.get(6)) || isEmpty(inputTextList.get(4)))
-                    {
-                        inputTextList.get(5).setText("");
-                    }
                     return false;
-                    }
+                }
 
             });
+
             /**
              * Here we start the real validation
              * */
@@ -181,11 +199,11 @@ public class Settings_Activity extends AppCompatActivity
                                         resWidthValidator.createVibration();
                                         return;
                                     }
-                                    if(text.getText().toString().length()  < 2 && !isEmpty(text) && resWidthValidator.getCount() < 1)
+                                    if(text.getText().toString().length()  < 3 && !isEmpty(text) && resWidthValidator.getCount() < 1)
                                     {
                                         resWidthValidator.setValid(false);
                                         resWidthValidator.setCount(1);
-                                        resWidthValidator.createWarning("Resolution Width is too small! The Resolution Width should be bigger than 2 Digits", "Resolution Width too small",
+                                        resWidthValidator.createWarning("Resolution Width is too small! The Resolution Width should be at least 2 digits", "Resolution Width too small",
                                                 "Ok", null,Settings_Activity.this, "Resolution Width too small",inputTextList.get(0));
                                         resWidthValidator.createVibration();
                                         return;
@@ -396,7 +414,7 @@ public class Settings_Activity extends AppCompatActivity
         ratioTable.put(6, "3:1");
         ratioTable.put(4, "5:3");
         ratioTable.put(5, "16:9");
-        ratioTable.put(6, "950:797");
+        ratioTable.put(7, "950:797");
         return ratioTable;
     }
     /**
