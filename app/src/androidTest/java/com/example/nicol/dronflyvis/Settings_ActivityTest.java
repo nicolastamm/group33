@@ -14,7 +14,7 @@ public class Settings_ActivityTest {
 
         Settings_Activity act = new Settings_Activity();
 
-        assertEquals(1000, act.getGcd(4000.0,3000.0));
+        assertEquals(1000, act.getGcd(4000.0f,3000.0f));
 
     }
 
@@ -23,7 +23,7 @@ public class Settings_ActivityTest {
 
         Settings_Activity act = new Settings_Activity();
 
-        assertEquals(4000, act.getGcd(4000.0,0.0));
+        assertEquals(4000, act.getGcd(4000.0f,0.0f));
 
     }
 
@@ -32,7 +32,7 @@ public class Settings_ActivityTest {
 
         Settings_Activity act = new Settings_Activity();
 
-        assertEquals(3000, act.getGcd(0.0,3000.0));
+        assertEquals(3000, act.getGcd(0.0f,3000.0f));
 
     }
 
@@ -74,33 +74,4 @@ public class Settings_ActivityTest {
         assertEquals(true, act.isEmpty(text));
     }*/
 
-    @Test
-    public void contains1() {
-
-        float[] array = new float[5];
-
-        for(int i = 0; i < array.length; ++i)
-        {
-            array[i] = i;
-        }
-
-        Settings_Activity act = new Settings_Activity();
-
-        assertEquals(true, act.contains(array, 3));
-    }
-
-    @Test
-    public void contains2() {
-
-        float[] array = new float[5];
-
-        for(int i = 0; i < array.length; ++i)
-        {
-            array[i] = i;
-        }
-
-        Settings_Activity act = new Settings_Activity();
-
-        assertEquals(false, act.contains(array, 5));
-    }
 }

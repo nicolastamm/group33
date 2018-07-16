@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
@@ -121,18 +122,16 @@ public class Settings_Activity extends AppCompatActivity
             text.setOnKeyListener(new View.OnKeyListener() {
                 @Override
                 public boolean onKey(View view, int i, KeyEvent keyEvent) {
-                    if(!isEmpty(inputTextList.get(0)) && !isEmpty(inputTextList.get(1)))
+                    if(!isEmpty(inputTextList.get(0)) && !isEmpty(inputTextList.get(1)) && !isEmpty(inputTextList.get(4)))
                     {
-
-                        if(!isEmpty(inputTextList.get(4)) && !isEmpty(inputTextList.get(5)) && !inputTextList.get(6).hasFocus())
+                        if(!isEmpty(inputTextList.get(5)) && !inputTextList.get(6).hasFocus())
                         {
-
-                                inputTextList.get(6).setText("" + calculatePixelSize(Float.parseFloat(inputTextList.get(5).getText().toString()),
-                                        Float.parseFloat(inputTextList.get(4).getText().toString()),
-                                        Float.parseFloat(inputTextList.get(0).getText().toString()),
-                                        Float.parseFloat(inputTextList.get(1).getText().toString())));
+                            inputTextList.get(6).setText("" + calculatePixelSize(Float.parseFloat(inputTextList.get(5).getText().toString()),
+                                    Float.parseFloat(inputTextList.get(4).getText().toString()),
+                                    Float.parseFloat(inputTextList.get(0).getText().toString()),
+                                    Float.parseFloat(inputTextList.get(1).getText().toString())));
                         }
-                        else if(!isEmpty(inputTextList.get(4)) && !isEmpty(inputTextList.get(6)) && !inputTextList.get(5).hasFocus())
+                        if(!isEmpty(inputTextList.get(6)) && !inputTextList.get(5).hasFocus())
                         {
                             inputTextList.get(5).setText("" + calculateHeight(Float.parseFloat(inputTextList.get(4).getText().toString()),
                                     Float.parseFloat(inputTextList.get(1).getText().toString()),
@@ -140,18 +139,11 @@ public class Settings_Activity extends AppCompatActivity
                                     Float.parseFloat(inputTextList.get(6).getText().toString())));
                         }
                     }
-                    if(isEmpty(inputTextList.get(0)) || isEmpty(inputTextList.get(1)) || isEmpty(inputTextList.get(5)) || isEmpty(inputTextList.get(4)))
-                    {
-                        inputTextList.get(6).setText("");
-                    }
-                    else if(isEmpty(inputTextList.get(0)) || isEmpty(inputTextList.get(1)) || isEmpty(inputTextList.get(6)) || isEmpty(inputTextList.get(4)))
-                    {
-                        inputTextList.get(5).setText("");
-                    }
                     return false;
-                    }
+                }
 
             });
+
             /**
              * Here we start the real validation
              * */
@@ -207,11 +199,11 @@ public class Settings_Activity extends AppCompatActivity
                                         resWidthValidator.createVibration();
                                         return;
                                     }
-                                    if(text.getText().toString().length()  < 2 && !isEmpty(text) && resWidthValidator.getCount() < 1)
+                                    if(text.getText().toString().length()  < 3 && !isEmpty(text) && resWidthValidator.getCount() < 1)
                                     {
                                         resWidthValidator.setValid(false);
                                         resWidthValidator.setCount(1);
-                                        resWidthValidator.createWarning("Resolution Width is too small! The Resolution Width should be bigger than 2 Digits", "Resolution Width too small",
+                                        resWidthValidator.createWarning("Resolution Width is too small! The Resolution Width should be at least 2 digits", "Resolution Width too small",
                                                 "Ok", null,Settings_Activity.this, "Resolution Width too small",inputTextList.get(0));
                                         resWidthValidator.createVibration();
                                         return;
@@ -422,7 +414,7 @@ public class Settings_Activity extends AppCompatActivity
         ratioTable.put(6, "3:1");
         ratioTable.put(4, "5:3");
         ratioTable.put(5, "16:9");
-        ratioTable.put(6, "950:797");
+        ratioTable.put(7, "950:797");
         return ratioTable;
     }
     /**
