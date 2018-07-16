@@ -142,11 +142,8 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
             droneFlag = getIntent().getExtras().getInt("com.example.nicol.dronflyvis.RADIO_SELECTION");
             overlap = getIntent().getExtras().getFloatArray("com.example.nicol.dronflyvis.OVERLAP");
             ratio = getIntent().getExtras().getFloat("com.example.nicol.dronflyvis.ASPECT_RATIO");
-
         }
-        Log.i("test", "" + settings[1]);
-        Log.i("test", "" + settings[2]);
-        Log.i("test", "" + ratio);
+
         /**
          * Set the image resource and make the book clickable.
          */
@@ -262,17 +259,17 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
             }
 
         }
-        else{
+        else {
 
             Rastering raster = new Rastering(nodeList, settings[2], settings[1], ratio, overlap[0], overlap[1]);
             TravelingSalesman tsm = new TravelingSalesman();
             ArrayList<Marker> pfad = new ArrayList<>();
 
             ArrayList<ArrayList<Node>> actRaster = raster.getRaster();
-            actStartNode = new Node(actRaster.get(0).get(0).getLatitude(), actRaster.get(0).get(0).getLongitude(), 2);
             if (actRaster.isEmpty()) {
                 route = nodeList;
             } else {
+                actStartNode = new Node(actRaster.get(0).get(0).getLatitude(), actRaster.get(0).get(0).getLongitude(), 2);
                 route = tsm.travelingSalesman(actRaster, actStartNode, nodeList);
             }
             allRoutes.add(route);
@@ -518,8 +515,6 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
                     for (ArrayList<ArrayList<Node>> i : actRaster) {
                         ArrayList<Marker> path = new ArrayList<>();
 
-
-
                         route = tsm.travelingSalesman(i, actStartNodes.get(count) , nodeList);
                         allRoutes.add(route);
                         count++;
@@ -579,7 +574,6 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
                     TravelingSalesman tsm = new TravelingSalesman();
 
                     ArrayList<ArrayList<Node>> actRaster = raster.getRaster();
-
                     if (actRaster.isEmpty()) {
                         route = nodeList;
                     } else {

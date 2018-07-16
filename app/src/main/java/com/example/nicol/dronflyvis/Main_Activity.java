@@ -950,6 +950,7 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
                                 intent.putExtra("com.example.nicol.dronflyvis.splitPoly", split);
                                 intent.putExtra("com.example.nicol.dronflyvis.ASPECT_RATIO", ratio);
                                 intent.putExtra("com.example.nicol.dronflyvis.OVERLAP",overlap);
+                                intent.putExtra("com.example.nicol.dronflyvis.RADIO_SELECTION", droneFlag);
 
                                 startActivity(intent);
                                 dialogInterface.cancel();
