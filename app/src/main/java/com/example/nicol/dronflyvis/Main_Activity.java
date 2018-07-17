@@ -862,10 +862,12 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
      * @param view
      */
     public void main_activity_next(View view) {
+        InputValidator mainVal = new InputValidator(Main_Activity.this);
         /**
          * If no markers are drawn, a warning will be shown.
          */
         if(markers.size() == 0) {
+            mainVal.createVibration();
             Warning warning = new Warning("You have to draw a polygon", "Please draw", false, "OK", this);
             android.app.AlertDialog alertDialog = warning.createWarning();
             alertDialog.setTitle("Missing Polygon");
@@ -879,6 +881,7 @@ public class Main_Activity extends FragmentActivity implements OnMapReadyCallbac
          */
         if (!split) {
             if (countPointInPoly() > 99) {
+                mainVal.createVibration();
                 AlertDialog.Builder dBuilder = new AlertDialog.Builder(Main_Activity.this);
 
                 dBuilder.setTitle("Polygon is too large!");
