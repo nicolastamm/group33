@@ -221,11 +221,9 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
             Rastering raster = new Rastering(nodeList, settings[2], settings[1], ratio, overlap[0], overlap[1]);
             TravelingSalesman tsm = new TravelingSalesman();
 
-
             ArrayList<ArrayList<ArrayList<Node>>> actRaster = raster.getRasters();
 
             actStartNodes = new ArrayList<Node>();
-
 
             for (ArrayList<ArrayList<Node>> i : actRaster) {
                 ArrayList<Marker> pfad = new ArrayList<>();
