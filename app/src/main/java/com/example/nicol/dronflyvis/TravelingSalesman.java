@@ -301,7 +301,7 @@ public class TravelingSalesman
      * @param list the list to copy
      * @return a list containing all values of the input list
      */
-    private ArrayList<Node> copyList(ArrayList<Node> list)
+    public static ArrayList<Node> copyList(ArrayList<Node> list)
     {
         ArrayList<Node> lst = new ArrayList<Node>();
 

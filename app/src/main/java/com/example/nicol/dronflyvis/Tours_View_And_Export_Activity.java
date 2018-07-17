@@ -41,6 +41,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 
 import de.keyboardsurfer.android.widget.crouton.Configuration;
 import de.keyboardsurfer.android.widget.crouton.Crouton;
@@ -267,7 +268,8 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
 
             ArrayList<ArrayList<Node>> actRaster = raster.getRaster();
             if (actRaster.isEmpty()) {
-                route = nodeList;
+                route = TravelingSalesman.copyList(nodeList);
+                route.remove(route.size() - 1);
             } else {
                 actStartNode = new Node(actRaster.get(0).get(0).getLatitude(), actRaster.get(0).get(0).getLongitude(), 2);
                 route = tsm.travelingSalesman(actRaster, actStartNode, nodeList);
@@ -574,11 +576,17 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
                     TravelingSalesman tsm = new TravelingSalesman();
 
                     ArrayList<ArrayList<Node>> actRaster = raster.getRaster();
-                    if (actRaster.isEmpty()) {
-                        route = nodeList;
-                    } else {
+
+                    /*
+                     * No Else at this point, because this is only the case if
+                     * the raster is empty.<br>
+                     * In this case we only take the point from the nodeList as route.
+                     * This is the same route, as the initial call creates
+                     */
+                    if (!actRaster.isEmpty()) {
                         route = tsm.travelingSalesman(actRaster, new Node(actStartNode.getLatitude(), actStartNode.getLongitude(), 2), nodeList);
                     }
+
                     allRoutes.add(route);
 
                     for (int i = 0; i < route.size(); i++) {
@@ -762,9 +770,32 @@ public class Tours_View_And_Export_Activity extends FragmentActivity implements 
         FileOutputStream fos = null;
         content = "";
 
-        for(int i = 0; i < nodeList.size() - 1; i++)
+        ArrayList<Node> edgeNodes = TravelingSalesman.copyList(nodeList);
+        Node act = null;
+        int index = 0;
+        int j = 0;
+        int max = edgeNodes.size();
+
+        // all duplicated Node from the NodeList will be removed
+        while(j < max)
         {
-            content += nodeList.get(i).getLatitude() + "," + nodeList.get(i).getLongitude() + "\n";
+            act = edgeNodes.get(j);
+            index = edgeNodes.indexOf(act);
+
+            for(int i = 0; i < edgeNodes.size(); i++)
+            {
+                if(i != index && edgeNodes.get(i).getLatitude() == act.getLatitude() && edgeNodes.get(i).getLongitude() == act.getLongitude())
+                {
+                    max--;
+                    edgeNodes.remove(edgeNodes.get(i));
+                }
+            }
+            j++;
+        }
+
+        for(int i = 0; i < edgeNodes.size(); i++)
+        {
+            content += edgeNodes.get(i).getLatitude() + "," + edgeNodes.get(i).getLongitude() + "\n";
         }
 
         //write data to file
